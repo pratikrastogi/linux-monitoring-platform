@@ -51,7 +51,7 @@ fi
 if [ "$BUILD_COLLECTOR" = true ]; then
   echo "🔧 Building Collector image..."
   docker build -t $COLLECTOR_IMAGE:$COLLECTOR_TAG collector/
-  ocker push $COLLECTOR_IMAGE:$COLLECTOR_TAG
+  docker push $COLLECTOR_IMAGE:$COLLECTOR_TAG
 
   echo "🚢 Deploying Collector..."
   kubectl set image deployment/collector collector=$COLLECTOR_IMAGE:$COLLECTOR_TAG -n $NAMESPACE
