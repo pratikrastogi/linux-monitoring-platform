@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+export BUILDAH_ISOLATION=chroot
+
+
 PROJECT_ROOT="/opt/linux-monitoring-platform"
 NAMESPACE="linux-monitoring"
 
