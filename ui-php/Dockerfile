@@ -1,13 +1,17 @@
 FROM php:8.2-apache
 
-# Enable mysqli
-RUN docker-php-ext-install mysqli
+# Install mysqli using OS packages (NOT docker-php-ext-install)
+RUN apt-get update \
+ && apt-get install -y php-mysql \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
-# Apache listens on 80 by default
+# Apache already listens on port 80
 EXPOSE 80
 
 # Copy UI code
 COPY src/ /var/www/html/
 
-# Fix permissions
+# Permissions
 RUN chown -R www-data:www-data /var/www/html
+
