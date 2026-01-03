@@ -1,8 +1,13 @@
-FROM registry.access.redhat.com/ubi8/php-82
+FROM php:8.2-apache
 
-USER root
-RUN dnf install -y php-mysqlnd && dnf clean all
+# Enable mysqli
+RUN docker-php-ext-install mysqli
 
+# Apache listens on 80 by default
+EXPOSE 80
+
+# Copy UI code
 COPY src/ /var/www/html/
-CMD ["/usr/libexec/s2i/run"]
 
+# Fix permissions
+RUN chown -R www-data:www-data /var/www/html
