@@ -1,21 +1,44 @@
-
 <?php
-session_start();
-if (!isset($_SESSION['user'])) header("Location: login.php");
-$c = new mysqli("mysql","monitor","monitor123","monitoring");
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-$q = "
-SELECT s.hostname, m.*
+$conn = new mysqli("mysql","monitor","monitor123","monitoring");
+
+/*
+ Logic:
+ - Always show servers
+ - LEFT JOIN latest metrics (if exist)
+*/
+
+$sql = "
+SELECT
+ s.id AS server_id,
+ s.hostname,
+ s.ip_address,
+ IFNULL(m.os_version, 'NA') AS os_version,
+ IFNULL(m.uptime, 'NA') AS uptime,
+ IFNULL(m.sshd_status, 'unknown') AS sshd_status,
+ IFNULL(m.reachable, 0) AS reachable
 FROM servers s
-JOIN server_metrics m ON s.id=m.server_id
-WHERE m.collected_at=(
- SELECT MAX(collected_at)
- FROM server_metrics
- WHERE server_id=s.id
-)
+LEFT JOIN server_metrics m
+  ON m.id = (
+    SELECT id
+    FROM server_metrics
+    WHERE server_id = s.id
+    ORDER BY collected_at DESC
+    LIMIT 1
+  )
+WHERE s.enabled = 1
+ORDER BY s.hostname
 ";
 
-$r = $c->query($q);
-echo json_encode($r->fetch_all(MYSQLI_ASSOC));
-?>
+$res = $conn->query($sql);
+
+$data = [];
+while ($row = $res->fetch_assoc()) {
+  $data[] = $row;
+}
+
+header("Content-Type: application/json");
+echo json_encode($data);
 
