@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terminal
+  namespace: linux-monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: terminal
+  template:
+    metadata:
+      labels:
+        app: terminal
+    spec:
+      containers:
+      - name: terminal
+        image: pratikrastogi/linux-monitor-terminal:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+
