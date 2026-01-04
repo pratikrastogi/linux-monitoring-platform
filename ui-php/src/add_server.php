@@ -1,176 +1,164 @@
 <?php
 session_start();
-if ($_SESSION['role'] != 'admin') die("Access denied");
-
-$conn = new mysqli("mysql","monitor","monitor123","monitoring");
-if ($conn->connect_error) die("DB connection failed");
-
-/* ================= Defaults ================= */
-$edit = false;
-$server = [
-  'id'=>'','hostname'=>'','ip_address'=>'','ssh_user'=>'','ssh_password'=>'','tag'=>'Generic'
-];
-
-/* ================= Edit Mode ================= */
-if (isset($_GET['id'])) {
-  $edit = true;
-  $stmt = $conn->prepare("SELECT * FROM servers WHERE id=?");
-  $stmt->bind_param("i", $_GET['id']);
-  $stmt->execute();
-  $server = $stmt->get_result()->fetch_assoc();
+if (!isset($_SESSION['user']) || $_SESSION['role'] != 'admin') {
+  header("Location: login.php");
+  exit;
 }
 
-/* ================= Save ================= */
+$conn = new mysqli("mysql","monitor","monitor123","monitoring");
+if ($conn->connect_error) die("DB Error");
+
+/* ---------- EDIT MODE ---------- */
+$edit = false;
+$server = ['id'=>'','hostname'=>'','ip_address'=>'','ssh_user'=>'','ssh_password'=>''];
+
+if (isset($_GET['id'])) {
+  $edit = true;
+  $st = $conn->prepare("SELECT * FROM servers WHERE id=?");
+  $st->bind_param("i", $_GET['id']);
+  $st->execute();
+  $server = $st->get_result()->fetch_assoc();
+}
+
+/* ---------- SAVE ---------- */
 if (isset($_POST['save'])) {
 
   if (!empty($_POST['id'])) {
     $q = $conn->prepare("
-      UPDATE servers
-      SET hostname=?, ip_address=?, ssh_user=?, ssh_password=?, tag=?
+      UPDATE servers SET hostname=?, ip_address=?, ssh_user=?, ssh_password=?
       WHERE id=?
     ");
-    $q->bind_param("sssssi",
-      $_POST['hostname'], $_POST['ip'], $_POST['user'],
-      $_POST['password'], $_POST['tag'], $_POST['id']
+    $q->bind_param("ssssi",
+      $_POST['hostname'], $_POST['ip'],
+      $_POST['user'], $_POST['password'], $_POST['id']
     );
   } else {
     $q = $conn->prepare("
-      INSERT INTO servers (hostname, ip_address, ssh_user, ssh_password, tag)
-      VALUES (?,?,?,?,?)
+      INSERT INTO servers (hostname, ip_address, ssh_user, ssh_password)
+      VALUES (?,?,?,?)
     ");
-    $q->bind_param("sssss",
+    $q->bind_param("ssss",
       $_POST['hostname'], $_POST['ip'],
-      $_POST['user'], $_POST['password'], $_POST['tag']
+      $_POST['user'], $_POST['password']
     );
   }
+
   $q->execute();
-  header("Location: ".$_SERVER['PHP_SELF']);
+  header("Location: add_server.php");
   exit;
 }
 
-/* ================= Delete ================= */
+/* ---------- DELETE ---------- */
 if (isset($_GET['delete'])) {
-  $stmt = $conn->prepare("DELETE FROM servers WHERE id=?");
-  $stmt->bind_param("i", $_GET['delete']);
-  $stmt->execute();
-  header("Location: ".$_SERVER['PHP_SELF']);
+  $d = $conn->prepare("DELETE FROM servers WHERE id=?");
+  $d->bind_param("i", $_GET['delete']);
+  $d->execute();
+  header("Location: add_server.php");
   exit;
 }
 
-/* ================= Server List ================= */
-$servers = $conn->query("SELECT * FROM servers ORDER BY id DESC");
+/* ---------- AJAX SSH TEST (SIMULATED) ---------- */
+if (isset($_GET['test_ssh'])) {
+  // Temporary logic: IP reachable → PASS, else FAIL
+  $ip = $_GET['test_ssh'];
+  $status = (exec("ping -c 1 -W 1 $ip >/dev/null 2>&1 && echo OK") == "OK")
+            ? "PASS" : "FAIL";
+  echo json_encode(["result"=>$status]);
+  exit;
+}
+
+/* ---------- SERVER LIST ---------- */
+$list = $conn->query("SELECT * FROM servers ORDER BY id DESC");
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
 <title>Manage Servers</title>
-<link rel="stylesheet" href="style.css">
-
-<style>
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.full{grid-column:1/-1}
-.primary-btn{background:linear-gradient(135deg,#1d2671,#c33764);color:#fff;border:none;padding:12px;border-radius:8px}
-.action-btn{margin-right:10px;cursor:pointer;font-weight:600}
-.test{color:#0a7}
-.delete{color:red}
-.tag{padding:3px 8px;border-radius:6px;color:#fff;font-size:12px}
-.Prod{background:#007bff}.DR{background:#dc3545}.SAP{background:#6f42c1}.Generic{background:#6c757d}
-.password-box{position:relative}
-.password-box span{position:absolute;right:10px;top:50%;transform:translateY(-50%);cursor:pointer}
-
-/* Responsive */
-@media(max-width:768px){
- .form-grid{grid-template-columns:1fr}
- .sidebar{display:none}
-}
-</style>
+<link rel="stylesheet" href="assets/style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
 
+<!-- ===== TOP BAR ===== -->
 <div class="topbar">
- <div class="logo">Linux Monitoring Microservice</div>
- <div class="top-actions">👤 admin <a class="logout" href="logout.php">Logout</a></div>
+  <div class="logo">🖥️ Vibhor Rastogi LAB Linux Monitoring</div>
+  <div class="top-actions">
+    <span class="user">👤 <?= $_SESSION['user'] ?></span>
+    <a href="logout.php" class="logout">Logout</a>
+  </div>
 </div>
 
 <div class="layout">
 
+<!-- ===== SIDEBAR ===== -->
 <div class="sidebar">
- <a href="index.php">Dashboard</a>
- <a class="active" href="add_server.php">Add Server</a>
+  <a href="index.php">📊 Dashboard</a>
+  <a href="charts.php">📈 Charts</a>
+  <a href="alerts.php">🚨 Alerts</a>
+  <hr>
+  <a class="active" href="add_server.php">➕ Add Server</a>
+  <a href="users.php">👥 Users</a>
 </div>
 
+<!-- ===== CONTENT ===== -->
 <div class="content">
 
-<!-- FORM -->
+<!-- ADD / EDIT FORM -->
 <div class="card">
-<h3><?= $edit?"Edit Server":"Add New Server" ?></h3>
+  <h3><?= $edit ? "Edit Server" : "Add New Server" ?></h3>
 
-<form method="post">
-<input type="hidden" name="id" value="<?= $server['id'] ?>">
+  <form method="post">
+    <input type="hidden" name="id" value="<?= $server['id'] ?>">
 
-<div class="form-grid">
- <div>
-  <label>Hostname</label>
-  <input name="hostname" required value="<?= $server['hostname'] ?>">
- </div>
+    <label>Hostname</label>
+    <input name="hostname" required value="<?= htmlspecialchars($server['hostname']) ?>">
 
- <div>
-  <label>IP Address</label>
-  <input name="ip" required value="<?= $server['ip_address'] ?>">
- </div>
+    <label>IP Address</label>
+    <input name="ip" required value="<?= htmlspecialchars($server['ip_address']) ?>">
 
- <div>
-  <label>SSH User</label>
-  <input name="user" required value="<?= $server['ssh_user'] ?>">
- </div>
+    <label>SSH Username</label>
+    <input name="user" required value="<?= htmlspecialchars($server['ssh_user']) ?>">
 
- <div>
-  <label>SSH Password</label>
-  <div class="password-box">
-   <input id="pwd" type="password" name="password" required value="<?= $server['ssh_password'] ?>">
-   <span onclick="togglePwd()">👁</span>
-  </div>
- </div>
+    <label>SSH Password</label>
+    <div style="position:relative">
+      <input id="pwd" type="password" name="password" required
+             value="<?= htmlspecialchars($server['ssh_password']) ?>">
+      <span onclick="togglePwd()" style="position:absolute;right:10px;top:12px;cursor:pointer">👁</span>
+    </div>
 
- <div>
-  <label>Server Tag</label>
-  <select name="tag">
-   <?php foreach(["Prod","DR","SAP","Generic"] as $t): ?>
-    <option <?= $server['tag']==$t?"selected":"" ?>><?= $t ?></option>
-   <?php endforeach ?>
-  </select>
- </div>
-
- <div class="full">
-  <button class="primary-btn" name="save"><?= $edit?"Save Changes":"Add Server" ?></button>
- </div>
-</div>
-</form>
+    <button name="save"><?= $edit ? "Save Changes" : "Add Server" ?></button>
+  </form>
 </div>
 
-<!-- TABLE -->
+<!-- SERVER LIST -->
 <div class="card">
-<h3>Configured Servers</h3>
+  <h3>Configured Servers</h3>
 
-<table class="modern-table">
-<tr><th>Hostname</th><th>IP</th><th>User</th><th>Tag</th><th>Action</th></tr>
+  <table class="modern-table">
+    <tr>
+      <th>Hostname</th>
+      <th>IP</th>
+      <th>User</th>
+      <th>SSH Test</th>
+      <th>Action</th>
+    </tr>
 
-<?php while($r=$servers->fetch_assoc()): ?>
-<tr>
-<td><?= $r['hostname'] ?></td>
-<td><?= $r['ip_address'] ?></td>
-<td><?= $r['ssh_user'] ?></td>
-<td><span class="tag <?= $r['tag'] ?>"><?= $r['tag'] ?></span></td>
-<td>
- <span class="action-btn test" onclick="testConn('<?= $r['ip_address'] ?>')">Test</span>
- <a class="action-btn" href="?id=<?= $r['id'] ?>">Edit</a>
- <span class="action-btn delete" onclick="confirmDel(<?= $r['id'] ?>)">Delete</span>
-</td>
-</tr>
-<?php endwhile ?>
-</table>
+    <?php while($r=$list->fetch_assoc()): ?>
+    <tr>
+      <td><?= $r['hostname'] ?></td>
+      <td><?= $r['ip_address'] ?></td>
+      <td><?= $r['ssh_user'] ?></td>
+      <td id="test<?= $r['id'] ?>">-</td>
+      <td>
+        <a href="?id=<?= $r['id'] ?>">Edit</a> |
+        <a href="#" onclick="testSSH(<?= $r['id'] ?>,'<?= $r['ip_address'] ?>')">Test</a> |
+        <a class="del" href="?delete=<?= $r['id'] ?>"
+           onclick="return confirm('Delete this server?')">Delete</a>
+      </td>
+    </tr>
+    <?php endwhile; ?>
+  </table>
 </div>
 
 </div>
@@ -179,15 +167,19 @@ $servers = $conn->query("SELECT * FROM servers ORDER BY id DESC");
 <script>
 function togglePwd(){
  let p=document.getElementById("pwd");
- p.type=p.type==="password"?"text":"password";
+ p.type = p.type==="password" ? "text" : "password";
 }
 
-function confirmDel(id){
- if(confirm("Delete this server?")) location.href="?delete="+id;
-}
-
-function testConn(ip){
- alert("Testing SSH connection to "+ip+" (backend hook next)");
+function testSSH(id, ip){
+ let cell = document.getElementById("test"+id);
+ cell.innerHTML = "⏳ Testing...";
+ fetch("add_server.php?test_ssh="+ip)
+ .then(r=>r.json())
+ .then(d=>{
+   cell.innerHTML = d.result === "PASS"
+     ? "<span class='ok'>PASS</span>"
+     : "<span class='bad'>FAIL</span>";
+ });
 }
 </script>
 
