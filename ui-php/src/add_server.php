@@ -64,7 +64,7 @@ if ($_POST) {
   }
 
   $q->execute();
-  header("Location: add_servers.php");
+  header("Location: add_server.php");
   exit;
 }
 
@@ -190,7 +190,7 @@ $servers = $conn->query("SELECT id, hostname, ip_address, ssh_user FROM servers 
           <td><?= htmlspecialchars($row['ip_address']) ?></td>
           <td><?= htmlspecialchars($row['ssh_user']) ?></td>
           <td>
-            <a class="edit-link" href="add_servers.php?id=<?= $row['id'] ?>">Edit</a>
+            <a class="edit-link" href="add_server.php?id=<?= $row['id'] ?>">Edit</a>
           </td>
         </tr>
         <?php endwhile; ?>
