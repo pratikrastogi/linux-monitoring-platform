@@ -19,6 +19,27 @@ pipeline {
         checkout scm
       }
     }
+pipeline {
+  agent any
+
+  environment {
+    NAMESPACE = "linux-monitoring"
+
+    UI_IMAGE = "pratikrastogi/linux-monitoring"
+    COLLECTOR_IMAGE = "pratikrastogi/linux-monitor-collector"
+
+    // Date-based tag (same as your script)
+    UI_TAG = sh(script: "date +%Y%m%d%H%M", returnStdout: true).trim()
+    COLLECTOR_TAG = sh(script: "date +%Y%m%d%H%M", returnStdout: true).trim()
+  }
+
+  stages {
+
+    stage('Checkout Code') {
+      steps {
+        checkout scm
+      }
+    }
 
     stage('Detect Changes') {
       steps {
@@ -49,8 +70,8 @@ pipeline {
 
         withCredentials([usernamePassword(
           credentialsId: 'dockerhub-creds',
-          usernameVariable: 'generationpratik@gmail.com',
-          passwordVariable: 'Docker@123!'
+          usernameVariable: 'DOCKER_USER',
+          passwordVariable: 'DOCKER_PASS'
         )]) {
           sh """
             docker login -u $DOCKER_USER -p $DOCKER_PASS
