@@ -6,31 +6,6 @@ pipeline {
 
     UI_IMAGE = "pratikrastogi/linux-monitoring"
     COLLECTOR_IMAGE = "pratikrastogi/linux-monitor-collector"
-
-    // Date-based tag (same as your script)
-    UI_TAG = sh(script: "date +%Y%m%d%H%M", returnStdout: true).trim()
-    COLLECTOR_TAG = sh(script: "date +%Y%m%d%H%M", returnStdout: true).trim()
-  }
-
-  stages {
-
-    stage('Checkout Code') {
-      steps {
-        checkout scm
-      }
-    }
-pipeline {
-  agent any
-
-  environment {
-    NAMESPACE = "linux-monitoring"
-
-    UI_IMAGE = "pratikrastogi/linux-monitoring"
-    COLLECTOR_IMAGE = "pratikrastogi/linux-monitor-collector"
-
-    // Date-based tag (same as your script)
-    UI_TAG = sh(script: "date +%Y%m%d%H%M", returnStdout: true).trim()
-    COLLECTOR_TAG = sh(script: "date +%Y%m%d%H%M", returnStdout: true).trim()
   }
 
   stages {
@@ -45,7 +20,7 @@ pipeline {
       steps {
         script {
           def changes = sh(
-            script: "git diff --name-only HEAD~1",
+            script: "git diff --name-only HEAD~1 || true",
             returnStdout: true
           ).trim()
 
@@ -53,6 +28,13 @@ pipeline {
 
           env.BUILD_UI = changes.contains("ui-php/") ? "true" : "false"
           env.BUILD_COLLECTOR = changes.contains("collector/") ? "true" : "false"
+
+          env.UI_TAG = sh(
+            script: "date +%Y%m%d%H%M",
+            returnStdout: true
+          ).trim()
+
+          env.COLLECTOR_TAG = env.UI_TAG
         }
       }
     }
@@ -62,7 +44,7 @@ pipeline {
         expression { env.BUILD_UI == "true" }
       }
       steps {
-        echo "🔧 Building PHP UI image..."
+        echo "🔧 Building PHP UI image"
 
         sh """
           docker build -t ${UI_IMAGE}:${UI_TAG} ui-php/
@@ -74,12 +56,10 @@ pipeline {
           passwordVariable: 'DOCKER_PASS'
         )]) {
           sh """
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
             docker push ${UI_IMAGE}:${UI_TAG}
           """
         }
-
-        echo "🚢 Deploying PHP UI..."
 
         sh """
           kubectl set image deployment/php-ui \
@@ -94,7 +74,7 @@ pipeline {
         expression { env.BUILD_COLLECTOR == "true" }
       }
       steps {
-        echo "🔧 Building Collector image..."
+        echo "🔧 Building Collector image"
 
         sh """
           docker build -t ${COLLECTOR_IMAGE}:${COLLECTOR_TAG} collector/
@@ -106,12 +86,10 @@ pipeline {
           passwordVariable: 'DOCKER_PASS'
         )]) {
           sh """
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
             docker push ${COLLECTOR_IMAGE}:${COLLECTOR_TAG}
           """
         }
-
-        echo "🚢 Deploying Collector..."
 
         sh """
           kubectl set image deployment/collector \
@@ -124,7 +102,7 @@ pipeline {
 
   post {
     success {
-      echo "✅ CI/CD Pipeline completed successfully!"
+      echo "✅ CI/CD Pipeline completed successfully"
     }
     failure {
       echo "❌ CI/CD Pipeline failed"
