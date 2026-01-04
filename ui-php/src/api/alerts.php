@@ -1,5 +1,7 @@
 <?php
 header("Content-Type: application/json");
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 $conn = new mysqli("mysql","monitor","monitor123","monitoring");
 if ($conn->connect_error) {
@@ -7,30 +9,24 @@ if ($conn->connect_error) {
   exit;
 }
 
-/* ==========================================================
-   FUNCTION: Send alert to Microsoft Teams
-========================================================== */
-function sendTeamsAlert($conn, $alert) {
+/* =====================================================
+   Send Microsoft Teams Notification
+===================================================== */
+function sendTeams($conn, $title, $host, $msg, $time) {
 
-  // Load webhook config
-  $cfgRes = $conn->query("SELECT teams_webhook, enabled FROM alert_config WHERE id=1");
-  if (!$cfgRes || $cfgRes->num_rows == 0) return;
+  $cfg = $conn->query("SELECT teams_webhook, enabled FROM alert_config WHERE id=1")
+              ->fetch_assoc();
 
-  $cfg = $cfgRes->fetch_assoc();
+  if (!$cfg || !$cfg['enabled'] || empty($cfg['teams_webhook'])) return;
 
-  if ($cfg['enabled'] != 1 || empty($cfg['teams_webhook'])) return;
-
-  // Build Teams message
   $payload = json_encode([
     "text" =>
-      "🚨 **ALERT TRIGGERED**\n\n".
-      "**Host:** {$alert['hostname']}\n".
-      "**Type:** {$alert['alert_type']}\n".
-      "**Message:** {$alert['message']}\n".
-      "**Time:** {$alert['created_at']}"
+      "🚨 **$title**\n\n".
+      "**Host:** $host\n".
+      "**Message:** $msg\n".
+      "**Time:** $time"
   ]);
 
-  // Send to Teams
   $ch = curl_init($cfg['teams_webhook']);
   curl_setopt($ch, CURLOPT_POST, true);
   curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
@@ -38,30 +34,79 @@ function sendTeamsAlert($conn, $alert) {
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
   curl_exec($ch);
   curl_close($ch);
+}
 
-  // Mark alert as notified (VERY IMPORTANT)
+/* =====================================================
+   STEP 1: Send NEW DOWN alerts (once)
+===================================================== */
+$newAlerts = $conn->query("
+  SELECT a.id, a.alert_type, a.message, a.created_at,
+         s.hostname
+  FROM alerts a
+  JOIN servers s ON s.id = a.server_id
+  WHERE a.active = 1
+    AND a.notified = 0
+");
+
+while ($a = $newAlerts->fetch_assoc()) {
+
+  sendTeams(
+    $conn,
+    $a['alert_type'],
+    $a['hostname'],
+    $a['message'],
+    $a['created_at']
+  );
+
+  // Mark as notified
   $stmt = $conn->prepare("UPDATE alerts SET notified=1 WHERE id=?");
-  $stmt->bind_param("i", $alert['id']);
+  $stmt->bind_param("i", $a['id']);
   $stmt->execute();
 }
 
-/* ==========================================================
-   STEP 1: Send notifications for NEW alerts only
-========================================================== */
-$newAlerts = $conn->query("SELECT * FROM alerts WHERE notified=0");
+/* =====================================================
+   STEP 2: Detect HOST RECOVERY (UP)
+===================================================== */
+$downHosts = $conn->query("
+  SELECT a.id, a.server_id, s.hostname, s.ip_address
+  FROM alerts a
+  JOIN servers s ON s.id = a.server_id
+  WHERE a.alert_type = 'HOST_DOWN'
+    AND a.active = 1
+");
 
-while ($alert = $newAlerts->fetch_assoc()) {
-  sendTeamsAlert($conn, $alert);
+while ($h = $downHosts->fetch_assoc()) {
+
+  // Ping to check recovery
+  exec("ping -c 1 -W 1 {$h['ip_address']} >/dev/null 2>&1", $o, $status);
+
+  if ($status === 0) {
+
+    // Send recovery notification
+    sendTeams(
+      $conn,
+      "HOST RECOVERED",
+      $h['hostname'],
+      "Host is reachable again",
+      date("Y-m-d H:i:s")
+    );
+
+    // Mark alert inactive
+    $stmt = $conn->prepare("UPDATE alerts SET active=0 WHERE id=?");
+    $stmt->bind_param("i", $h['id']);
+    $stmt->execute();
+  }
 }
 
-/* ==========================================================
-   STEP 2: Return ACTIVE alerts to UI
-========================================================== */
+/* =====================================================
+   STEP 3: Return ACTIVE alerts for UI
+===================================================== */
 $result = $conn->query("
-  SELECT hostname, alert_type, message, created_at
-  FROM alerts
-  WHERE resolved = 0
-  ORDER BY created_at DESC
+  SELECT s.hostname, a.alert_type, a.message, a.created_at
+  FROM alerts a
+  JOIN servers s ON s.id = a.server_id
+  WHERE a.active = 1
+  ORDER BY a.created_at DESC
 ");
 
 $data = [];
