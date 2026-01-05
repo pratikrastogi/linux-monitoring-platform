@@ -49,7 +49,7 @@ $users = $conn->query("SELECT username, role FROM users ORDER BY username");
 
 <!-- ===== TOP BAR ===== -->
 <div class="topbar">
-  <div class="logo">🖥️ Vibhor Rastogi LAB Linux Monitoring</div>
+  <div class="logo">🖥️ Pratik Rastogi LAB Linux Monitoring</div>
   <div class="top-actions">
     <span class="user">👤 <?= $_SESSION['user'] ?></span>
     <a href="logout.php" class="logout">Logout</a>

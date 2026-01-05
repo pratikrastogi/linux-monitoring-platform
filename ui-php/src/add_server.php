@@ -82,7 +82,7 @@ $list = $conn->query("SELECT * FROM servers ORDER BY id DESC");
 
 <!-- ===== TOP BAR ===== -->
 <div class="topbar">
-  <div class="logo">🖥️ Vibhor Rastogi LAB Linux Monitoring</div>
+  <div class="logo">🖥️ Pratik Rastogi LAB Linux Monitoring</div>
   <div class="top-actions">
     <span class="user">👤 <?= $_SESSION['user'] ?></span>
     <a href="logout.php" class="logout">Logout</a>

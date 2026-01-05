@@ -33,7 +33,7 @@ $role = $_SESSION['role'];
 
     <?php if ($role == 'admin') { ?>
       <hr>
-      <a href="add_server.php">➕ Add Server</a>
+      <a href="add_server.php">➕ Manage Servers</a>
       <a href="users.php">👥 Users</a>
     <?php } ?>
   </div>
