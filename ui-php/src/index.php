@@ -67,7 +67,7 @@ $role = $_SESSION['role'];
             <th>OS</th>
             <th>Uptime</th>
             <th>SSHD</th>
-            <?php if ($role == 'admin') echo "<th>Action</th>"; ?>
+            <th>Action</th>"
           </tr>
         </thead>
         <tbody></tbody>
