@@ -19,8 +19,7 @@ const term = new Terminal();
 term.open(document.getElementById('terminal'));
 
 const ws = new WebSocket(
-  "ws://<?= $_SERVER['SERVER_NAME'] ?>:32000/?server_id=<?= $server_id ?>
-"
+  "ws://192.168.1.46:32000/?server_id=<?= $server_id ?>"
 );
 
 ws.onmessage = e => term.write(e.data);
