@@ -30,7 +30,7 @@ $role = $_SESSION['role'];
     <a class="active" href="index.php">📊 Dashboard</a>
     <a href="charts.php">📈 Charts</a>
     <a href="alerts.php">🚨 Alerts</a>
-
+    <a href="terminal.php?id=<?= $server_id ?>">Terminal</a>
     <?php if ($role == 'admin') { ?>
       <hr>
       <a href="add_server.php">➕ Manage Servers</a>
