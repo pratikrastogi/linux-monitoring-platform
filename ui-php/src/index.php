@@ -30,7 +30,7 @@ $role = $_SESSION['role'];
     <a class="active" href="index.php">📊 Dashboard</a>
     <a href="charts.php">📈 Charts</a>
     <a href="alerts.php">🚨 Alerts</a>
-    <a href="terminal.php?id=<?= $server_id ?>">Terminal</a>
+
     <?php if ($role == 'admin') { ?>
       <hr>
       <a href="add_server.php">➕ Manage Servers</a>
@@ -101,7 +101,10 @@ function loadData() {
       <td>${s.uptime}</td>
       <td class="${sshdClass}">${s.sshd_status}</td>
       <?php if ($role == 'admin') { ?>
-      <td><a class="del" href="delete_server.php?id=${s.server_id}">Delete</a></td>
+      <td>
+        <a href="terminal.php?id=${s.server_id}">🖥 Terminal</a> |
+        <a class="del" href="delete_server.php?id=${s.server_id}">Delete</a>
+      </td>
       <?php } ?>
     </tr>`;
   });
@@ -116,4 +119,3 @@ function loadData() {
 
 </body>
 </html>
-
