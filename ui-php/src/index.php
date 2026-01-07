@@ -100,12 +100,10 @@ function loadData() {
       <td>${s.os_version}</td>
       <td>${s.uptime}</td>
       <td class="${sshdClass}">${s.sshd_status}</td>
-      <?php if ($role == 'admin') { ?>
       <td>
         <a href="terminal.php?id=${s.server_id}">🖥 Terminal</a> |
         <a class="del" href="delete_server.php?id=${s.server_id}">Delete</a>
       </td>
-      <?php } ?>
     </tr>`;
   });
 
