@@ -19,7 +19,8 @@ const term = new Terminal();
 term.open(document.getElementById('terminal'));
 
 const ws = new WebSocket(
-  "ws://terminal-gateway.linux-monitoring.svc.cluster.local:3000/?server_id=<?= $server_id ?>"
+  "ws://<?= $_SERVER['SERVER_NAME'] ?>:32000/?server_id=<?= $server_id ?>
+"
 );
 
 ws.onmessage = e => term.write(e.data);
