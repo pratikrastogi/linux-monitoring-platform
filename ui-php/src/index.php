@@ -15,7 +15,7 @@ $role = $_SESSION['role'];
 
 <!-- ===== TOP NAV BAR ===== -->
 <div class="topbar">
-  <div class="logo">🖥️ Kyndryl LAB Linux Monitoring Sytem</div>
+  <div class="logo">🖥️ Pratik LAB Linux Monitoring Sytem</div>
   <div class="top-actions">
     <span class="user">👤 <?php echo $_SESSION['user']; ?></span>
     <a href="logout.php" class="logout">Logout</a>
