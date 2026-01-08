@@ -1,6 +1,6 @@
 <?php
 session_start();
-if ($_SESSION['user']) header("Location: index.php");
+if (isset($_SESSION['user'])) header("Location: index.php");
 ?>
 
 <!DOCTYPE html>
