@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: provision-worker
+  namespace: linux-monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: provision-worker
+  template:
+    metadata:
+      labels:
+        app: provision-worker
+    spec:
+      serviceAccountName: provision-sa
+      containers:
+      - name: worker
+        image: pratikrastogi/provision-worker:latest
+        volumeMounts:
+        - name: labs
+          mountPath: /labs
+      volumes:
+      - name: labs
+        persistentVolumeClaim:
+          claimName: labs-rwx
+
