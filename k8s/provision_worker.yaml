@@ -14,7 +14,6 @@ spec:
         app: provision-worker
     spec:
       containers:
-      - name: worker
-        image: docker.io/pratikrastogi/provision-worker
-        command: ["python","/opt/lab/provision_worker.py"]
-
+      - name: provision-worker
+        image: docker.io/pratikrastogi/provision_worker:1.0
+        command: ["python","provision_worker.py"]

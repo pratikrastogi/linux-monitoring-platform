@@ -14,7 +14,7 @@ spec:
         app: cleanup-worker
     spec:
       containers:
-      - name: worker
-        image: docker.io/pratikrastogi/provision_worker
+      - name: cleanup-worker
+        image: docker.io/pratikrastogi/provision_worker:1.0
         command: ["python","/opt/lab/cleanup_worker.py"]
 
