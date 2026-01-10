@@ -10,6 +10,7 @@ if ($conn->connect_error) die("DB error");
 $user = $_SESSION['user'];
 $uid  = (int)$_SESSION['uid'];
 
+/* Fetch latest lab session */
 $q = $conn->prepare("
     SELECT * FROM lab_sessions
     WHERE user_id = ?
@@ -19,81 +20,85 @@ $q = $conn->prepare("
 $q->bind_param("i", $uid);
 $q->execute();
 $lab = $q->get_result()->fetch_assoc();
+
+/* FIXED server_id (same as old script logic) */
+$server_id = 1;
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-<title>Lab Terminal</title>
+  <title>Lab Terminal</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css">
+  <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
 
-<link rel="stylesheet" href="assets/style.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css">
-<script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
-
-<style>
-  body {
-    background:#111;
-    color:#eee;
-    font-family: monospace;
-  }
-  #terminal {
-    background:#000;
-    height:500px;
-    border:1px solid #333;
-    margin-top:10px;
-  }
-  .btn {
-    padding:8px 12px;
-    background:#4caf50;
-    color:#fff;
-    border:none;
-    cursor:pointer;
-    margin-left:5px;
-  }
-  .btn:disabled {
-    background:#666;
-    cursor:not-allowed;
-  }
-  input {
-    padding:8px;
-    background:#222;
-    color:#fff;
-    border:1px solid #555;
-  }
-</style>
+  <style>
+    body { background:#111; color:#eee; font-family: monospace; }
+    #terminal {
+      background:#000;
+      height:500px;
+      border:1px solid #333;
+      margin-top:10px;
+    }
+    .btn {
+      padding:8px 12px;
+      background:#4caf50;
+      color:#fff;
+      border:none;
+      cursor:pointer;
+    }
+    .btn:disabled {
+      background:#666;
+      cursor:not-allowed;
+    }
+    input {
+      padding:8px;
+      background:#222;
+      color:#fff;
+      border:1px solid #555;
+    }
+  </style>
 </head>
 
 <body>
 
-<h2>🧪 Kubernetes Lab – <?= htmlspecialchars($user) ?></h2>
+<h3>🧪 Lab Terminal – User: <?= htmlspecialchars($user) ?></h3>
 
-<?php if ($lab && $lab['status'] === 'ACTIVE'): ?>
+<?php if (!$lab): ?>
 
-  <p>✅ <b>Lab Active</b></p>
+  <p>No lab session found.</p>
+
+<?php elseif ($lab['status'] === 'REQUESTED'): ?>
+
+  <p>⏳ Lab provisioning in progress…</p>
+  <p>Please wait, page will refresh automatically.</p>
+  <script>
+    setTimeout(() => location.reload(), 5000);
+  </script>
+
+<?php elseif ($lab['status'] === 'ACTIVE'): ?>
+
+  <p>✅ Lab Active</p>
   <p>Expires at: <b><?= $lab['access_expiry'] ?></b></p>
   <p id="timer"></p>
 
-  <!-- 🔑 PASSWORD INPUT -->
-  <input
-    type="password"
-    id="sshpass"
-    placeholder="Lab user password (jaise: LabSunil@123)"
-  >
+  <!-- 🔑 PASSWORD INPUT (OLD SCRIPT STYLE) -->
+  <input type="password" id="sshpass" placeholder="Lab user password">
 
   <!-- 🔌 CONNECT BUTTON -->
-  <button class="btn" id="connectBtn" onclick="connect()">🔌 Connect</button>
+  <button class="btn" id="connectBtn" onclick="connect()">Connect</button>
 
   <!-- 🖥 TERMINAL -->
   <div id="terminal"></div>
 
   <script>
-    /* -------- TIMER (sirf display ke liye) -------- */
+    /* -------- TIMER (DISPLAY ONLY) -------- */
     const expiryTs = new Date("<?= $lab['access_expiry'] ?>".replace(' ', 'T')).getTime();
     const timerEl = document.getElementById("timer");
 
     setInterval(() => {
       const diff = expiryTs - Date.now();
       if (diff <= 0) {
-        timerEl.innerText = "⌛ Lab expired. Page refresh karo.";
+        timerEl.innerText = "⌛ Lab expired. Refresh page.";
         return;
       }
       const m = Math.floor(diff / 60000);
@@ -101,40 +106,39 @@ $lab = $q->get_result()->fetch_assoc();
       timerEl.innerText = `⏱ ${m}m ${s}s remaining`;
     }, 1000);
 
-    /* -------- TERMINAL LOGIC (SIRF EK BAAR) -------- */
+    /* -------- TERMINAL (OLD SCRIPT + FIXES) -------- */
     let term = null;
     let ws   = null;
 
     function connect() {
 
-      // agar already connected hai to kuch mat karo
+      // prevent multiple connections
       if (ws && ws.readyState === WebSocket.OPEN) {
         return;
       }
 
       const pass = document.getElementById("sshpass").value;
       if (!pass) {
-        alert("Password daalo bhai pehle 😄");
+        alert("Please enter SSH password");
         return;
       }
 
-      // terminal sirf ek baar create hoga
+      // terminal created only once (OLD SCRIPT FIX)
       if (!term) {
         term = new Terminal({ cursorBlink: true });
         term.open(document.getElementById("terminal"));
       }
 
-      // connect button disable
       document.getElementById("connectBtn").disabled = true;
 
       ws = new WebSocket(
         "ws://<?= $_SERVER['HTTP_HOST'] ?>:32000/?" +
-        "server_id=1"
+        "server_id=<?= $server_id ?>&user=<?= $user ?>"
       );
 
       ws.onopen = () => {
         ws.send(JSON.stringify({ password: pass }));
-        term.write("🔐 Password verify ho raha hai...\r\n");
+        term.write("🔐 Authenticating...\r\n");
       };
 
       ws.onmessage = e => term.write(e.data);
@@ -155,7 +159,7 @@ $lab = $q->get_result()->fetch_assoc();
 
 <?php else: ?>
 
-  <p>❌ Abhi koi active lab nahi hai.</p>
+  <p>❌ Lab not active (Status: <?= htmlspecialchars($lab['status']) ?>)</p>
 
 <?php endif; ?>
 
