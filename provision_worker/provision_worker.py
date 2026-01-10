@@ -80,12 +80,7 @@ while True:
         session_id = session["id"]
 
         # 3️⃣ Mark RUNNING (lock)
-        cur.execute("""
-            UPDATE lab_sessions
-            SET status='RUNNING'
-            WHERE id=%s
-        """, (session_id,))
-
+        pass
         try:
             provision_user(target, session)
 
