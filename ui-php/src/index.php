@@ -1,7 +1,15 @@
 <?php
 session_start();
-if (!isset($_SESSION['user'])) header("Location: login.php");
+if (!isset($_SESSION['user'])) {
+    header("Location: login.php");
+    exit;
+}
+
 $role = $_SESSION['role'];
+$username = $_SESSION['user'];
+
+$conn = new mysqli("mysql","monitor","monitor123","monitoring");
+if ($conn->connect_error) die("DB Error");
 ?>
 <!DOCTYPE html>
 <html>
@@ -15,9 +23,9 @@ $role = $_SESSION['role'];
 
 <!-- ===== TOP NAV BAR ===== -->
 <div class="topbar">
-  <div class="logo">🖥️ Pratik LAB Linux Monitoring Sytem</div>
+  <div class="logo">🖥️ Pratik LAB Linux Monitoring System</div>
   <div class="top-actions">
-    <span class="user">👤 <?php echo $_SESSION['user']; ?></span>
+    <span class="user">👤 <?php echo htmlspecialchars($username); ?></span>
     <a href="logout.php" class="logout">Logout</a>
   </div>
 </div>
@@ -31,7 +39,7 @@ $role = $_SESSION['role'];
     <a href="charts.php">📈 Charts</a>
     <a href="alerts.php">🚨 Alerts</a>
 
-    <?php if ($role == 'admin') { ?>
+    <?php if ($role === 'admin') { ?>
       <hr>
       <a href="add_server.php">➕ Manage Servers</a>
       <a href="users.php">👥 Users</a>
@@ -42,7 +50,7 @@ $role = $_SESSION['role'];
   <!-- ===== CONTENT ===== -->
   <div class="content">
 
-    <!-- SUMMARY CARDS -->
+    <!-- ===== SUMMARY CARDS ===== -->
     <div class="cards">
       <div class="card">
         <h3>Total Servers</h3>
@@ -58,7 +66,7 @@ $role = $_SESSION['role'];
       </div>
     </div>
 
-    <!-- SERVER TABLE -->
+    <!-- ===== SERVER TABLE ===== -->
     <div class="card">
       <h3>Server Status</h3>
       <table class="modern-table" id="tbl">
@@ -68,14 +76,16 @@ $role = $_SESSION['role'];
             <th>OS</th>
             <th>Uptime</th>
             <th>SSHD</th>
-            <th>Action</th>"
+            <th>Action</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
     </div>
 
-    <?php if ($role == 'admin') { ?>
+<?php if ($role === 'admin') { ?>
+
+<!-- ===== LAB EXTENSION REQUESTS ===== -->
 <div class="card" id="lab-requests">
   <h3>🧪 Pending Lab Extension Requests</h3>
 
@@ -83,35 +93,45 @@ $role = $_SESSION['role'];
     <thead>
       <tr>
         <th>User</th>
-        <th>Request</th>
+        <th>Requested Hours</th>
+        <th>Status</th>
         <th>Action</th>
       </tr>
     </thead>
     <tbody>
-    <?php
-    $conn = new mysqli("mysql","monitor","monitor123","monitoring");
-    $res = $conn->query("
-      SELECT sc.id, u.username, sc.description
-      FROM support_cases sc
-      JOIN users u ON sc.user_id = u.id
-      WHERE sc.category='LAB_EXTENSION'
-      AND sc.status='OPEN'
-    ");
-    while ($r = $res->fetch_assoc()) {
-        echo "<tr>
-          <td>{$r['username']}</td>
-          <td>{$r['description']}</td>
-          <td>
-            <a href='approve_lab.php?id={$r['id']}'>✅ Approve</a> |
-            <a href='reject_lab.php?id={$r['id']}'>❌ Reject</a>
-          </td>
-        </tr>";
-    }
-    ?>
+
+<?php
+$res = $conn->query("
+  SELECT ler.id, u.username, ler.hours, ler.status
+  FROM lab_extension_requests ler
+  JOIN users u ON ler.user_id = u.id
+  WHERE ler.status='PENDING'
+  ORDER BY ler.created_at ASC
+");
+
+if ($res->num_rows === 0) {
+    echo "<tr><td colspan='4'>No pending lab extension requests</td></tr>";
+}
+
+while ($r = $res->fetch_assoc()) {
+    echo "<tr>
+      <td>{$r['username']}</td>
+      <td>{$r['hours']} Hour(s)</td>
+      <td><span style='color:orange;font-weight:bold'>PENDING</span></td>
+      <td>
+        <a href='approve_lab.php?id={$r['id']}'>✅ Approve</a> |
+        <a href='reject_lab.php?id={$r['id']}'>❌ Reject</a>
+      </td>
+    </tr>";
+}
+?>
+
     </tbody>
   </table>
 </div>
+
 <?php } ?>
+
   </div>
 </div>
 
@@ -155,3 +175,4 @@ function loadData() {
 
 </body>
 </html>
+
