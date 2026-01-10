@@ -10,7 +10,7 @@ if ($conn->connect_error) die("DB error");
 $user = $_SESSION['user'];
 $uid  = (int)$_SESSION['uid'];
 
-/* Fetch latest lab session */
+/* Latest lab session */
 $q = $conn->prepare("
     SELECT * FROM lab_sessions
     WHERE user_id = ?
@@ -21,7 +21,7 @@ $q->bind_param("i", $uid);
 $q->execute();
 $lab = $q->get_result()->fetch_assoc();
 
-/* FIXED server_id (same as old script logic) */
+/* fixed server id (same as old working logic) */
 $server_id = 1;
 ?>
 <!DOCTYPE html>
@@ -40,11 +40,12 @@ $server_id = 1;
       margin-top:10px;
     }
     .btn {
-      padding:8px 12px;
+      padding:8px 14px;
       background:#4caf50;
       color:#fff;
       border:none;
       cursor:pointer;
+      margin-top:10px;
     }
     .btn:disabled {
       background:#666;
@@ -61,37 +62,43 @@ $server_id = 1;
 
 <body>
 
-<h3>🧪 Lab Terminal – User: <?= htmlspecialchars($user) ?></h3>
+<h3>🧪 Kubernetes Lab – User: <?= htmlspecialchars($user) ?></h3>
 
 <?php if (!$lab): ?>
 
-  <p>No lab session found.</p>
+  <!-- FIRST TIME USER -->
+  <p>You have not used your free lab yet.</p>
+  <a class="btn" href="generate_free_access.php">
+    🚀 Request Free Lab Access (60 min)
+  </a>
 
 <?php elseif ($lab['status'] === 'REQUESTED'): ?>
 
+  <!-- PROVISIONING -->
   <p>⏳ Lab provisioning in progress…</p>
-  <p>Please wait, page will refresh automatically.</p>
+  <p>Please wait, this page will refresh automatically.</p>
   <script>
     setTimeout(() => location.reload(), 5000);
   </script>
 
 <?php elseif ($lab['status'] === 'ACTIVE'): ?>
 
+  <!-- ACTIVE LAB -->
   <p>✅ Lab Active</p>
   <p>Expires at: <b><?= $lab['access_expiry'] ?></b></p>
   <p id="timer"></p>
 
-  <!-- 🔑 PASSWORD INPUT (OLD SCRIPT STYLE) -->
+  <!-- PASSWORD -->
   <input type="password" id="sshpass" placeholder="Lab user password">
 
-  <!-- 🔌 CONNECT BUTTON -->
+  <!-- CONNECT -->
   <button class="btn" id="connectBtn" onclick="connect()">Connect</button>
 
-  <!-- 🖥 TERMINAL -->
+  <!-- TERMINAL -->
   <div id="terminal"></div>
 
   <script>
-    /* -------- TIMER (DISPLAY ONLY) -------- */
+    /* TIMER (display only) */
     const expiryTs = new Date("<?= $lab['access_expiry'] ?>".replace(' ', 'T')).getTime();
     const timerEl = document.getElementById("timer");
 
@@ -106,24 +113,19 @@ $server_id = 1;
       timerEl.innerText = `⏱ ${m}m ${s}s remaining`;
     }, 1000);
 
-    /* -------- TERMINAL (OLD SCRIPT + FIXES) -------- */
+    /* TERMINAL (OLD SCRIPT + FIXES) */
     let term = null;
     let ws   = null;
 
     function connect() {
-
-      // prevent multiple connections
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        return;
-      }
+      if (ws && ws.readyState === WebSocket.OPEN) return;
 
       const pass = document.getElementById("sshpass").value;
       if (!pass) {
-        alert("Please enter SSH password");
+        alert("Please enter lab user password");
         return;
       }
 
-      // terminal created only once (OLD SCRIPT FIX)
       if (!term) {
         term = new Terminal({ cursorBlink: true });
         term.open(document.getElementById("terminal"));
@@ -157,12 +159,19 @@ $server_id = 1;
     }
   </script>
 
-<?php else: ?>
+<?php elseif ($lab['status'] === 'EXPIRED'): ?>
 
-  <p>❌ Lab not active (Status: <?= htmlspecialchars($lab['status']) ?>)</p>
+  <!-- FREE LAB USED -->
+  <p>⌛ Your free lab has expired.</p>
+  <p>You can request more time from admin.</p>
+
+<?php elseif ($lab['status'] === 'FAILED'): ?>
+
+  <p>❌ Lab provisioning failed. Please contact admin.</p>
 
 <?php endif; ?>
 
 </body>
 </html>
+
 
