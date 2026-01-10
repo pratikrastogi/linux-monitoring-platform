@@ -1,132 +1,116 @@
 <?php
 session_start();
-if (!isset($_SESSION['user'])) die("Login required");
+if (!isset($_SESSION['user'], $_SESSION['uid'])) {
+    die("Login required");
+}
 
 $conn = new mysqli("mysql","monitor","monitor123","monitoring");
-if ($conn->connect_error) die("DB error");
+if ($conn->connect_error) {
+    die("DB error");
+}
 
 $user = $_SESSION['user'];
-$uid  = $_SESSION['uid'] ?? null;
-$server_id = $_GET['id'] ?? null;
+$uid  = (int)$_SESSION['uid'];
 
 /* Fetch latest lab session */
-$stmt = $conn->prepare("
-  SELECT * FROM lab_sessions
-  WHERE user_id=?
-  ORDER BY id DESC
-  LIMIT 1
+$q = $conn->prepare("
+    SELECT * FROM lab_sessions
+    WHERE user_id = ?
+    ORDER BY id DESC
+    LIMIT 1
 ");
-$stmt->bind_param("i",$uid);
-$stmt->execute();
-$lab = $stmt->get_result()->fetch_assoc();
-
-$now = time();
-$state = "NO_ACCESS";
-$remaining = 0;
-
-if ($lab) {
-    $expiry = strtotime($lab['access_expiry']);
-    if ($lab['status'] === 'ACTIVE' && $expiry > $now) {
-        $state = "ACTIVE";
-        $remaining = $expiry - $now;
-    } elseif ($lab['status'] === 'ACTIVE' && $expiry <= $now) {
-        // Mark expired
-        $conn->query("UPDATE lab_sessions SET status='EXPIRED' WHERE id=".$lab['id']);
-        $state = "EXPIRED";
-    } elseif ($lab['status'] === 'REQUESTED') {
-        $state = "REQUESTED";
-    } else {
-        $state = $lab['status'];
-    }
-}
+$q->bind_param("i", $uid);
+$q->execute();
+$lab = $q->get_result()->fetch_assoc();
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Terminal Access</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css">
-  <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
-  <style>
-    .box { max-width:600px;margin:40px auto;text-align:center }
-    .btn { padding:10px 20px;font-size:16px;cursor:pointer }
-    .warn { color:red;font-weight:bold }
-    .info { color:#333 }
-  </style>
+<title>Lab Terminal</title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css">
+<script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
 </head>
+
 <body>
 
-<div class="box">
+<h2>🧪 Kubernetes Lab – <?= htmlspecialchars($user) ?></h2>
 
-<h3>🖥 Kubernetes Lab Terminal</h3>
-<p>User: <b><?= htmlspecialchars($user) ?></b></p>
+<?php if (!$lab): ?>
 
-<?php if ($state === "NO_ACCESS"): ?>
+  <!-- NO LAB -->
+  <p>You have not used your free lab yet.</p>
+  <a class="btn" href="generate_free_access.php">🚀 Generate Free Access (60 min)</a>
 
-  <p class="info">You have <b>60 minutes FREE lab access</b>.</p>
-  <form method="post" action="generate_free_access.php">
-    <button class="btn">🚀 Generate Free Access</button>
-  </form>
+<?php elseif ($lab['status'] === 'REQUESTED'): ?>
 
-<?php elseif ($state === "ACTIVE"): ?>
+  <!-- REQUESTED -->
+  <p>⏳ Provisioning in progress…</p>
+  <p>Please wait. This page will refresh automatically.</p>
+  <script>
+    setTimeout(() => location.reload(), 5000);
+  </script>
 
-  <p class="info">
-    ⏳ Remaining Time:
-    <span id="timer"></span>
-  </p>
+<?php elseif ($lab['status'] === 'ACTIVE'): ?>
 
-  <input type="password" id="sshpass" placeholder="SSH Password">
-  <button class="btn" onclick="connect()">Connect</button>
+  <!-- ACTIVE -->
+  <p>✅ Lab Active</p>
+  <p>Expires at: <b><?= $lab['access_expiry'] ?></b></p>
 
-  <div id="terminal" style="height:500px;border:1px solid #ccc"></div>
+  <div id="terminal" style="height:500px;border:1px solid #333;"></div>
 
-<?php elseif ($state === "EXPIRED"): ?>
+  <script>
+    const expiry = new Date("<?= $lab['access_expiry'] ?>").getTime();
 
-  <p class="warn">❌ Your free lab access has expired.</p>
-  <a href="request_access.php">👉 Request More Time</a>
+    function updateTimer() {
+      const now = Date.now();
+      const diff = expiry - now;
 
-<?php elseif ($state === "REQUESTED"): ?>
+      if (diff <= 0) {
+        location.reload();
+        return;
+      }
 
-  <p class="info">⏳ Your request is pending admin approval.</p>
+      const mins = Math.floor(diff / 60000);
+      const secs = Math.floor((diff % 60000) / 1000);
+      document.getElementById("timer").innerText =
+        `${mins}m ${secs}s remaining`;
+    }
 
-<?php endif; ?>
+    setInterval(updateTimer, 1000);
+  </script>
 
-</div>
+  <p id="timer"></p>
 
-<?php if ($state === "ACTIVE"): ?>
-<script>
-let remaining = <?= (int)$remaining ?>;
+  <script>
+    let term = new Terminal({ cursorBlink: true });
+    term.open(document.getElementById('terminal'));
 
-function format(t){
-  let m = Math.floor(t/60);
-  let s = t % 60;
-  return m + "m " + s + "s";
-}
+    const ws = new WebSocket(
+      "ws://<?= $_SERVER['HTTP_HOST'] ?>:32000/?user=<?= $user ?>"
+    );
 
-document.getElementById("timer").innerText = format(remaining);
+    ws.onmessage = e => term.write(e.data);
+    term.onData(d => ws.send(d));
+  </script>
 
-setInterval(() => {
-  remaining--;
-  if (remaining <= 0) location.reload();
-  document.getElementById("timer").innerText = format(remaining);
-}, 1000);
+<?php elseif ($lab['status'] === 'FAILED'): ?>
 
-let term = new Terminal({ cursorBlink: true });
-term.open(document.getElementById('terminal'));
+  <!-- FAILED -->
+  <p>❌ Provisioning failed.</p>
+  <p>Please contact admin or try later.</p>
 
-function connect() {
-  const pass = document.getElementById("sshpass").value;
-  const ws = new WebSocket(
-    "ws://<?= $_SERVER['HTTP_HOST'] ?>:32000/?" +
-    "server_id=<?= $server_id ?>&user=<?= $user ?>"
-  );
-  ws.onopen = () => {
-    ws.send(JSON.stringify({ password: pass }));
-    term.write("🔐 Authenticating...\r\n");
-  };
-  ws.onmessage = e => term.write(e.data);
-  term.onData(d => ws.send(d));
-}
-</script>
+<?php elseif ($lab['status'] === 'EXPIRED'): ?>
+
+  <!-- EXPIRED -->
+  <p>⌛ Your free lab has expired.</p>
+  <a class="btn" href="request_extension.php">Request More Time</a>
+
+<?php elseif ($lab['status'] === 'REVOKED'): ?>
+
+  <!-- REVOKED -->
+  <p>🚫 Your lab access was revoked by admin.</p>
+
 <?php endif; ?>
 
 </body>
