@@ -17,62 +17,37 @@ if (!$username || !$email || !$password) {
 }
 
 /* Check if user exists */
-$chk = $conn->prepare("SELECT username FROM users WHERE username=?");
+$chk = $conn->prepare("SELECT id FROM users WHERE username=?");
 $chk->bind_param("s", $username);
 $chk->execute();
 if ($chk->get_result()->num_rows > 0) {
     die("Username already exists");
 }
 
-/* Password hash (keep SHA256 for compatibility) */
+/* Hash password (keep SHA256 for now) */
 $hash = hash("sha256", $password);
 
-/* 1 hour free access */
-$expiry = date("Y-m-d H:i:s", strtotime("+1 hour"));
+/* Define role explicitly */
+$role = 'user';
 
-/* Insert user */
+/* Insert ONLY user (no lab, no expiry) */
 $q = $conn->prepare("
 INSERT INTO users
-(username,password,role,email,mobile,plan,access_expiry,enabled)
-VALUES (?,?,?,?,?,'FREE',?,1)
+(username, password, role, email, mobile, plan, enabled)
+VALUES (?, ?, ?, ?, ?, 'FREE', 1)
 ");
-$q->bind_param("ssssss",
+$q->bind_param(
+    "sssss",
     $username,
     $hash,
-    $role = 'user',
+    $role,
     $email,
-    $mobile,
-    $expiry
+    $mobile
 );
 $q->execute();
 
-/* Queue provisioning */
-$pq = $conn->prepare("
-INSERT INTO provisioning_queue (username, requested_duration)
-VALUES (?, 60)
-");
-$pq->bind_param("s", $username);
-$pq->execute();
-
-/* Create lab session */
-$uid = $conn->insert_id;
-$ls = $conn->prepare("
-INSERT INTO lab_sessions
-(user_id, username, namespace, access_start, access_expiry)
-VALUES (?,?,?,?,?)
-");
-$namespace = "lab-" . $username;
-$start = date("Y-m-d H:i:s");
-$ls->bind_param("issss",
-    $uid,
-    $username,
-    $namespace,
-    $start,
-    $expiry
-);
-$ls->execute();
-
-$_SESSION['msg'] = "Registration successful. You can login now.";
+/* Done */
+$_SESSION['msg'] = "Registration successful. You can now login and claim your free lab access.";
 header("Location: login.php");
 exit;
 

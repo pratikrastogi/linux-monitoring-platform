@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: provision-worker
+  name: cleanup-worker
   namespace: linux-monitoring
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: provision-worker
+      app: cleanup-worker
   template:
     metadata:
       labels:
-        app: provision-worker
+        app: cleanup-worker
     spec:
       containers:
       - name: worker
-        image: docker.io/pratikrastogi/provision-worker
-        command: ["python","/opt/lab/provision_worker.py"]
+        image: docker.io/pratikrastogi/provision_worker
+        command: ["python","/opt/lab/cleanup_worker.py"]
 

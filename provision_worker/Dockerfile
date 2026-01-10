@@ -1,17 +1,22 @@
 FROM python:3.11
 
 RUN apt-get update && apt-get install -y \
-    openssl \
+    openssh-client \
+    sshpass \
     bash \
-    kubectl \
-    passwd \
-    util-linux
+    openssl
 
 RUN pip install mysql-connector-python
 
-COPY provision_worker.py /worker.py
-COPY create_lab_user.sh /scripts/create_lab_user.sh
-RUN chmod +x /scripts/create_lab_user.sh
+WORKDIR /opt/lab
 
-CMD ["python","/worker.py"]
+COPY provision_worker.py .
+COPY cleanup_worker.py .
+COPY create_lab_user.sh .
+COPY cleanup_lab_user.sh .
+
+RUN chmod +x create_lab_user.sh cleanup_lab_user.sh
+
+# Default command overridden per deployment
+CMD ["python", "provision_worker.py"]
 

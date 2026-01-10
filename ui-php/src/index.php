@@ -35,6 +35,7 @@ $role = $_SESSION['role'];
       <hr>
       <a href="add_server.php">➕ Manage Servers</a>
       <a href="users.php">👥 Users</a>
+      <a href="#lab-requests">🧪 Lab Requests</a>
     <?php } ?>
   </div>
 
@@ -74,6 +75,43 @@ $role = $_SESSION['role'];
       </table>
     </div>
 
+    <?php if ($role == 'admin') { ?>
+<div class="card" id="lab-requests">
+  <h3>🧪 Pending Lab Extension Requests</h3>
+
+  <table class="modern-table">
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Request</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+    <?php
+    $conn = new mysqli("mysql","monitor","monitor123","monitoring");
+    $res = $conn->query("
+      SELECT sc.id, u.username, sc.description
+      FROM support_cases sc
+      JOIN users u ON sc.user_id = u.id
+      WHERE sc.category='LAB_EXTENSION'
+      AND sc.status='OPEN'
+    ");
+    while ($r = $res->fetch_assoc()) {
+        echo "<tr>
+          <td>{$r['username']}</td>
+          <td>{$r['description']}</td>
+          <td>
+            <a href='approve_lab.php?id={$r['id']}'>✅ Approve</a> |
+            <a href='reject_lab.php?id={$r['id']}'>❌ Reject</a>
+          </td>
+        </tr>";
+    }
+    ?>
+    </tbody>
+  </table>
+</div>
+<?php } ?>
   </div>
 </div>
 
