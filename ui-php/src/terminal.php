@@ -30,7 +30,11 @@ $lab = $q->get_result()->fetch_assoc();
 <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
 
 <style>
-  body { background:#111; color:#eee; font-family: monospace; }
+  body {
+    background:#111;
+    color:#eee;
+    font-family: monospace;
+  }
   #terminal {
     background:#000;
     height:500px;
@@ -49,6 +53,12 @@ $lab = $q->get_result()->fetch_assoc();
     background:#666;
     cursor:not-allowed;
   }
+  input {
+    padding:8px;
+    background:#222;
+    color:#fff;
+    border:1px solid #555;
+  }
 </style>
 </head>
 
@@ -58,24 +68,32 @@ $lab = $q->get_result()->fetch_assoc();
 
 <?php if ($lab && $lab['status'] === 'ACTIVE'): ?>
 
-  <p>✅ Lab Active</p>
+  <p>✅ <b>Lab Active</b></p>
   <p>Expires at: <b><?= $lab['access_expiry'] ?></b></p>
   <p id="timer"></p>
 
-  <input type="password" id="sshpass" placeholder="Lab Password">
+  <!-- 🔑 PASSWORD INPUT -->
+  <input
+    type="password"
+    id="sshpass"
+    placeholder="Lab user password (jaise: LabSunil@123)"
+  >
+
+  <!-- 🔌 CONNECT BUTTON -->
   <button class="btn" id="connectBtn" onclick="connect()">🔌 Connect</button>
 
+  <!-- 🖥 TERMINAL -->
   <div id="terminal"></div>
 
   <script>
-    /* ---------- TIMER (DISPLAY ONLY) ---------- */
+    /* -------- TIMER (sirf display ke liye) -------- */
     const expiryTs = new Date("<?= $lab['access_expiry'] ?>".replace(' ', 'T')).getTime();
     const timerEl = document.getElementById("timer");
 
     setInterval(() => {
       const diff = expiryTs - Date.now();
       if (diff <= 0) {
-        timerEl.innerText = "⌛ Lab expired. Refresh page.";
+        timerEl.innerText = "⌛ Lab expired. Page refresh karo.";
         return;
       }
       const m = Math.floor(diff / 60000);
@@ -83,28 +101,30 @@ $lab = $q->get_result()->fetch_assoc();
       timerEl.innerText = `⏱ ${m}m ${s}s remaining`;
     }, 1000);
 
-    /* ---------- TERMINAL (SINGLE INSTANCE) ---------- */
+    /* -------- TERMINAL LOGIC (SIRF EK BAAR) -------- */
     let term = null;
     let ws   = null;
 
     function connect() {
-      // Prevent duplicate connections
+
+      // agar already connected hai to kuch mat karo
       if (ws && ws.readyState === WebSocket.OPEN) {
         return;
       }
 
       const pass = document.getElementById("sshpass").value;
       if (!pass) {
-        alert("Enter lab password");
+        alert("Password daalo bhai pehle 😄");
         return;
       }
 
-      // Initialize terminal only once
+      // terminal sirf ek baar create hoga
       if (!term) {
         term = new Terminal({ cursorBlink: true });
         term.open(document.getElementById("terminal"));
       }
 
+      // connect button disable
       document.getElementById("connectBtn").disabled = true;
 
       ws = new WebSocket(
@@ -114,13 +134,13 @@ $lab = $q->get_result()->fetch_assoc();
 
       ws.onopen = () => {
         ws.send(JSON.stringify({ password: pass }));
-        term.write("🔐 Authenticating...\r\n");
+        term.write("🔐 Password verify ho raha hai...\r\n");
       };
 
       ws.onmessage = e => term.write(e.data);
 
       ws.onclose = () => {
-        term.write("\r\n❌ Disconnected\r\n");
+        term.write("\r\n❌ Connection closed\r\n");
         ws = null;
         document.getElementById("connectBtn").disabled = false;
       };
@@ -135,7 +155,7 @@ $lab = $q->get_result()->fetch_assoc();
 
 <?php else: ?>
 
-  <p>No active lab session.</p>
+  <p>❌ Abhi koi active lab nahi hai.</p>
 
 <?php endif; ?>
 
