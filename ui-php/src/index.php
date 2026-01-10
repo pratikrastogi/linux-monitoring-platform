@@ -5,173 +5,167 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 
-$role = $_SESSION['role'];
+$conn = new mysqli("mysql","monitor","monitor123","monitoring");
+if ($conn->connect_error) {
+    die("Database connection failed");
+}
+
 $username = $_SESSION['user'];
 
-$conn = new mysqli("mysql","monitor","monitor123","monitoring");
-if ($conn->connect_error) die("DB Error");
+/* =====================================================
+   FETCH user_id SAFELY
+===================================================== */
+$stmt = $conn->prepare("SELECT id FROM users WHERE username=?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$stmt->bind_result($user_id);
+$stmt->fetch();
+$stmt->close();
+
+if (!$user_id) {
+    die("Invalid user session");
+}
+
+/* =====================================================
+   FETCH LATEST LAB SESSION
+===================================================== */
+$stmt = $conn->prepare("
+    SELECT *
+    FROM lab_sessions
+    WHERE user_id=?
+    ORDER BY id DESC
+    LIMIT 1
+");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$res = $stmt->get_result();
+$lab = $res->fetch_assoc();
+$stmt->close();
+
+/* =====================================================
+   CHECK EXPIRY (UTC LOGIC)
+===================================================== */
+$nowUtc = new DateTime("now", new DateTimeZone("UTC"));
+$expired = true;
+
+if ($lab) {
+    $expiryUtc = new DateTime($lab['access_expiry'], new DateTimeZone("UTC"));
+    if ($lab['status'] === 'ACTIVE' && $expiryUtc > $nowUtc) {
+        $expired = false;
+    }
+}
+
+/* =====================================================
+   HANDLE EXTENSION REQUEST (USER FORM)
+===================================================== */
+$message = "";
+
+if (isset($_POST['request_extension'])) {
+
+    $hours = (int)$_POST['hours'];
+    $experience = trim($_POST['experience']);
+    $domain = trim($_POST['domain']);
+    $feedback = trim($_POST['feedback']);
+    $suggestion = trim($_POST['suggestion']);
+
+    if ($hours > 0 && $experience && $domain && $feedback && $suggestion) {
+
+        $stmt = $conn->prepare("
+            INSERT INTO lab_extension_requests
+            (user_id, username, hours, status)
+            VALUES (?, ?, ?, 'PENDING')
+        ");
+        $stmt->bind_param("isi", $user_id, $username, $hours);
+        $stmt->execute();
+        $stmt->close();
+
+        $message = "✅ Extension request submitted. Please wait for admin approval.";
+    } else {
+        $message = "❌ All fields are mandatory.";
+    }
+}
+
+/* =====================================================
+   IST DISPLAY ONLY
+===================================================== */
+date_default_timezone_set("Asia/Kolkata");
+$expiry_ist = null;
+
+if ($lab) {
+    $expiry_ist = (new DateTime($lab['access_expiry'], new DateTimeZone("UTC")))
+        ->setTimezone(new DateTimeZone("Asia/Kolkata"))
+        ->format("d M Y, h:i:s A");
+}
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
-<title>Pratik Linux Monitoring</title>
+<title>Lab Terminal</title>
 <link rel="stylesheet" href="assets/style.css">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
 
-<!-- ===== TOP NAV BAR ===== -->
 <div class="topbar">
-  <div class="logo">🖥️ Pratik LAB Linux Monitoring System</div>
+  <div class="logo">🖥️ Linux LAB Terminal</div>
   <div class="top-actions">
-    <span class="user">👤 <?php echo htmlspecialchars($username); ?></span>
+    👤 <?= htmlspecialchars($username) ?>
     <a href="logout.php" class="logout">Logout</a>
   </div>
 </div>
 
-<!-- ===== MAIN LAYOUT ===== -->
-<div class="layout">
+<div class="content">
 
-  <!-- ===== SIDEBAR ===== -->
-  <div class="sidebar">
-    <a class="active" href="index.php">📊 Dashboard</a>
-    <a href="charts.php">📈 Charts</a>
-    <a href="alerts.php">🚨 Alerts</a>
+<?php if (!$expired): ?>
 
-    <?php if ($role === 'admin') { ?>
-      <hr>
-      <a href="add_server.php">➕ Manage Servers</a>
-      <a href="users.php">👥 Users</a>
-      <a href="#lab-requests">🧪 Lab Requests</a>
-    <?php } ?>
+  <!-- ================= ACTIVE LAB ================= -->
+  <div class="card">
+    <h3>✅ Lab Active</h3>
+    <p><b>Expires at:</b> <?= $expiry_ist ?> IST</p>
+    <a href="web_terminal.php" class="button">🚀 Open Terminal</a>
   </div>
 
-  <!-- ===== CONTENT ===== -->
-  <div class="content">
+<?php else: ?>
 
-    <!-- ===== SUMMARY CARDS ===== -->
-    <div class="cards">
-      <div class="card">
-        <h3>Total Servers</h3>
-        <p id="total">0</p>
-      </div>
-      <div class="card">
-        <h3>SSHD Down</h3>
-        <p id="sshd">0</p>
-      </div>
-      <div class="card">
-        <h3>Host Down</h3>
-        <p id="down">0</p>
-      </div>
-    </div>
+  <!-- ================= EXPIRED LAB ================= -->
+  <div class="card">
+    <h3>⛔ Lab Time Expired</h3>
+    <p>Your free lab time is over. Request extension to continue.</p>
 
-    <!-- ===== SERVER TABLE ===== -->
-    <div class="card">
-      <h3>Server Status</h3>
-      <table class="modern-table" id="tbl">
-        <thead>
-          <tr>
-            <th>Hostname</th>
-            <th>OS</th>
-            <th>Uptime</th>
-            <th>SSHD</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+    <?php if ($message): ?>
+      <p style="color:green;font-weight:bold;"><?= htmlspecialchars($message) ?></p>
+    <?php endif; ?>
 
-<?php if ($role === 'admin') { ?>
+    <form method="post">
+      <label>Current Experience in Linux</label>
+      <textarea name="experience" required></textarea>
 
-<!-- ===== LAB EXTENSION REQUESTS ===== -->
-<div class="card" id="lab-requests">
-  <h3>🧪 Pending Lab Extension Requests</h3>
+      <label>Core Technical Domain</label>
+      <input type="text" name="domain" required>
 
-  <table class="modern-table">
-    <thead>
-      <tr>
-        <th>User</th>
-        <th>Requested Hours</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
+      <label>Feedback about Product</label>
+      <textarea name="feedback" required></textarea>
 
-<?php
-$res = $conn->query("
-  SELECT ler.id, u.username, ler.hours, ler.status
-  FROM lab_extension_requests ler
-  JOIN users u ON ler.user_id = u.id
-  WHERE ler.status='PENDING'
-  ORDER BY ler.created_at ASC
-");
+      <label>Suggestions for Improvement</label>
+      <textarea name="suggestion" required></textarea>
 
-if ($res->num_rows === 0) {
-    echo "<tr><td colspan='4'>No pending lab extension requests</td></tr>";
-}
+      <label>Requested Hours</label>
+      <select name="hours">
+        <option value="1">1 Hour</option>
+        <option value="2">2 Hours</option>
+        <option value="4">4 Hours</option>
+      </select>
 
-while ($r = $res->fetch_assoc()) {
-    echo "<tr>
-      <td>{$r['username']}</td>
-      <td>{$r['hours']} Hour(s)</td>
-      <td><span style='color:orange;font-weight:bold'>PENDING</span></td>
-      <td>
-        <a href='approve_lab.php?id={$r['id']}'>✅ Approve</a> |
-        <a href='reject_lab.php?id={$r['id']}'>❌ Reject</a>
-      </td>
-    </tr>";
-}
-?>
-
-    </tbody>
-  </table>
-</div>
-
-<?php } ?>
-
+      <button type="submit" name="request_extension">
+        📨 Request Extension
+      </button>
+    </form>
   </div>
+
+<?php endif; ?>
+
 </div>
-
-<!-- ===== JS ===== -->
-<script>
-setInterval(loadData, 10000);
-loadData();
-
-function loadData() {
- fetch('api/metrics.php')
- .then(r => r.json())
- .then(d => {
-  let body = "";
-  let sshdDown = 0;
-  let hostDown = 0;
-
-  d.forEach(s => {
-    let sshdClass = s.sshd_status === 'active' ? 'ok' : 'bad';
-    if (s.sshd_status !== 'active') sshdDown++;
-    if (s.reachable == 0) hostDown++;
-
-    body += `<tr>
-      <td>${s.hostname}</td>
-      <td>${s.os_version}</td>
-      <td>${s.uptime}</td>
-      <td class="${sshdClass}">${s.sshd_status}</td>
-      <td>
-        <a href="terminal.php?id=${s.server_id}">🖥 Terminal</a> |
-        <a class="del" href="delete_server.php?id=${s.server_id}">Delete</a>
-      </td>
-    </tr>`;
-  });
-
-  document.querySelector("#tbl tbody").innerHTML = body;
-  document.getElementById("total").innerText = d.length;
-  document.getElementById("sshd").innerText = sshdDown;
-  document.getElementById("down").innerText = hostDown;
- });
-}
-</script>
 
 </body>
 </html>
