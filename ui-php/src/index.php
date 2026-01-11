@@ -14,7 +14,7 @@ if ($conn->connect_error) die("DB Error");
 <!DOCTYPE html>
 <html>
 <head>
-<title>Pratik Linux Monitoring</title>
+<title>KubeArena Linux Monitoring</title>
 <link rel="stylesheet" href="assets/style.css">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -23,7 +23,7 @@ if ($conn->connect_error) die("DB Error");
 
 <!-- ===== TOP NAV BAR ===== -->
 <div class="topbar">
-  <div class="logo">🖥️ Pratik LAB Linux Monitoring System</div>
+  <div class="logo">🚀 KubeArena – Linux Monitoring Platform</div>
   <div class="top-actions">
     <span class="user">👤 <?php echo htmlspecialchars($username); ?></span>
     <a href="logout.php" class="logout">Logout</a>

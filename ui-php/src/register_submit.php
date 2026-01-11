@@ -10,6 +10,8 @@ $username = trim($_POST['username']);
 $email    = trim($_POST['email']);
 $mobile   = trim($_POST['mobile']);
 $password = $_POST['password'];
+$hash = password_hash($password, PASSWORD_BCRYPT);
+
 
 if (!$username || !$email || !$password) {
     die("Invalid input");

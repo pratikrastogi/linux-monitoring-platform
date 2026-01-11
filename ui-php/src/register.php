@@ -8,59 +8,55 @@ if (isset($_SESSION['user'])) {
 <!DOCTYPE html>
 <html>
 <head>
-<title>Register | Pratik Lab</title>
+<title>Register | KubeArena</title>
 <link rel="stylesheet" href="assets/style.css">
-<script>
-function validateForm() {
-    const pwd = document.getElementById("password").value;
-    const confirm = document.getElementById("confirm_password").value;
-
-    const regex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+=!]).{8,}$/;
-
-    if (!regex.test(pwd)) {
-        alert("Password must be at least 8 characters and include uppercase, number & special character.");
-        return false;
-    }
-
-    if (pwd !== confirm) {
-        alert("Passwords do not match");
-        return false;
-    }
-    return true;
-}
-</script>
+<script src="assets/register.js" defer></script>
 </head>
 
 <body class="login-bg">
 
 <div class="login-box">
-    <h2>Create Account</h2>
-    <p style="font-size:13px;color:#666;">
-        Free access for 1 hour Kubernetes practice
-    </p>
+  <h2>Create <span>KubeArena</span> Account</h2>
+  <p style="font-size:13px;color:#666;">
+    Free 1-Hour Kubernetes Lab Access
+  </p>
 
-    <form method="post" action="register_submit.php" onsubmit="return validateForm();">
+<form method="post" action="register_submit.php">
 
-        <input type="text" name="username" placeholder="Username" required>
+  <div class="field">
+    <input type="text" name="username" id="username" required placeholder=" ">
+    <label>Username</label>
+    <span class="status" id="uStatus"></span>
+  </div>
 
-        <input type="email" name="email" placeholder="Email Address" required>
+  <div class="field">
+    <input type="email" name="email" id="email" required placeholder=" ">
+    <label>Email</label>
+    <span class="status" id="eStatus"></span>
+  </div>
 
-        <input type="text" name="mobile" placeholder="Mobile Number" required>
+  <div class="field">
+    <input type="text" name="mobile" id="mobile" required placeholder=" ">
+    <label>Mobile</label>
+    <span class="status" id="mStatus"></span>
+  </div>
 
-        <input type="password" id="password" name="password" placeholder="Password" required>
+  <div class="field">
+    <input type="password" name="password" id="password" required placeholder=" ">
+    <label>Password</label>
+    <span class="status" id="pStatus"></span>
+  </div>
 
-        <input type="password" id="confirm_password" placeholder="Confirm Password" required>
+  <button type="submit">Register</button>
+</form>
 
-        <button type="submit">Register</button>
-    </form>
+<hr>
 
-    <hr>
+<p style="font-size:13px;">
+  Already have an account? <a href="login.php">Login</a>
+</p>
 
-    <p style="font-size:13px;">
-        Already have an account? <a href="login.php">Login</a>
-    </p>
 </div>
-
 </body>
 </html>
 

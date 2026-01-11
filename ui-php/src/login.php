@@ -8,32 +8,41 @@ if (isset($_SESSION['user'])) {
 <!DOCTYPE html>
 <html>
 <head>
-<title>Login | Pratik Lab</title>
+<title>Login | KubeArena</title>
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body class="login-bg">
 
 <div class="login-box">
-    <h2>Pratik Kubernetes Lab</h2>
-    <p style="font-size:13px;color:#666;">
-        Practice Linux & Kubernetes on Live Environment
-    </p>
+  <h2>Welcome to <span>KubeArena</span></h2>
+  <p style="font-size:13px;color:#666;">
+    Enterprise Linux & Kubernetes Practice Labs
+  </p>
 
-    <form method="post" action="auth.php">
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-    </form>
+  <form method="post" action="auth.php">
+    <div class="field">
+      <input type="text" name="username" required placeholder=" ">
+      <label>Username</label>
+    </div>
 
-    <hr>
+    <div class="field">
+      <input type="password" name="password" required placeholder=" ">
+      <label>Password</label>
+    </div>
 
-    <p style="font-size:13px;">
-        New user? <a href="register.php">Create Account</a>
-    </p>
+    <button type="submit">Login</button>
+  </form>
 
-    <p style="font-size:13px;">
-        <a href="forgot_password.php">Forgot Password?</a>
-    </p>
+  <div class="oauth">
+    <button disabled>Continue with Google (Coming Soon)</button>
+    <button disabled>Continue with Zoho (Coming Soon)</button>
+  </div>
+
+  <hr>
+
+  <p style="font-size:13px;">
+    New user? <a href="register.php">Create Account</a>
+  </p>
 </div>
 
 </body>
