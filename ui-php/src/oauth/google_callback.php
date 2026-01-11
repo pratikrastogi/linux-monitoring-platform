@@ -53,9 +53,9 @@ if (empty($profile['email']) || !$profile['verified_email']) {
     die("Email not verified");
 }
 
-$email   = strtolower($profile['email']);
-$oauthId = $profile['id'];
-$username = explode('@', $email)[0];   // 👈 SIMPLE RULE
+$email    = strtolower($profile['email']);
+$oauthId  = $profile['id'];
+$username = explode('@', $email)[0];   // SAME AS NORMAL USER
 
 /* ================= DB ================= */
 $conn = new mysqli("mysql", "monitor", "monitor123", "monitoring");
@@ -78,7 +78,7 @@ $res = $q->get_result();
 
 if ($res->num_rows === 1) {
     $row = $res->fetch_assoc();
-    $_SESSION['uid']  = $row['id'];
+    $_SESSION['uid']  = (int)$row['id'];
     $_SESSION['user'] = $row['username'];
     $_SESSION['role'] = $row['role'];
     header("Location: /terminal.php");
@@ -101,7 +101,7 @@ $res = $q->get_result();
 if ($res->num_rows === 1) {
     $row = $res->fetch_assoc();
 
-    // Attach Google to existing user
+    // Link Google to existing user
     $upd = $conn->prepare("
         UPDATE users
         SET oauth_provider='google', oauth_id=?
@@ -110,7 +110,7 @@ if ($res->num_rows === 1) {
     $upd->bind_param("si", $oauthId, $row['id']);
     $upd->execute();
 
-    $_SESSION['uid']  = $row['id'];
+    $_SESSION['uid']  = (int)$row['id'];
     $_SESSION['user'] = $row['username'];
     $_SESSION['role'] = $row['role'];
     header("Location: /terminal.php");
@@ -118,7 +118,7 @@ if ($res->num_rows === 1) {
 }
 
 /* =================================================
-   CASE 3: Brand new user
+   CASE 3: Brand new user (NORMAL USER BEHAVIOUR)
 ================================================= */
 $ins = $conn->prepare("
     INSERT INTO users
@@ -130,17 +130,8 @@ $ins->execute();
 
 $uid = $conn->insert_id;
 
-/* ===== create free lab if not exists ===== */
-$exp = date("Y-m-d H:i:s", time() + 3600);
-$lab = $conn->prepare("
-    INSERT INTO lab_sessions (user_id, status, access_expiry)
-    VALUES (?, 'REQUESTED', ?)
-");
-$lab->bind_param("is", $uid, $exp);
-$lab->execute();
-
 /* ================= SESSION ================= */
-$_SESSION['uid']  = $uid;
+$_SESSION['uid']  = (int)$uid;
 $_SESSION['user'] = $username;
 $_SESSION['role'] = 'user';
 
