@@ -15,26 +15,13 @@ spec:
     spec:
       containers:
       - name: php-ui
-        image: docker.io/pratikrastogi/linux-monitoring:ssl
+        image: docker.io/pratikrastogi/linux-monitoring:202601111122
         ports:
-        - containerPort: 443
+        - containerPort: 80
         envFrom:
         - secretRef:
             name: oauth-secrets
-        volumeMounts:
-        - name: tls
-          mountPath: /etc/ssl/kube
-          readOnly: true
-        - name: apache-ssl
-          mountPath: /etc/apache2/sites-enabled/ssl.conf
-          subPath: ssl.conf
-      volumes:
-      - name: tls
-        secret:
-          secretName: kubearena-tls
-      - name: apache-ssl
-        configMap:
-          name: apache-ssl-config
+
 ---
 apiVersion: v1
 kind: Service
@@ -42,11 +29,44 @@ metadata:
   name: php-ui
   namespace: linux-monitoring
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: php-ui
   ports:
-  - port: 443
-    targetPort: 443
-    nodePort: 30443
+  - port: 80
+    targetPort: 80
 
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kubearena-ingress
+  namespace: linux-monitoring
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - kubearena.pratikrastogi.co.in
+    secretName: kubearena-tls
+  rules:
+  - host: kubearena.pratikrastogi.co.in
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: php-ui
+            port:
+              number: 80
+
+      - path: /terminal
+        pathType: Prefix
+        backend:
+          service:
+            name: terminal-gateway
+            port:
+              number: 3000

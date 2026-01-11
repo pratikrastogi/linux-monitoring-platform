@@ -21,7 +21,7 @@ if (!$code) {
 }
 
 /* ===============================
-   EXCHANGE CODE FOR TOKEN
+   TOKEN EXCHANGE
 ================================ */
 $tokenResp = file_get_contents(
     "https://oauth2.googleapis.com/token",
@@ -47,12 +47,11 @@ if (!isset($token['access_token'])) {
 }
 
 /* ===============================
-   FETCH GOOGLE PROFILE
+   GOOGLE PROFILE
 ================================ */
 $profile = json_decode(
     file_get_contents(
-        "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" . $token['access_token']
-    ),
+        "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" . $token['access_token']),
     true
 );
 
@@ -65,7 +64,7 @@ $oauthId  = $profile['id'];
 $username = explode('@', $email)[0];
 
 /* ===============================
-   DB CONNECTION
+   DB CONNECT
 ================================ */
 $conn = new mysqli("mysql", "monitor", "monitor123", "monitoring");
 if ($conn->connect_error) {
@@ -78,8 +77,7 @@ if ($conn->connect_error) {
 $stmt = $conn->prepare("
     SELECT id, username, role
     FROM users
-    WHERE oauth_provider = 'google'
-      AND oauth_id = ?
+    WHERE oauth_provider='google' AND oauth_id=?
 ");
 $stmt->bind_param("s", $oauthId);
 $stmt->execute();
@@ -87,7 +85,6 @@ $res = $stmt->get_result();
 
 if ($res->num_rows === 0) {
 
-    /* ---- Create New User ---- */
     $role = 'user';
     $plan = 'FREE';
 
@@ -102,8 +99,6 @@ if ($res->num_rows === 0) {
     $uid = $conn->insert_id;
 
 } else {
-
-    /* ---- Existing User ---- */
     $row = $res->fetch_assoc();
     $uid      = (int)$row['id'];
     $username = $row['username'];
@@ -111,15 +106,38 @@ if ($res->num_rows === 0) {
 }
 
 /* ===============================
-   SET SESSION (CRITICAL FIX)
+   AUTO CREATE FREE LAB (NEW)
+================================ */
+$chk = $conn->prepare("
+    SELECT id FROM lab_sessions WHERE user_id = ?
+");
+$chk->bind_param("i", $uid);
+$chk->execute();
+$chkRes = $chk->get_result();
+
+if ($chkRes->num_rows === 0) {
+    // 60 minutes free lab
+    $exp = date("Y-m-d H:i:s", time() + 3600);
+
+    $insLab = $conn->prepare("
+        INSERT INTO lab_sessions
+        (user_id, status, access_expiry)
+        VALUES (?, 'REQUESTED', ?)
+    ");
+    $insLab->bind_param("is", $uid, $exp);
+    $insLab->execute();
+}
+
+/* ===============================
+   SET SESSION
 ================================ */
 $_SESSION['user'] = $username;
 $_SESSION['uid']  = $uid;
 $_SESSION['role'] = $role;
 
 /* ===============================
-   REDIRECT TO DASHBOARD
+   REDIRECT
 ================================ */
-header("Location: /index.php");
+header("Location: /terminal.php");
 exit;
 
