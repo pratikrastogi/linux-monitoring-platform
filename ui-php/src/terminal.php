@@ -167,10 +167,11 @@ docker run -d \
     }
 
     ws = new WebSocket(
-      "ws://59.99.157.195:32000/?" +
+      "wss://kubearena.pratikrastogi.co.in/terminal?" +
       "server_id=<?= $server_id ?>&user=<?= $user ?>"
     );
 
+ 
     ws.onopen = () => {
       ws.send(JSON.stringify({ password: password }));
       term.write("🔐 Auto authenticating...\r\n");
