@@ -15,13 +15,26 @@ spec:
     spec:
       containers:
       - name: php-ui
-        image: docker.io/pratikrastogi/linux-monitoring:202601111023
-        imagePullPolicy: IfNotPresent
+        image: docker.io/pratikrastogi/linux-monitoring:ssl
         ports:
-        - containerPort: 80
+        - containerPort: 443
         envFrom:
         - secretRef:
             name: oauth-secrets
+        volumeMounts:
+        - name: tls
+          mountPath: /etc/ssl/kube
+          readOnly: true
+        - name: apache-ssl
+          mountPath: /etc/apache2/sites-enabled/ssl.conf
+          subPath: ssl.conf
+      volumes:
+      - name: tls
+        secret:
+          secretName: kubearena-tls
+      - name: apache-ssl
+        configMap:
+          name: apache-ssl-config
 ---
 apiVersion: v1
 kind: Service
@@ -33,6 +46,7 @@ spec:
   selector:
     app: php-ui
   ports:
-  - port: 80
-    nodePort: 30080
+  - port: 443
+    targetPort: 443
+    nodePort: 30443
 

@@ -11,9 +11,7 @@ if ($conn->connect_error) die("DB error");
 $user = $_SESSION['user'];
 $uid  = (int)$_SESSION['uid'];
 
-/* ===============================
-   FETCH LATEST LAB SESSION
-================================ */
+/* FETCH LATEST LAB SESSION */
 $q = $conn->prepare("
     SELECT *
     FROM lab_sessions
@@ -25,38 +23,7 @@ $q->bind_param("i", $uid);
 $q->execute();
 $lab = $q->get_result()->fetch_assoc();
 
-/* fixed server id (OLD LOGIC – DO NOT TOUCH) */
-$server_id = 1;
-
-/* ===============================
-   HANDLE EXTENSION REQUEST FORM
-================================ */
-$msg = "";
-
-if (isset($_POST['request_extension'])) {
-
-    $hours = (int)$_POST['hours'];
-    $exp   = trim($_POST['experience']);
-    $dom   = trim($_POST['domain']);
-    $fb    = trim($_POST['feedback']);
-    $sug   = trim($_POST['suggestion']);
-
-    if ($hours && $exp && $dom && $fb && $sug) {
-
-        $stmt = $conn->prepare("
-            INSERT INTO lab_extension_requests
-            (user_id, username, hours, status)
-            VALUES (?, ?, ?, 'PENDING')
-        ");
-        $stmt->bind_param("isi", $uid, $user, $hours);
-        $stmt->execute();
-        $stmt->close();
-
-        $msg = "✅ Request submitted. Please wait for admin approval.";
-    } else {
-        $msg = "❌ All fields are mandatory.";
-    }
-}
+$server_id = 1; // DO NOT TOUCH
 ?>
 <!DOCTYPE html>
 <html>
@@ -67,12 +34,35 @@ if (isset($_POST['request_extension'])) {
   <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
 
   <style>
-    body { background:#111; color:#eee; font-family: monospace; }
+    body {
+      margin:0;
+      background:#0f0f0f;
+      color:#eee;
+      font-family: monospace;
+    }
+    .layout {
+      display:flex;
+      height:100vh;
+    }
+    .terminal-pane {
+      flex:2;
+      padding:10px;
+      border-right:1px solid #333;
+    }
+    .lab-pane {
+      flex:1;
+      padding:15px;
+      overflow-y:auto;
+      background:#111;
+    }
     #terminal {
+      height:520px;
       background:#000;
-      height:500px;
       border:1px solid #333;
       margin-top:10px;
+    }
+    h3,h4 {
+      color:#4caf50;
     }
     .btn {
       padding:8px 14px;
@@ -80,157 +70,130 @@ if (isset($_POST['request_extension'])) {
       color:#fff;
       border:none;
       cursor:pointer;
-      margin-top:10px;
     }
-    .btn.red { background:#e53935; }
-    .btn:disabled { background:#666; cursor:not-allowed; }
-    input, textarea, select {
-      width:100%;
+    .cmd {
+      background:#000;
+      border:1px solid #444;
       padding:8px;
-      background:#222;
-      color:#fff;
-      border:1px solid #555;
-      margin-top:5px;
+      margin:6px 0;
+      color:#0f0;
+      font-size:13px;
+    }
+    .note {
+      color:#ccc;
+      font-size:13px;
     }
   </style>
 </head>
 
 <body>
 
-<h3>🧪 Kubernetes Lab – User: <?= htmlspecialchars($user) ?></h3>
+<?php if ($lab && $lab['status'] === 'ACTIVE'): ?>
 
-<?php if (!$lab): ?>
+<div class="layout">
 
-  <!-- FIRST TIME USER -->
-  <p>You have not used your free lab yet.</p>
-  <a class="btn" href="generate_free_access.php">
-    🚀 Request Free Lab Access (60 min)
-  </a>
+  <!-- TERMINAL SIDE -->
+  <div class="terminal-pane">
+    <h3>🧪 Kubernetes Lab Terminal</h3>
+    <p>User: <b><?= htmlspecialchars($user) ?></b></p>
+    <p>Expires: <?= htmlspecialchars($lab['access_expiry']) ?></p>
 
-<?php elseif ($lab['status'] === 'REQUESTED'): ?>
+    <button class="btn" onclick="connect()">🔌 Connect Terminal</button>
 
-  <!-- PROVISIONING -->
-  <p>⏳ Lab provisioning in progress…</p>
-  <p>Please wait, this page will refresh automatically.</p>
-  <script>
-    setTimeout(() => location.reload(), 5000);
-  </script>
+    <div id="terminal"></div>
+  </div>
 
-<?php elseif ($lab['status'] === 'ACTIVE'): ?>
+  <!-- LAB GUIDE SIDE -->
+  <div class="lab-pane">
+    <h3>📘 LAB-1: Container Fundamentals (Mandatory)</h3>
 
-  <!-- ACTIVE LAB -->
-  <p>✅ Lab Active</p>
-  <p>Expires at: <b><?= htmlspecialchars($lab['access_expiry']) ?></b></p>
-  <p id="timer"></p>
+    <p class="note">
+      ⚠️ Before Kubernetes, you <b>MUST</b> understand containers.
+      This lab will prepare you for Docker / Podman usage.
+    </p>
 
-  <!-- PASSWORD PROMPT -->
-  <input type="password" id="sshpass" placeholder="Lab user password">
+    <h4>1️⃣ Check Container Runtime</h4>
+    <div class="cmd">docker --version</div>
+    <div class="cmd">podman --version</div>
 
-  <button class="btn" id="connectBtn" onclick="connect()">Connect</button>
+    <h4>2️⃣ Images</h4>
+    <div class="cmd">docker images</div>
+    <div class="cmd">docker pull nginx</div>
 
-  <!-- TERMINAL -->
-  <div id="terminal"></div>
+    <h4>3️⃣ Run a Container</h4>
+    <div class="cmd">docker run -d --name web nginx</div>
+    <div class="cmd">docker ps</div>
+    <div class="cmd">docker ps -a</div>
 
-  <script>
-    /* TIMER (display only) */
-    const expiryTs = new Date("<?= $lab['access_expiry'] ?>".replace(' ', 'T')).getTime();
-    const timerEl = document.getElementById("timer");
+    <h4>4️⃣ Port Mapping</h4>
+    <div class="cmd">docker run -d -p 8080:80 nginx</div>
 
-    setInterval(() => {
-      const diff = expiryTs - Date.now();
-      if (diff <= 0) {
-        timerEl.innerText = "⌛ Lab expired. Refresh page.";
-        return;
-      }
-      const m = Math.floor(diff / 60000);
-      const s = Math.floor((diff % 60000) / 1000);
-      timerEl.innerText = `⏱ ${m}m ${s}s remaining`;
-    }, 1000);
+    <h4>5️⃣ Logs & Inspect</h4>
+    <div class="cmd">docker logs web</div>
+    <div class="cmd">docker inspect web</div>
 
-    /* TERMINAL – OLD WORKING LOGIC */
-    let term = null;
-    let ws   = null;
+    <h4>6️⃣ Persistent Volume</h4>
+    <div class="cmd">
+docker run -d \
+-v /data:/usr/share/nginx/html \
+-p 8081:80 nginx
+    </div>
 
-    function connect() {
-      if (ws && ws.readyState === WebSocket.OPEN) return;
+    <h4>7️⃣ Push / Pull (Concept)</h4>
+    <div class="cmd">docker login</div>
+    <div class="cmd">docker tag nginx myrepo/nginx:v1</div>
+    <div class="cmd">docker push myrepo/nginx:v1</div>
 
-      const pass = document.getElementById("sshpass").value;
-      if (!pass) {
-        alert("Please enter lab user password");
-        return;
-      }
+    <p class="note">
+      ✅ After completing LAB-1, you are ready for Kubernetes Pods.
+    </p>
+  </div>
 
-      if (!term) {
-        term = new Terminal({ cursorBlink: true });
-        term.open(document.getElementById("terminal"));
-      }
+</div>
 
-      document.getElementById("connectBtn").disabled = true;
+<script>
+  let term = null;
+  let ws   = null;
 
-      ws = new WebSocket(
-        "ws://<?= $_SERVER['HTTP_HOST'] ?>:32000/?" +
-        "server_id=<?= $server_id ?>&user=<?= $user ?>"
-      );
+  function connect() {
+    if (ws && ws.readyState === WebSocket.OPEN) return;
 
-      ws.onopen = () => {
-        ws.send(JSON.stringify({ password: pass }));
-        term.write("🔐 Authenticating...\r\n");
-      };
+    const username = "<?= $user ?>";
+    const password = "k8s" + username + "@123!";
 
-      ws.onmessage = e => term.write(e.data);
-
-      ws.onclose = () => {
-        term.write("\r\n❌ Connection closed\r\n");
-        ws = null;
-        document.getElementById("connectBtn").disabled = false;
-      };
-
-      term.onData(d => {
-        if (ws && ws.readyState === WebSocket.OPEN) {
-          ws.send(d);
-        }
-      });
+    if (!term) {
+      term = new Terminal({ cursorBlink: true });
+      term.open(document.getElementById("terminal"));
     }
-  </script>
 
-<?php elseif ($lab['status'] === 'EXPIRED'): ?>
+    ws = new WebSocket(
+      "ws://59.99.157.195:32000/?" +
+      "server_id=<?= $server_id ?>&user=<?= $user ?>"
+    );
 
-  <!-- FREE LAB USED -->
-  <p class="red">⌛ Your free lab access has expired.</p>
-  <p>You can request extended access from admin.</p>
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ password: password }));
+      term.write("🔐 Auto authenticating...\r\n");
+    };
 
-  <?php if ($msg): ?>
-    <p><?= htmlspecialchars($msg) ?></p>
-  <?php endif; ?>
+    ws.onmessage = e => term.write(e.data);
 
-  <form method="post">
-    <label>Current Experience in Linux</label>
-    <textarea name="experience" required></textarea>
+    ws.onclose = () => {
+      term.write("\r\n❌ Connection closed\r\n");
+      ws = null;
+    };
 
-    <label>Core Technical Domain</label>
-    <input name="domain" required>
+    term.onData(d => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(d);
+      }
+    });
+  }
+</script>
 
-    <label>Feedback about Product</label>
-    <textarea name="feedback" required></textarea>
+<?php else: ?>
 
-    <label>Suggestion for Improvement</label>
-    <textarea name="suggestion" required></textarea>
-
-    <label>Requested Hours</label>
-    <select name="hours">
-      <option value="1">1 Hour</option>
-      <option value="2">2 Hours</option>
-      <option value="4">4 Hours</option>
-    </select>
-
-    <button class="btn" name="request_extension">
-      📨 Request Access
-    </button>
-  </form>
-
-<?php elseif ($lab['status'] === 'FAILED'): ?>
-
-  <p>❌ Lab provisioning failed. Please contact admin.</p>
+<p style="padding:20px">⏳ Lab not active or expired.</p>
 
 <?php endif; ?>
 
