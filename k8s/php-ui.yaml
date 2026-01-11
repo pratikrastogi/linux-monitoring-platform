@@ -15,10 +15,13 @@ spec:
     spec:
       containers:
       - name: php-ui
-        image: pratikrastogi/linux-monitoring:2.2
+        image: docker.io/pratikrastogi/linux-monitoring:202601111023
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
+        envFrom:
+        - secretRef:
+            name: oauth-secrets
 ---
 apiVersion: v1
 kind: Service
