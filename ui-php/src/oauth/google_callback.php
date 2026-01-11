@@ -1,20 +1,14 @@
 <?php
 session_start();
 
-/* ===============================
-   OAUTH STATE CHECK
-================================ */
-if (
-    !isset($_GET['state'], $_SESSION['oauth_state']) ||
-    $_GET['state'] !== $_SESSION['oauth_state']
-) {
+/* ================= OAUTH STATE ================= */
+if (!isset($_GET['state'], $_SESSION['oauth_state']) ||
+    $_GET['state'] !== $_SESSION['oauth_state']) {
     die("Invalid OAuth state");
 }
 unset($_SESSION['oauth_state']);
 
-/* ===============================
-   CONFIG
-================================ */
+/* ================= CONFIG ================= */
 $config = require __DIR__ . '/../config/oauth.php';
 $g = $config['google'];
 
@@ -23,9 +17,7 @@ if (empty($_GET['code'])) {
 }
 $code = $_GET['code'];
 
-/* ===============================
-   TOKEN EXCHANGE
-================================ */
+/* ================= TOKEN ================= */
 $tokenResp = file_get_contents(
     "https://oauth2.googleapis.com/token",
     false,
@@ -49,12 +41,10 @@ if (empty($token['access_token'])) {
     die("Token exchange failed");
 }
 
-/* ===============================
-   GOOGLE PROFILE
-================================ */
+/* ================= GOOGLE PROFILE ================= */
 $profile = json_decode(
     file_get_contents(
-        "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" . $token['access_token']
+        "https://www.googleapis.com/oauth2/v2/userinfo?access_token=".$token['access_token']
     ),
     true
 );
@@ -65,104 +55,95 @@ if (empty($profile['email']) || !$profile['verified_email']) {
 
 $email   = strtolower($profile['email']);
 $oauthId = $profile['id'];
+$username = explode('@', $email)[0];   // 👈 SIMPLE RULE
 
-/* ===============================
-   DB CONNECT
-================================ */
+/* ================= DB ================= */
 $conn = new mysqli("mysql", "monitor", "monitor123", "monitoring");
 if ($conn->connect_error) {
-    die("DB connection failed");
+    die("DB error");
 }
 
-/* ===============================
-   CHECK EXISTING GOOGLE USER
-================================ */
-$stmt = $conn->prepare("
+/* =================================================
+   CASE 1: Google user already exists
+================================================= */
+$q = $conn->prepare("
     SELECT id, username, role
     FROM users
-    WHERE oauth_provider='google'
-      AND oauth_id=?
+    WHERE oauth_provider='google' AND oauth_id=?
     LIMIT 1
 ");
-$stmt->bind_param("s", $oauthId);
-$stmt->execute();
-$res = $stmt->get_result();
+$q->bind_param("s", $oauthId);
+$q->execute();
+$res = $q->get_result();
 
 if ($res->num_rows === 1) {
-
-    /* ---------- EXISTING USER ---------- */
-    $row      = $res->fetch_assoc();
-    $uid      = (int)$row['id'];
-    $username = $row['username'];
-    $role     = $row['role'];
-
-} else {
-
-    /* ===============================
-       GENERATE UNIQUE USERNAME
-    ================================ */
-    $base = preg_replace('/[^a-z0-9]/', '', explode('@', $email)[0]);
-    if ($base === '') {
-        $base = 'user';
-    }
-
-    $username = $base;
-    $i = 1;
-
-    while (true) {
-        $chk = $conn->prepare("SELECT 1 FROM users WHERE username=? LIMIT 1");
-        $chk->bind_param("s", $username);
-        $chk->execute();
-        if ($chk->get_result()->num_rows === 0) {
-            break;
-        }
-        $username = $base . $i;
-        $i++;
-    }
-
-    /* ===============================
-       INSERT USER (USERNAME GUARANTEED)
-    ================================ */
-    $ins = $conn->prepare("
-        INSERT INTO users
-        (username, email, role, plan, enabled, oauth_provider, oauth_id)
-        VALUES (?, ?, 'user', 'FREE', 1, 'google', ?)
-    ");
-    $ins->bind_param("sss", $username, $email, $oauthId);
-    $ins->execute();
-
-    $uid  = $conn->insert_id;
-    $role = 'user';
+    $row = $res->fetch_assoc();
+    $_SESSION['uid']  = $row['id'];
+    $_SESSION['user'] = $row['username'];
+    $_SESSION['role'] = $row['role'];
+    header("Location: /terminal.php");
+    exit;
 }
 
-/* ===============================
-   ENSURE FREE LAB EXISTS
-================================ */
-$labChk = $conn->prepare("SELECT 1 FROM lab_sessions WHERE user_id=? LIMIT 1");
-$labChk->bind_param("i", $uid);
-$labChk->execute();
+/* =================================================
+   CASE 2: Username already exists (normal user)
+================================================= */
+$q = $conn->prepare("
+    SELECT id, username, role
+    FROM users
+    WHERE username=?
+    LIMIT 1
+");
+$q->bind_param("s", $username);
+$q->execute();
+$res = $q->get_result();
 
-if ($labChk->get_result()->num_rows === 0) {
-    $expiry = date("Y-m-d H:i:s", time() + 3600);
+if ($res->num_rows === 1) {
+    $row = $res->fetch_assoc();
 
-    $labIns = $conn->prepare("
-        INSERT INTO lab_sessions (user_id, status, access_expiry)
-        VALUES (?, 'REQUESTED', ?)
+    // Attach Google to existing user
+    $upd = $conn->prepare("
+        UPDATE users
+        SET oauth_provider='google', oauth_id=?
+        WHERE id=?
     ");
-    $labIns->bind_param("is", $uid, $expiry);
-    $labIns->execute();
+    $upd->bind_param("si", $oauthId, $row['id']);
+    $upd->execute();
+
+    $_SESSION['uid']  = $row['id'];
+    $_SESSION['user'] = $row['username'];
+    $_SESSION['role'] = $row['role'];
+    header("Location: /terminal.php");
+    exit;
 }
 
-/* ===============================
-   SESSION
-================================ */
-$_SESSION['user'] = $username;
+/* =================================================
+   CASE 3: Brand new user
+================================================= */
+$ins = $conn->prepare("
+    INSERT INTO users
+    (username, email, role, plan, enabled, oauth_provider, oauth_id)
+    VALUES (?, ?, 'user', 'FREE', 1, 'google', ?)
+");
+$ins->bind_param("sss", $username, $email, $oauthId);
+$ins->execute();
+
+$uid = $conn->insert_id;
+
+/* ===== create free lab if not exists ===== */
+$exp = date("Y-m-d H:i:s", time() + 3600);
+$lab = $conn->prepare("
+    INSERT INTO lab_sessions (user_id, status, access_expiry)
+    VALUES (?, 'REQUESTED', ?)
+");
+$lab->bind_param("is", $uid, $exp);
+$lab->execute();
+
+/* ================= SESSION ================= */
 $_SESSION['uid']  = $uid;
-$_SESSION['role'] = $role;
+$_SESSION['user'] = $username;
+$_SESSION['role'] = 'user';
 
-/* ===============================
-   REDIRECT
-================================ */
 header("Location: /terminal.php");
 exit;
 
