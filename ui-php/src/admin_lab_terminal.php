@@ -86,9 +86,6 @@ include 'includes/header.php';
                 <div style="flex: 1; overflow-y: auto; padding: 20px;" id="labGuidePanel">
                     <?php if (!empty($lab['lab_guide_content'])): ?>
                         <!-- Lab Guide Content from Course -->
-                        <div class="alert alert-info mb-3">
-                            <h5><i class="fas fa-book"></i> Lab Guide</h5>
-                        </div>
                         <div class="lab-guide-content">
                             <?= renderCourseContent($lab['lab_guide_content']) ?>
                         </div>
@@ -255,33 +252,57 @@ function initializeTerminal() {
         }
     });
 }
+</script>
 
-// Copy to clipboard functionality for command blocks
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('#labGuidePanel .cmd-block').forEach(block => {
-        const copyBtn = document.createElement('button');
-        copyBtn.className = 'btn btn-sm btn-outline-light cmd-copy';
-        copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
-        copyBtn.style.color = '#fff';
-        copyBtn.onclick = (e) => {
-            e.preventDefault();
-            const code = block.querySelector('code').innerText;
-            navigator.clipboard.writeText(code).then(() => {
-                const originalText = copyBtn.innerHTML;
-                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                setTimeout(() => copyBtn.innerHTML = originalText, 2000);
-            });
-        };
-        block.appendChild(copyBtn);
-    });
+  // Copy to clipboard functionality
+  document.querySelectorAll('#labGuidePanel .cmd-block').forEach(block => {
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'btn btn-sm btn-outline-secondary cmd-copy';
+    copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+    copyBtn.onclick = (e) => {
+      e.preventDefault();
+      const code = block.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        setTimeout(() => copyBtn.innerHTML = originalText, 2000);
+      }).catch(err => console.error('Copy failed:', err));
+    };
+    block.appendChild(copyBtn);
+  });
+
+  // Highlight command blocks
+  document.querySelectorAll('#labGuidePanel .cmd-block code').forEach(block => {
+    hljs.highlightElement(block);
+  });
 });
 </script>
 
 <style>
     .lab-guide-content {
         color: #333;
-        line-height: 1.6;
+        line-height: 1.8;
         font-size: 14px;
+    }
+    
+    .lab-guide-content p {
+        margin-bottom: 10px;
+    }
+    
+    .lab-guide-content h1,
+    .lab-guide-content h2,
+    .lab-guide-content h3,
+    .lab-guide-content h4,
+    .lab-guide-content h5,
+    .lab-guide-content h6 {
+        margin-top: 15px;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: #333;
     }
     
     .cmd-block {
@@ -301,6 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
         border: none;
         padding: 0;
         font-size: 13px;
+        font-weight: 500;
     }
 
     .cmd-copy {
@@ -309,24 +331,12 @@ document.addEventListener('DOMContentLoaded', function() {
         right: 8px;
         opacity: 0.7;
         transition: opacity 0.2s;
-        padding: 4px 10px;
         font-size: 11px;
+        padding: 4px 10px;
     }
 
     .cmd-copy:hover {
         opacity: 1;
-    }
-    
-    .lab-guide-content h1,
-    .lab-guide-content h2,
-    .lab-guide-content h3,
-    .lab-guide-content h4,
-    .lab-guide-content h5,
-    .lab-guide-content h6 {
-        margin-top: 15px;
-        margin-bottom: 10px;
-        font-weight: 600;
-        color: #333;
     }
     
     .lab-guide-content code {
