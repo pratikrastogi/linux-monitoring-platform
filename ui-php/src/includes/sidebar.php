@@ -110,9 +110,9 @@
         </li>
         
         <li class="nav-item">
-          <a href="labs.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'labs.php' ? 'active' : ''; ?>">
+          <a href="admin_labs.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_labs.php' ? 'active' : ''; ?>">
             <i class="nav-icon fas fa-flask"></i>
-            <p>Lab Templates</p>
+            <p>Manage Labs</p>
           </a>
         </li>
         

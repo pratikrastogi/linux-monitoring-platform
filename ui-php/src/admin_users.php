@@ -253,8 +253,8 @@ include 'includes/header.php';
               <tr>
                 <td><?= $user['id'] ?></td>
                 <td>
-                  <strong><?= htmlspecialchars($user['name'] ?? $user['email']) ?></strong><br>
-                  <small class="text-muted"><?= htmlspecialchars($user['email']) ?></small>
+                  <strong><?= htmlspecialchars($user['username'] ?? '') ?></strong><br>
+                  <small class="text-muted"><?= htmlspecialchars($user['email'] ?? '') ?></small>
                 </td>
                 <td>
                   <form method="POST" style="display:inline;">
@@ -421,7 +421,7 @@ include 'includes/header.php';
           <div class="small-box bg-danger">
             <div class="inner">
               <?php
-              $expired_labs = $conn->query("SELECT COUNT(*) as cnt FROM lab_sessions WHERE status='ACTIVE' AND expires_at < NOW()")->fetch_assoc()['cnt'];
+              $expired_labs = $conn->query("SELECT COUNT(*) as cnt FROM lab_sessions WHERE status='ACTIVE' AND access_expiry < NOW()")->fetch_assoc()['cnt'];
               ?>
               <h3><?= $expired_labs ?></h3>
               <p>Expired Labs</p>
