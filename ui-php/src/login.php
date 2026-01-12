@@ -373,7 +373,31 @@ if (isset($_SESSION['user'])) {
             Sign in to access your learning dashboard
           </p>
 
-          <form method="post" action="auth.php">
+          <?php if (isset($_GET['error'])): ?>
+            <div class="alert alert-danger alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              <?php
+              switch ($_GET['error']) {
+                case 'invalid':
+                  echo '<i class="fas fa-exclamation-triangle"></i> Invalid username or password';
+                  break;
+                case 'disabled':
+                  echo '<i class="fas fa-ban"></i> Account is disabled';
+                  break;
+                case 'expired':
+                  echo '<i class="fas fa-clock"></i> Your lab access has expired';
+                  break;
+                case 'empty':
+                  echo '<i class="fas fa-info-circle"></i> Please enter username and password';
+                  break;
+                default:
+                  echo '<i class="fas fa-exclamation"></i> Login failed';
+              }
+              ?>
+            </div>
+          <?php endif; ?>
+
+          <form method="post" action="login_submit.php">
         <div class="input-group mb-3">
           <input type="text" name="username" class="form-control" placeholder="Username" required>
           <div class="input-group-append">

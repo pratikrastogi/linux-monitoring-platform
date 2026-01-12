@@ -1,33 +1,32 @@
 <?php
-session_start();
+// Authentication check - ensures user is logged in
+// Do NOT call session_start() here - calling page should do it
 
+// If session not started, redirect to login
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check if user is logged in
+if (!isset($_SESSION['user']) || !isset($_SESSION['uid']) || !isset($_SESSION['role'])) {
+    // Not logged in, redirect to login page
+    header('Location: login.php');
+    exit;
+}
+
+// Database connection (for pages that need it)
 $conn = new mysqli("mysql","monitor","monitor123","monitoring");
 if ($conn->connect_error) {
-    die("DB error");
+    die("Database connection failed");
 }
 
-$username = $_POST['username'];
-$password = hash("sha256", $_POST['password']);
+// User is authenticated, continue with page
+// Session variables available:
+// - $_SESSION['user'] - username
+// - $_SESSION['uid'] - user ID
+// - $_SESSION['role'] - user role (admin/user)
 
-$q = $conn->prepare("
-SELECT id, role, enabled, access_expiry
-FROM users
-WHERE username=? AND password=?
-");
-$q->bind_param("ss",$username,$password);
-$q->execute();
-$r = $q->get_result()->fetch_assoc();
-
-if (!$r) {
-    die("Invalid username or password");
-}
-
-/* Check enabled */
-if ($r['enabled'] != 1) {
-    die("Account disabled or expired");
-}
-
-/* Check expiry (except admin) */
+/* Old login logic removed - this is now just an auth check */
 if ($r['role'] !== 'admin' && $r['access_expiry'] !== null) {
     if (strtotime($r['access_expiry']) < time()) {
         die("Your lab access has expired. Please renew.");
