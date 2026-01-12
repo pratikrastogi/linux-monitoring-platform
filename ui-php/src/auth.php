@@ -15,8 +15,8 @@ if (!isset($_SESSION['user']) || !isset($_SESSION['uid']) || !isset($_SESSION['r
 }
 
 // Database connection (for pages that need it)
-$conn = new mysqli("mysql","monitor","monitor123","monitoring");
-if ($conn->connect_error) {
+$db = new mysqli("mysql","monitor","monitor123","monitoring");
+if ($db->connect_error) {
     die("Database connection failed");
 }
 
@@ -25,19 +25,4 @@ if ($conn->connect_error) {
 // - $_SESSION['user'] - username
 // - $_SESSION['uid'] - user ID
 // - $_SESSION['role'] - user role (admin/user)
-
-/* Old login logic removed - this is now just an auth check */
-if ($r['role'] !== 'admin' && $r['access_expiry'] !== null) {
-    if (strtotime($r['access_expiry']) < time()) {
-        die("Your lab access has expired. Please renew.");
-    }
-}
-
-/* Login success */
-$_SESSION['user'] = $username;
-$_SESSION['role'] = $r['role'];
-$_SESSION['uid']  = $r['id'];
-
-header("Location: index.php");
-exit;
-
+?>

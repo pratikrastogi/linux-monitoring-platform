@@ -81,7 +81,7 @@ if ($res->num_rows === 1) {
     $_SESSION['uid']  = (int)$row['id'];
     $_SESSION['user'] = $row['username'];
     $_SESSION['role'] = $row['role'];
-    header("Location: /terminal.php");
+    header("Location: /index.php");
     exit;
 }
 
@@ -135,6 +135,6 @@ $_SESSION['uid']  = (int)$uid;
 $_SESSION['user'] = $username;
 $_SESSION['role'] = 'user';
 
-header("Location: /terminal.php");
+header("Location: /index.php");
 exit;
 
