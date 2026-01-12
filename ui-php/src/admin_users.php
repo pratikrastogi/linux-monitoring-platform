@@ -35,15 +35,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_lab'])) {
     
     // Create lab session
     $conn->query("INSERT INTO lab_sessions 
-                  (user_id, username, lab_id, namespace, access_start, access_expiry, status, session_token, plan, provisioned, created_at, updated_at)
-                  VALUES ($user_id, '$username', $lab_id, 'pending', NOW(), '$access_expiry', 'ACTIVE', '$session_token', 'standard', 0, NOW(), NOW())");
+                  (user_id, lab_id, server_id, access_expiry, status, created_at)
+                  VALUES ($user_id, $lab_id, ".$lab_info['server_id'].", '$access_expiry', 'ACTIVE', NOW())");
     
     $session_id = $conn->insert_id;
     
-    // Execute provisioning script on bastion host
-    $bastion_host = $lab_info['bastion_host'];
-    $bastion_user = $lab_info['bastion_user'];
-    $bastion_password = $lab_info['bastion_password'];
+    // Get server details from centralized servers table
+    $server_result = $conn->query("SELECT * FROM servers WHERE id = ".$lab_info['server_id']);
+    $server_info = $server_result->fetch_assoc();
+    
+    $bastion_host = $server_info['ip_address'];
+    $bastion_user = $server_info['ssh_user'];
+    $bastion_password = $server_info['ssh_password'];
     $provision_script = $lab_info['provision_script_path'];
     $user_email = $user_info['email'];
     $duration_hours = $validity_hours;
@@ -53,9 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_lab'])) {
                        "'bash $provision_script $user_email $duration_hours $lab_id'";
     
     exec($provision_command . " > /dev/null 2>&1 &");
-    
-    // Update session status
-    $conn->query("UPDATE lab_sessions SET status='ACTIVE', provisioned=1 WHERE id=$session_id");
     
     $_SESSION['success'] = "Lab assigned successfully! Provisioning initiated on $bastion_host";
     

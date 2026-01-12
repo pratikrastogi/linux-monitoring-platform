@@ -21,9 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_POST['id'] ?? null;
             $course_id = (int)$_POST['course_id'];
             $lab_name = $db->real_escape_string($_POST['lab_name']);
-            $bastion_host = $db->real_escape_string($_POST['bastion_host']);
-            $bastion_user = $db->real_escape_string($_POST['bastion_user']);
-            $bastion_password = $db->real_escape_string($_POST['bastion_password']);
+            $server_id = (int)$_POST['server_id'];
             $provision_script_path = $db->real_escape_string($_POST['provision_script_path']);
             $cleanup_script_path = $db->real_escape_string($_POST['cleanup_script_path']);
             $duration_minutes = (int)$_POST['duration_minutes'];
@@ -31,16 +29,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $active = isset($_POST['active']) ? 1 : 0;
             
             if ($id) {
-                $db->query("UPDATE labs SET course_id=$course_id, lab_name='$lab_name', bastion_host='$bastion_host', 
-                           bastion_user='$bastion_user', bastion_password='$bastion_password', 
+                $db->query("UPDATE labs SET course_id=$course_id, lab_name='$lab_name', server_id=$server_id, 
                            provision_script_path='$provision_script_path', cleanup_script_path='$cleanup_script_path',
                            duration_minutes=$duration_minutes, max_concurrent_users=$max_concurrent_users, 
                            active=$active WHERE id=$id");
                 $message = "Lab updated successfully!";
             } else {
-                $db->query("INSERT INTO labs (course_id, lab_name, bastion_host, bastion_user, bastion_password, 
+                $db->query("INSERT INTO labs (course_id, lab_name, server_id, 
                            provision_script_path, cleanup_script_path, duration_minutes, max_concurrent_users, active) 
-                           VALUES ($course_id, '$lab_name', '$bastion_host', '$bastion_user', '$bastion_password', 
+                           VALUES ($course_id, '$lab_name', $server_id, 
                            '$provision_script_path', '$cleanup_script_path', $duration_minutes, $max_concurrent_users, $active)");
                 $message = "Lab created successfully!";
             }
@@ -60,11 +57,12 @@ if (isset($_GET['edit'])) {
     $edit_lab = $result->fetch_assoc();
 }
 
-// Get all labs with course names
-$labs = $db->query("SELECT l.*, c.name as course_name, 
+// Get all labs with course names and server details
+$labs = $db->query("SELECT l.*, c.name as course_name, s.ip_address, s.ssh_user, s.ssh_password,
     (SELECT COUNT(*) FROM lab_sessions WHERE lab_id = l.id AND status='ACTIVE') as active_sessions 
     FROM labs l 
     LEFT JOIN courses c ON l.course_id = c.id 
+    LEFT JOIN servers s ON l.server_id = s.id 
     ORDER BY l.created_at DESC");
 
 include 'includes/header.php';
@@ -158,28 +156,24 @@ include 'includes/header.php';
                             </div>
                             
                             <hr>
-                            <h5><i class="fas fa-server"></i> Bastion Server Configuration</h5>
+                            <h5><i class="fas fa-server"></i> Select Server (Provisioner/Bastion)</h5>
                             
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-12">
                                     <div class="form-group">
-                                        <label>Host (IP/Hostname) *</label>
-                                        <input type="text" name="bastion_host" class="form-control" placeholder="192.168.1.46"
-                                               value="<?= $edit_lab ? htmlspecialchars($edit_lab['bastion_host']) : '' ?>" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>Username *</label>
-                                        <input type="text" name="bastion_user" class="form-control"
-                                               value="<?= $edit_lab ? htmlspecialchars($edit_lab['bastion_user']) : '' ?>" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label>Password *</label>
-                                        <input type="password" name="bastion_password" class="form-control"
-                                               value="<?= $edit_lab ? htmlspecialchars($edit_lab['bastion_password']) : '' ?>" required>
+                                        <label>Server *</label>
+                                        <select name="server_id" class="form-control" required>
+                                            <option value="">-- Select a Server --</option>
+                                            <?php 
+                                            $servers = $db->query("SELECT id, hostname, ip_address, ssh_user FROM servers WHERE enabled = 1 ORDER BY hostname");
+                                            while ($server = $servers->fetch_assoc()): 
+                                            ?>
+                                                <option value="<?= $server['id'] ?>" <?= ($edit_lab && $edit_lab['server_id'] == $server['id']) ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($server['hostname']) ?> (<?= htmlspecialchars($server['ip_address']) ?>) - <?= htmlspecialchars($server['ssh_user']) ?>
+                                                </option>
+                                            <?php endwhile; ?>
+                                        </select>
+                                        <small class="text-muted">Choose a server from <a href="admin_provisioners.php" target="_blank">Server Management</a></small>
                                     </div>
                                 </div>
                             </div>
@@ -291,7 +285,7 @@ include 'includes/header.php';
                                         <a href="?edit=<?= $lab['id'] ?>" class="btn btn-sm btn-info" title="Edit lab">
                                             <i class="fas fa-edit"></i> Edit
                                         </a>
-                                        <button class="btn btn-sm btn-success" onclick="openTerminal('<?= htmlspecialchars($lab['bastion_host']) ?>', '<?= htmlspecialchars($lab['bastion_user']) ?>', '<?= htmlspecialchars($lab['bastion_password']) ?>')" title="Open terminal access">
+                                        <button class="btn btn-sm btn-success" onclick="openTerminal('<?= htmlspecialchars($lab['ip_address']) ?>', '<?= htmlspecialchars($lab['ssh_user']) ?>', '<?= htmlspecialchars($lab['ssh_password']) ?>')" title="Open terminal access">
                                             <i class="fas fa-terminal"></i> Terminal
                                         </button>
                                         <form method="POST" style="display:inline;">
@@ -366,15 +360,26 @@ include 'includes/header.php';
                 setTimeout(() => fitAddon.fit(), 100);
                 window.addEventListener('resize', () => fitAddon.fit());
                 
-                let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in/terminal');
+                let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in/terminal?' + 
+                    'host=' + encodeURIComponent(host) + 
+                    '&user=' + encodeURIComponent(user) +
+                    '&password=' + encodeURIComponent(password));
+                
                 ws.onopen = () => {
-                    ws.send(JSON.stringify({type: 'auth', host: host, user: user, password: password}));
                     term.write('\r\n🔗 Connecting to ' + host + '...\r\n');
                 };
                 ws.onmessage = (e) => term.write(e.data);
-                ws.onerror = () => term.write('\r\n❌ Connection error\r\n');
+                ws.onerror = (err) => {
+                    term.write('\r\n❌ Connection error: ' + (err.message || 'Unknown error') + '\r\n');
+                    console.error('WebSocket error:', err);
+                };
                 ws.onclose = () => term.write('\r\n❌ Connection closed\r\n');
-                term.onData(d => ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify({type: 'data', data: d})));
+                
+                term.onData(d => {
+                    if (ws.readyState === WebSocket.OPEN) {
+                        ws.send(d);
+                    }
+                });
             };
             document.head.appendChild(s2);
         };
