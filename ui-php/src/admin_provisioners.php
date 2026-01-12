@@ -301,11 +301,17 @@ include 'includes/header.php';
                 setTimeout(() => fitAddon.fit(), 100);
                 window.addEventListener('resize', () => fitAddon.fit());
                 
-                // SECURE: Only server_id in URL, gateway fetches credentials from database
-                let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in:3000/terminal?server_id=' + serverId);
+                // SECURE: server_id and user in URL, password sent in JSON message
+                let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in:32000/terminal?server_id=' + serverId + '&user=' + encodeURIComponent('<?= htmlspecialchars($server['ssh_user']) ?>'));
                 
+                let passwordSent = false;
                 ws.onopen = () => {
                     term.write('\r\n🔗 Connecting to ' + hostname + '...\r\n');
+                    // Send password as JSON
+                    if (!passwordSent) {
+                        ws.send(JSON.stringify({ password: '<?= htmlspecialchars($server['ssh_password']) ?>' }));
+                        passwordSent = true;
+                    }
                 };
                 ws.onmessage = (e) => term.write(e.data);
                 ws.onerror = (err) => {

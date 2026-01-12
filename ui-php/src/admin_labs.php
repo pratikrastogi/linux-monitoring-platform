@@ -294,9 +294,9 @@ include 'includes/header.php';
                                         <a href="?edit=<?= $lab['id'] ?>" class="btn btn-sm btn-info" title="Edit lab">
                                             <i class="fas fa-edit"></i> Edit
                                         </a>
-                                        <button class="btn btn-sm btn-success" onclick="openTerminal(<?= $lab['server_id'] ?>, '<?= htmlspecialchars($lab['lab_name']) ?>')" title="Open terminal access">
-                                            <i class="fas fa-terminal"></i> Terminal
-                                        </button>
+                                        <a href="admin_lab_terminal.php?lab_id=<?= $lab['id'] ?>" class="btn btn-sm btn-success" title="Open lab environment with terminal">
+                                            <i class="fas fa-flask"></i> Open Lab
+                                        </a>
                                         <form method="POST" style="display:inline;">
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="id" value="<?= $lab['id'] ?>">
@@ -334,64 +334,6 @@ include 'includes/header.php';
     $(document).ready(function() {
         $('[data-widget="pushmenu"]').PushMenu();
     });
-    
-    // Terminal access function for admin - SECURE (no passwords in URL)
-    function openTerminal(serverId, labName) {
-        const modal = document.createElement('div');
-        modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; flex-direction: column;';
-        modal.innerHTML = `
-            <div style="background: #2c3e50; color: white; padding: 10px; display: flex; justify-content: space-between; flex: 0 0 auto;">
-                <span><i class="fas fa-terminal"></i> Terminal - Lab: ${labName}</span>
-                <button onclick="this.closest('[data-modal]').remove()" style="background: #e74c3c; border: none; color: white; padding: 5px 15px; cursor: pointer; border-radius: 3px;">
-                    <i class="fas fa-times"></i> Close
-                </button>
-            </div>
-            <div id="terminal" style="flex: 1; background: #000; overflow: hidden;"></div>
-        `;
-        modal.setAttribute('data-modal', '1');
-        document.body.appendChild(modal);
-        
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css';
-        document.head.appendChild(link);
-        
-        const s1 = document.createElement('script');
-        s1.src = 'https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.js';
-        s1.onload = () => {
-            const s2 = document.createElement('script');
-            s2.src = 'https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.js';
-            s2.onload = () => {
-                const term = new Terminal({cursorBlink: true, fontSize: 12, fontFamily: 'Courier New'});
-                const fitAddon = new FitAddon.FitAddon();
-                term.loadAddon(fitAddon);
-                term.open(document.getElementById('terminal'));
-                setTimeout(() => fitAddon.fit(), 100);
-                window.addEventListener('resize', () => fitAddon.fit());
-                
-                // SECURE: Only server_id in URL, gateway fetches credentials from database
-                let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in:3000/terminal?server_id=' + serverId);
-                
-                ws.onopen = () => {
-                    term.write('\r\n🔗 Connecting to lab server...\r\n');
-                };
-                ws.onmessage = (e) => term.write(e.data);
-                ws.onerror = (err) => {
-                    term.write('\r\n❌ Connection error: ' + (err.message || 'Unknown error') + '\r\n');
-                    console.error('WebSocket error:', err);
-                };
-                ws.onclose = () => term.write('\r\n❌ Connection closed\r\n');
-                
-                term.onData(d => {
-                    if (ws.readyState === WebSocket.OPEN) {
-                        ws.send(d);
-                    }
-                });
-            };
-            document.head.appendChild(s2);
-        };
-        document.head.appendChild(s1);
-    }
 </script>
 </body>
 </html>
