@@ -17,26 +17,19 @@ if (!$session) die("Invalid or expired session");
 
 $remaining = strtotime($session['access_expiry']) - time();
 $mins = floor($remaining / 60);
+
+$page_title = "Lab Terminal";
+include 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Lab Terminal</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <style>
-        body { margin: 0; padding: 0; overflow: hidden; }
-        .lab-container { display: flex; height: 100vh; }
-        .lab-guide { width: 30%; overflow-y: auto; padding: 20px; background: #f4f4f4; border-right: 1px solid #ccc; }
-        .terminal-container { flex: 1; padding: 20px; }
-        #terminal { height: calc(100% - 60px); }
-        .lab-header { background: #28a745; color: white; padding: 10px; }
-    </style>
-</head>
-<body>
+
+<body class="hold-transition">
+<style>
+    .lab-container { display: flex; height: calc(100vh - 60px); }
+    .lab-guide { width: 30%; overflow-y: auto; padding: 20px; background: #f4f7fc; border-right: 1px solid #ddd; }
+    .terminal-container { flex: 1; padding: 20px; background: #fff; }
+    #terminal { height: calc(100% - 60px); background: #000; }
+    .lab-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 4px; margin-bottom: 15px; }
+</style>
 <div class="lab-container">
     <div class="lab-guide">
         <div class="lab-header">

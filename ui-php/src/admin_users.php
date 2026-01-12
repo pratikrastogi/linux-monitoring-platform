@@ -35,9 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_lab'])) {
     $provision_q = $conn->query("SELECT * FROM provision_target LIMIT 1");
     if ($provision_q && $provision_q->num_rows > 0) {
         $target = $provision_q->fetch_assoc();
-        $target_ip = $target['target_ip'];
-        $target_user = $target['target_user'];
-        $target_password = $target['target_password'];
+        $target_ip = $target['host_ip'];
+        $target_user = $target['ssh_user'];
+        $target_password = $target['ssh_password'];
         
         // Get user details
         $user_q = $conn->query("SELECT email FROM users WHERE id=$user_id");
@@ -64,23 +64,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_lab'])) {
 
 // Handle provision target update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_provision_target'])) {
-    $target_ip = $conn->real_escape_string($_POST['target_ip']);
-    $target_user = $conn->real_escape_string($_POST['target_user']);
-    $target_password = $conn->real_escape_string($_POST['target_password']);
+    $target_ip = $conn->real_escape_string($_POST['host_ip'] ?? $_POST['target_ip'] ?? '');
+    $target_user = $conn->real_escape_string($_POST['ssh_user'] ?? $_POST['target_user'] ?? '');
+    $target_password = $conn->real_escape_string($_POST['ssh_password'] ?? $_POST['target_password'] ?? '');
     
     // Check if provision_target exists
     $check = $conn->query("SELECT id FROM provision_target LIMIT 1");
     if ($check && $check->num_rows > 0) {
         $conn->query("UPDATE provision_target SET 
-                      target_ip='$target_ip', 
-                      target_user='$target_user', 
-                      target_password='$target_password',
+                      host_ip='$target_ip', 
+                      ssh_user='$target_user', 
+                      ssh_password='$target_password',
                       updated_at=NOW()
                       WHERE id=1");
     } else {
         $conn->query("INSERT INTO provision_target 
-                      (target_ip, target_user, target_password, created_at, updated_at)
-                      VALUES ('$target_ip', '$target_user', '$target_password', NOW(), NOW())");
+                      (host_ip, ssh_user, ssh_password, updated_at)
+                      VALUES ('$target_ip', '$target_user', '$target_password', NOW())");
     }
     
     $_SESSION['success'] = "Provision target updated successfully!";
@@ -165,8 +165,8 @@ include 'includes/header.php';
               <div class="col-md-4">
                 <div class="form-group">
                   <label>Target Server IP <span class="text-danger">*</span></label>
-                  <input type="text" name="target_ip" class="form-control" 
-                         value="<?= htmlspecialchars($provision_target['target_ip'] ?? '') ?>" 
+                  <input type="text" name="host_ip" class="form-control" 
+                         value="<?= htmlspecialchars($provision_target['host_ip'] ?? '') ?>" 
                          placeholder="192.168.1.46" required>
                   <small class="text-muted">Server where labs will be provisioned</small>
                 </div>
@@ -175,16 +175,16 @@ include 'includes/header.php';
               <div class="col-md-4">
                 <div class="form-group">
                   <label>SSH Username <span class="text-danger">*</span></label>
-                  <input type="text" name="target_user" class="form-control" 
-                         value="<?= htmlspecialchars($provision_target['target_user'] ?? 'root') ?>" required>
+                  <input type="text" name="ssh_user" class="form-control" 
+                         value="<?= htmlspecialchars($provision_target['ssh_user'] ?? 'root') ?>" required>
                 </div>
               </div>
 
               <div class="col-md-4">
                 <div class="form-group">
                   <label>SSH Password <span class="text-danger">*</span></label>
-                  <input type="password" name="target_password" class="form-control" 
-                         value="<?= htmlspecialchars($provision_target['target_password'] ?? '') ?>" 
+                  <input type="password" name="ssh_password" class="form-control" 
+                         value="<?= htmlspecialchars($provision_target['ssh_password'] ?? '') ?>" 
                          placeholder="Enter password" required>
                 </div>
               </div>
@@ -194,9 +194,9 @@ include 'includes/header.php';
               <i class="fas fa-save"></i> Update Provision Target
             </button>
 
-            <?php if ($provision_target && isset($provision_target['target_ip'])): ?>
+            <?php if ($provision_target && isset($provision_target['host_ip'])): ?>
             <span class="badge badge-success ml-2">
-              <i class="fas fa-check"></i> Configured: <?= htmlspecialchars($provision_target['target_ip'] ?? 'Not set') ?>
+              <i class="fas fa-check"></i> Configured: <?= htmlspecialchars($provision_target['host_ip'] ?? 'Not set') ?>
             </span>
             <?php else: ?>
             <span class="badge badge-danger ml-2">
@@ -343,11 +343,11 @@ include 'includes/header.php';
                                     placeholder="Optional notes about this assignment..."></textarea>
                         </div>
 
-                        <?php if ($provision_target && isset($provision_target['target_ip'])): ?>
+                        <?php if ($provision_target && isset($provision_target['host_ip'])): ?>
                         <div class="alert alert-info mb-0">
                           <i class="fas fa-info-circle"></i> 
                           <strong>Auto-Provisioning Enabled</strong><br>
-                          Lab will be automatically provisioned on: <code><?= htmlspecialchars($provision_target['target_ip'] ?? '') ?></code>
+                          Lab will be automatically provisioned on: <code><?= htmlspecialchars($provision_target['host_ip'] ?? '') ?></code>
                         </div>
                         <?php else: ?>
                         <div class="alert alert-warning mb-0">

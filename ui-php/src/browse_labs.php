@@ -11,16 +11,16 @@ $where = $course_filter ? "WHERE c.id = $course_filter" : '';
 $labs = $db->query("SELECT c.*, 
     (SELECT COUNT(*) FROM labs WHERE course_id = c.id AND active=1) as lab_count
     FROM courses c $where AND c.active=1 ORDER BY c.name");
+
+$page_title = "Browse Labs";
+include 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Browse Labs</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-</head>
+
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
-    <?php include 'includes/sidebar.php'; ?>
+
+<?php include 'includes/navbar.php'; ?>
+<?php include 'includes/sidebar.php'; ?>
     
     <div class="content-wrapper">
         <div class="content-header"><h1>Browse Labs</h1></div>

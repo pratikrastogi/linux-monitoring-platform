@@ -18,16 +18,16 @@ $pending = $db->query("SELECT lr.*, l.lab_name, c.name as course_name
     JOIN labs l ON lr.lab_id = l.id 
     JOIN courses c ON l.course_id = c.id 
     WHERE lr.user_id=$uid AND lr.status='pending'");
+
+$page_title = "My Labs";
+include 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My Labs</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-</head>
+
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
-    <?php include 'includes/sidebar.php'; ?>
+
+<?php include 'includes/navbar.php'; ?>
+<?php include 'includes/sidebar.php'; ?>
     
     <div class="content-wrapper">
         <div class="content-header"><h1>My Labs</h1></div>

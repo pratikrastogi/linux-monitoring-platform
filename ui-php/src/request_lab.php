@@ -16,17 +16,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $lab = $db->query("SELECT l.*, c.name as course_name, c.lab_guide_content FROM labs l JOIN courses c ON l.course_id=c.id WHERE l.id=$lab_id")->fetch_assoc();
+
+$page_title = "Request Lab";
+include 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Request Lab</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-</head>
+
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
-    <?php include 'includes/sidebar.php'; ?>
+
+<?php include 'includes/navbar.php'; ?>
+<?php include 'includes/sidebar.php'; ?>
     
     <div class="content-wrapper">
         <div class="content-header"><h1>Request Lab Access</h1></div>
