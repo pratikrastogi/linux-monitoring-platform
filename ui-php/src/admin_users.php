@@ -203,7 +203,7 @@ include 'includes/header.php';
                 </td>
                 <td><?= $total_sessions ?></td>
                 <td>
-                  <button class="btn btn-xs btn-primary" data-toggle="modal" data-target="#assignLab<?= $user['id'] ?>">
+                  <button class="btn btn-xs btn-primary assign-lab-btn" data-user-id="<?= $user['id'] ?>" data-user-name="<?= htmlspecialchars($user['name'] ?? $user['email']) ?>">
                     <i class="fas fa-plus"></i> Assign Lab
                   </button>
                   <a href="admin_lab_requests.php?user=<?= $user['id'] ?>" class="btn btn-xs btn-info">
@@ -212,100 +212,100 @@ include 'includes/header.php';
                 </td>
               </tr>
 
-              <!-- Assign Lab Modal -->
-              <div class="modal fade" id="assignLab<?= $user['id'] ?>">
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header bg-primary">
-                      <h4 class="modal-title">
-                        <i class="fas fa-flask"></i> Assign Lab to <?= htmlspecialchars($user['name'] ?? $user['email']) ?>
-                      </h4>
-                      <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
-                    <form method="POST">
-                      <div class="modal-body">
-                        <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
-                        
-                        <div class="form-group">
-                          <label>Select Course <span class="text-danger">*</span></label>
-                          <select name="course_id" id="course_<?= $user['id'] ?>" class="form-control" required onchange="showLabsForCourse(<?= $user['id'] ?>)">
-                            <option value="">-- Select Course --</option>
-                            <?php 
-                            $courses_q = $conn->query("SELECT id, name FROM courses WHERE active=1 ORDER BY name");
-                            while($course = $courses_q->fetch_assoc()):
-                            ?>
-                            <option value="<?= $course['id'] ?>"><?= htmlspecialchars($course['name']) ?></option>
-                            <?php endwhile; ?>
-                          </select>
-                        </div>
-
-                        <div class="form-group">
-                          <label>Select Lab <span class="text-danger">*</span></label>
-                          <select name="lab_id" id="lab_<?= $user['id'] ?>" class="form-control" required>
-                            <option value="">-- Select a lab --</option>
-                            <?php
-                            // Pre-render all labs
-                            $all_labs_query = $conn->query("
-                              SELECT l.id, l.lab_name, l.course_id, l.duration_minutes, s.hostname 
-                              FROM labs l 
-                              LEFT JOIN servers s ON l.server_id = s.id 
-                              WHERE l.active=1 
-                              ORDER BY l.course_id, l.lab_name");
-                            
-                            $labs_by_course = [];
-                            while($lab = $all_labs_query->fetch_assoc()) {
-                              if (!isset($labs_by_course[$lab['course_id']])) {
-                                $labs_by_course[$lab['course_id']] = [];
-                              }
-                              $labs_by_course[$lab['course_id']][] = $lab;
-                            }
-                            
-                            foreach($labs_by_course as $course_id => $labs):
-                              foreach($labs as $lab):
-                            ?>
-                            <option value="<?= $lab['id'] ?>" data-course="<?= $course_id ?>" class="lab-option" style="display:none;">
-                              <?= htmlspecialchars($lab['lab_name']) ?> (<?= $lab['duration_minutes'] ?> min<?= $lab['hostname'] ? ' - ' . htmlspecialchars($lab['hostname']) : '' ?>)
-                            </option>
-                            <?php 
-                              endforeach;
-                            endforeach;
-                            ?>
-                          </select>
-                        </div>
-
-                        <div class="form-group">
-                          <label>Validity (Hours) <span class="text-danger">*</span></label>
-                          <input type="number" name="validity_hours" class="form-control" value="8" min="1" max="168" required>
-                        </div>
-
-                        <div class="form-group">
-                          <label>Admin Notes</label>
-                          <textarea name="notes" class="form-control" rows="3" placeholder="Optional notes..."></textarea>
-                        </div>
-
-                        <div class="alert alert-info mb-0">
-                          <i class="fas fa-info-circle"></i> Lab will be auto-provisioned on the server.
-                        </div>
-                      </div>
-
-                      <div class="modal-footer">
-                        <button type="submit" name="assign_lab" class="btn btn-primary">
-                          <i class="fas fa-rocket"></i> Assign Lab
-                        </button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-
               <?php endwhile; ?>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- User Statistics -->
+      <!-- SINGLE Assign Lab Modal - Reusable for all users -->
+      <div class="modal fade" id="assignLabModal" tabindex="-1" role="dialog" aria-labelledby="assignLabLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header bg-primary">
+              <h5 class="modal-title" id="assignLabLabel">
+                <i class="fas fa-flask"></i> Assign Lab to <span id="modalUserName"></span>
+              </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form method="POST" id="assignLabForm">
+              <div class="modal-body">
+                <input type="hidden" name="user_id" id="modalUserId" value="">
+                
+                <div class="form-group">
+                  <label for="courseSelect">Select Course <span class="text-danger">*</span></label>
+                  <select name="course_id" id="courseSelect" class="form-control" required onchange="showLabsForCourse()">
+                    <option value="">-- Select Course --</option>
+                    <?php 
+                    $courses_result = $conn->query("SELECT id, name FROM courses WHERE active=1 ORDER BY name");
+                    while($c = $courses_result->fetch_assoc()):
+                    ?>
+                    <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['name']) ?></option>
+                    <?php endwhile; ?>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="labSelect">Select Lab <span class="text-danger">*</span></label>
+                  <select name="lab_id" id="labSelect" class="form-control" required>
+                    <option value="">-- Select a lab --</option>
+                    <?php
+                    // Pre-render all labs
+                    $labs_query = $conn->query("
+                      SELECT l.id, l.lab_name, l.course_id, l.duration_minutes, s.hostname 
+                      FROM labs l 
+                      LEFT JOIN servers s ON l.server_id = s.id 
+                      WHERE l.active=1 
+                      ORDER BY l.course_id, l.lab_name");
+                    
+                    $labs_by_course = [];
+                    while($lab = $labs_query->fetch_assoc()) {
+                      if (!isset($labs_by_course[$lab['course_id']])) {
+                        $labs_by_course[$lab['course_id']] = [];
+                      }
+                      $labs_by_course[$lab['course_id']][] = $lab;
+                    }
+                    
+                    foreach($labs_by_course as $cid => $labs):
+                      foreach($labs as $l):
+                    ?>
+                    <option value="<?= $l['id'] ?>" data-course="<?= $cid ?>" class="lab-option" style="display:none;">
+                      <?= htmlspecialchars($l['lab_name']) ?> (<?= $l['duration_minutes'] ?> min<?= $l['hostname'] ? ' - ' . htmlspecialchars($l['hostname']) : '' ?>)
+                    </option>
+                    <?php 
+                      endforeach;
+                    endforeach;
+                    ?>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="validityHours">Validity (Hours) <span class="text-danger">*</span></label>
+                  <input type="number" name="validity_hours" id="validityHours" class="form-control" value="8" min="1" max="168" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="adminNotes">Admin Notes</label>
+                  <textarea name="notes" id="adminNotes" class="form-control" rows="3" placeholder="Optional notes..."></textarea>
+                </div>
+
+                <div class="alert alert-info mb-0">
+                  <i class="fas fa-info-circle"></i> Lab will be auto-provisioned on the server.
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="submit" name="assign_lab" class="btn btn-primary">
+                  <i class="fas fa-rocket"></i> Assign Lab
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>      <!-- User Statistics -->
       <div class="row">
         <div class="col-md-3">
           <div class="small-box bg-info">
@@ -377,24 +377,39 @@ include 'includes/header.php';
 </div>
 
 <script>
+// Handle Assign Lab button clicks
+document.querySelectorAll('.assign-lab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const userId = this.getAttribute('data-user-id');
+        const userName = this.getAttribute('data-user-name');
+        
+        // Set modal values
+        document.getElementById('modalUserId').value = userId;
+        document.getElementById('modalUserName').textContent = userName;
+        document.getElementById('courseSelect').value = '';
+        document.getElementById('labSelect').value = '';
+        document.getElementById('validityHours').value = 8;
+        document.getElementById('adminNotes').value = '';
+        
+        // Show modal
+        $('#assignLabModal').modal('show');
+    });
+});
+
 // Show/hide labs based on selected course
-function showLabsForCourse(userId) {
-    const courseId = document.getElementById('course_' + userId).value;
-    const labSelect = document.getElementById('lab_' + userId);
-    const allOptions = labSelect.querySelectorAll('option.lab-option');
+function showLabsForCourse() {
+    const courseId = document.getElementById('courseSelect').value;
+    const allOptions = document.querySelectorAll('.lab-option');
     
-    // Hide all options first
-    allOptions.forEach(opt => opt.style.display = 'none');
+    allOptions.forEach(opt => {
+        if (courseId && opt.getAttribute('data-course') === courseId) {
+            opt.style.display = 'block';
+        } else {
+            opt.style.display = 'none';
+        }
+    });
     
-    // Show only options for this course
-    if (courseId) {
-        allOptions.forEach(opt => {
-            if (opt.dataset.course === courseId) {
-                opt.style.display = 'block';
-            }
-        });
-        labSelect.value = ''; // Reset selection
-    }
+    document.getElementById('labSelect').value = '';
 }
 </script>
 
