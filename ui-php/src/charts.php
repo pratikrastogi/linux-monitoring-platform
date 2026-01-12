@@ -84,20 +84,26 @@ function loadServers() {
       const sel = document.getElementById('serverSelect');
       sel.innerHTML = '';
 
-      if (data.length === 0) {
-        alert("No servers found");
+      if (!data || data.length === 0) {
+        sel.innerHTML = '<option>No servers available</option>';
         return;
       }
 
       data.forEach(s => {
         const opt = document.createElement('option');
         opt.value = s.server_id;
-        opt.text = s.hostname;
+        opt.text = s.hostname + ' (' + s.ip_address + ')';
         sel.appendChild(opt);
       });
 
       // Load chart for first server
-      loadChart(sel.value);
+      if (data.length > 0) {
+        loadChart(data[0].server_id);
+      }
+    })
+    .catch(err => {
+      console.error('Error loading servers:', err);
+      document.getElementById('serverSelect').innerHTML = '<option>Error loading servers</option>';
     });
 }
 
@@ -109,16 +115,25 @@ function loadChart(serverId) {
     .then(res => res.json())
     .then(data => {
 
-      if (data.length === 0) {
-        console.log("No chart data");
+      if (!data || data.length === 0) {
+        console.log("No chart data for server", serverId);
+        const ctx = document.getElementById('perfChart');
+        if (ctx) {
+          ctx.getContext('2d').clearRect(0, 0, ctx.width, ctx.height);
+        }
         return;
       }
 
       const labels = data.map(x => x.collected_at);
-      const cpu = data.map(x => Number(x.cpu_usage));
-      const mem = data.map(x => Number(x.mem_usage));
+      const cpu = data.map(x => parseFloat(x.cpu_usage || 0));
+      const mem = data.map(x => parseFloat(x.mem_usage || 0));
 
-      const ctx = document.getElementById('perfChart').getContext('2d');
+      const ctx = document.getElementById('perfChart');
+      
+      if (!ctx) {
+        console.error('Chart canvas not found');
+        return;
+      }
 
       if (chart) {
         chart.destroy();
@@ -134,30 +149,41 @@ function loadChart(serverId) {
               data: cpu,
               borderColor: '#e74c3c',
               backgroundColor: 'rgba(231,76,60,0.1)',
-              tension: 0.3
+              tension: 0.3,
+              fill: true
             },
             {
               label: 'Memory Usage (%)',
               data: mem,
               borderColor: '#3498db',
               backgroundColor: 'rgba(52,152,219,0.1)',
-              tension: 0.3
+              tension: 0.3,
+              fill: true
             }
           ]
         },
         options: {
           responsive: true,
+          maintainAspectRatio: true,
           plugins: {
             legend: { position: 'top' }
           },
           scales: {
             y: {
               beginAtZero: true,
-              max: 100
+              max: 100,
+              ticks: {
+                callback: function(value) {
+                  return value + '%';
+                }
+              }
             }
           }
         }
       });
+    })
+    .catch(err => {
+      console.error('Error loading chart data:', err);
     });
 }
 
