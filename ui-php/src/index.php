@@ -202,6 +202,17 @@ function loadData() {
 }
 </script>
 
+<?php
+// =============================================
+// LABS PLATFORM WIDGETS (ADDITIVE - Phase 2)
+// Purpose: Add Labs dashboard widgets below existing content
+// Backward Compatible: Does NOT modify existing functionality
+// =============================================
+if (file_exists('widgets/lab_widgets.php')) {
+    include 'widgets/lab_widgets.php';
+}
+?>
+
 </body>
 </html>
 

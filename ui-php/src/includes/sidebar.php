@@ -92,6 +92,69 @@
         
         <?php } ?>
         
+        <!-- =============================================
+             LABS PLATFORM SECTION (Phase 2 - ADDITIVE)
+             Purpose: Add Labs platform navigation
+             Backward Compatible: Does NOT modify existing menu items
+             ============================================= -->
+        
+        <?php if ($_SESSION['role'] === 'admin'): ?>
+        <!-- Admin Labs Section -->
+        <li class="nav-header">LABS PLATFORM</li>
+        
+        <li class="nav-item">
+          <a href="courses.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'courses.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-book"></i>
+            <p>Courses</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="labs.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'labs.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-flask"></i>
+            <p>Lab Templates</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="admin_lab_requests.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_lab_requests.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-clipboard-list"></i>
+            <p>
+              Lab Requests
+              <span class="badge badge-warning right" id="pendingLabRequests">0</span>
+            </p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="provisioners.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'provisioners.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-server"></i>
+            <p>Provisioners</p>
+          </a>
+        </li>
+        
+        <?php endif; ?>
+        
+        <?php if ($_SESSION['role'] === 'user'): ?>
+        <!-- User Labs Section -->
+        <li class="nav-header">MY LEARNING</li>
+        
+        <li class="nav-item">
+          <a href="my_labs.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'my_labs.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-graduation-cap"></i>
+            <p>My Labs</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="terminal.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'terminal.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-terminal"></i>
+            <p>Lab Terminal</p>
+          </a>
+        </li>
+        
+        <?php endif; ?>
+        
         <!-- General Section -->
         <li class="nav-header">ACCOUNT</li>
         
