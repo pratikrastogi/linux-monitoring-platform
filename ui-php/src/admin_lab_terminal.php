@@ -16,7 +16,8 @@ if (!$lab_id) {
 }
 
 // Get lab details
-$lab = $db->query("SELECT l.*, s.hostname, s.ip_address, s.ssh_user, s.ssh_port, c.name as course_name
+$lab = $db->query("SELECT l.id, l.lab_name, l.course_id, l.server_id, l.duration_minutes, l.max_concurrent_users, l.active, l.provision_script_path, l.cleanup_script_path, l.lab_guide, l.guide_url,
+    s.hostname, s.ip_address, s.ssh_user, s.ssh_password, s.ssh_port, c.name as course_name
     FROM labs l
     LEFT JOIN servers s ON l.server_id = s.id
     LEFT JOIN courses c ON l.course_id = c.id
@@ -220,6 +221,7 @@ function initializeTerminal() {
     const labName = "<?= htmlspecialchars($lab['lab_name']) ?>";
     const sshUser = "<?= htmlspecialchars($lab['ssh_user'] ?? 'root') ?>";
     const sshPassword = "<?= htmlspecialchars($lab['ssh_password'] ?? '') ?>";
+    const sshPort = <?= $lab['ssh_port'] ?? 22 ?>;
     
     if (!serverId) {
         term.write('\r\n❌ No server assigned to this lab\r\n');
