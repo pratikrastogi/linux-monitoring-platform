@@ -182,7 +182,7 @@ if (isset($_SESSION['user'])) {
         </a>
       </p>
       <p class="mb-0">
-        <a href="register_new.php" class="text-center">
+        <a href="register.php" class="text-center">
           <i class="fas fa-user-plus"></i> Register a new account
         </a>
       </p>
