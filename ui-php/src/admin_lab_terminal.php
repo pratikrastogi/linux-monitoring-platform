@@ -16,7 +16,7 @@ if (!$lab_id) {
 }
 
 // Get lab details
-$lab = $db->query("SELECT l.id, l.lab_name, l.course_id, l.server_id, l.duration_minutes, l.max_concurrent_users, l.active, l.provision_script_path, l.cleanup_script_path, l.lab_guide, l.guide_url,
+$lab = $db->query("SELECT l.id, l.lab_name, l.course_id, l.server_id, l.duration_minutes, l.max_concurrent_users, l.active, l.provision_script_path, l.cleanup_script_path,
     s.hostname, s.ip_address, s.ssh_user, s.ssh_password, s.ssh_port, c.name as course_name
     FROM labs l
     LEFT JOIN servers s ON l.server_id = s.id

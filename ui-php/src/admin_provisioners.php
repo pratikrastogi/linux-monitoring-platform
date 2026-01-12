@@ -229,7 +229,7 @@ include 'includes/header.php';
                   <?php endif; ?>
                 </td>
                 <td>
-                  <button class="btn btn-sm btn-success" onclick="openTerminal(<?= $server['id'] ?>, '<?= htmlspecialchars($server['hostname']) ?>')" title="Open terminal access">
+                  <button class="btn btn-sm btn-success" onclick="openTerminal(<?= $server['id'] ?>, '<?= htmlspecialchars($server['hostname']) ?>', '<?= htmlspecialchars($server['ssh_user']) ?>', '<?= htmlspecialchars($server['ssh_password']) ?>')" title="Open terminal access">
                     <i class="fas fa-terminal"></i> Connect
                   </button>
                   <a href="?edit=<?= $server['id'] ?>" class="btn btn-sm btn-info">
@@ -268,7 +268,7 @@ include 'includes/header.php';
 
 <script>
     // Terminal access function for admin - SECURE (no passwords in URL)
-    function openTerminal(serverId, hostname) {
+    function openTerminal(serverId, hostname, sshUser, sshPassword) {
         const modal = document.createElement('div');
         modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; flex-direction: column;';
         modal.innerHTML = `
@@ -302,14 +302,14 @@ include 'includes/header.php';
                 window.addEventListener('resize', () => fitAddon.fit());
                 
                 // SECURE: server_id and user in URL, password sent in JSON message
-                let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in/terminal?server_id=' + serverId + '&user=' + encodeURIComponent('<?= htmlspecialchars($server['ssh_user']) ?>'));
+                let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in/terminal?server_id=' + serverId + '&user=' + encodeURIComponent(sshUser));
                 
                 let passwordSent = false;
                 ws.onopen = () => {
                     term.write('\r\n🔗 Connecting to ' + hostname + '...\r\n');
                     // Send password as JSON
                     if (!passwordSent) {
-                        ws.send(JSON.stringify({ password: '<?= htmlspecialchars($server['ssh_password']) ?>' }));
+                        ws.send(JSON.stringify({ password: sshPassword }));
                         passwordSent = true;
                     }
                 };
