@@ -14,6 +14,9 @@ db = mysql.connector.connect(
     autocommit=True
 )
 
+# ----------------------------------------------------------
+# SSH EXECUTION HELPER
+# ----------------------------------------------------------
 def ssh_exec(host, ssh_user, ssh_pass, command):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -21,7 +24,7 @@ def ssh_exec(host, ssh_user, ssh_pass, command):
         hostname=host,
         username=ssh_user,
         password=ssh_pass,
-        timeout=10,
+        timeout=15,
         allow_agent=False,
         look_for_keys=False
     )
@@ -33,71 +36,74 @@ def ssh_exec(host, ssh_user, ssh_pass, command):
         raise RuntimeError(err)
     return out
 
-# ==========================================================
-# EXISTING LOGIC (NEW USER PROVISIONING) - UNTOUCHED
-# ==========================================================
-def provision_new_user(target, session):
-    host = target["host_ip"]
-    ssh_user = target["ssh_user"]
-    ssh_pass = target["ssh_password"]
 
-    username = session["username"]
-    duration = int(
-        (session["access_expiry"] - session["access_start"]).total_seconds() / 60
-    )
+# ----------------------------------------------------------
+# NEW LAB PROVISIONING (REQUESTED → ACTIVE)
+# ----------------------------------------------------------
+def provision_new_lab(session):
+    host = session["ip_address"]
+    ssh_user = session["ssh_user"]
+    ssh_pass = session["ssh_password"]
 
-    safe_user = shlex.quote(username)
-    cmd = f"sudo /opt/lab/create_lab_user.sh {safe_user} {duration}"
+    namespace = session["namespace"]
+    script = session["provision_script_path"]
+
+    if not script:
+        raise RuntimeError("Provision script path missing")
+
+    safe_ns = shlex.quote(namespace)
+    cmd = f"sudo {script} {safe_ns}"
 
     return ssh_exec(host, ssh_user, ssh_pass, cmd)
 
-# ==========================================================
-# NEW LOGIC (EXTENSION APPROVED USERS)
-# ==========================================================
-def provision_extension(target, session):
-    host = target["host_ip"]
-    ssh_user = target["ssh_user"]
-    ssh_pass = target["ssh_password"]
 
-    username = session["username"]
+# ----------------------------------------------------------
+# EXTENSION HANDLING (PAID EXTENSIONS – FUTURE USE)
+# ----------------------------------------------------------
+def provision_extension(session):
+    host = session["ip_address"]
+    ssh_user = session["ssh_user"]
+    ssh_pass = session["ssh_password"]
 
-    # remaining / extended minutes
+    namespace = session["namespace"]
+
     now = datetime.utcnow()
     expiry = session["access_expiry"]
     minutes = int((expiry - now).total_seconds() / 60)
     if minutes < 1:
         minutes = 1
 
-    safe_user = shlex.quote(username)
+    safe_ns = shlex.quote(namespace)
 
-    # SAME script – now it also unlocks + resets password + issues token
-    cmd = f"sudo /opt/lab/issue_k8s_token.sh {safe_user} {minutes}"
+    # example extension script (optional future use)
+    cmd = f"sudo /opt/lab/extend_lab.sh {safe_ns} {minutes}"
 
     return ssh_exec(host, ssh_user, ssh_pass, cmd)
 
-# ==========================================================
-# MAIN LOOP
-# ==========================================================
+
+# ----------------------------------------------------------
+# MAIN WORKER LOOP
+# ----------------------------------------------------------
 while True:
     try:
         cur = db.cursor(dictionary=True)
 
-        # 1️⃣ Provision target
-        cur.execute("SELECT * FROM provision_target WHERE id=1")
-        target = cur.fetchone()
-        if not target:
-            cur.close()
-            time.sleep(POLL_INTERVAL)
-            continue
-
         # ==================================================
-        # CASE 1: NEW USER (REQUESTED)
+        # CASE 1: NEW LAB SESSION (REQUESTED)
         # ==================================================
         cur.execute("""
-            SELECT *
-            FROM lab_sessions
-            WHERE status='REQUESTED'
-            ORDER BY id
+            SELECT 
+                ls.*,
+                l.provision_script_path,
+                s.ip_address,
+                s.ssh_user,
+                s.ssh_password,
+                s.ssh_port
+            FROM lab_sessions ls
+            JOIN labs l ON ls.lab_id = l.id
+            JOIN servers s ON l.server_id = s.id
+            WHERE ls.status = 'REQUESTED'
+            ORDER BY ls.id
             LIMIT 1
             FOR UPDATE
         """)
@@ -106,34 +112,46 @@ while True:
         if session:
             session_id = session["id"]
             try:
-                provision_new_user(target, session)
+                print(f"[INFO] Provisioning lab session {session_id}")
+                provision_new_lab(session)
+
                 cur.execute("""
                     UPDATE lab_sessions
-                    SET status='ACTIVE'
+                    SET status='ACTIVE', provisioned=1
                     WHERE id=%s
                 """, (session_id,))
+
+                print(f"[SUCCESS] Lab session {session_id} is ACTIVE")
+
             except Exception as e:
                 cur.execute("""
                     UPDATE lab_sessions
                     SET status='FAILED'
                     WHERE id=%s
                 """, (session_id,))
-                print(f"[ERROR] Provision failed for {session['username']}: {e}")
+
+                print(f"[ERROR] Provision failed for session {session_id}: {e}")
 
             cur.close()
             time.sleep(POLL_INTERVAL)
             continue
 
         # ==================================================
-        # CASE 2: EXTENSION APPROVED (EXPIRED → ACTIVE)
+        # CASE 2: EXTENSION (OPTIONAL / FUTURE)
         # ==================================================
         cur.execute("""
-            SELECT *
-            FROM lab_sessions
-            WHERE status='ACTIVE'
-              AND plan='PAID'
-              AND provisioned IS NULL
-            ORDER BY id
+            SELECT 
+                ls.*,
+                s.ip_address,
+                s.ssh_user,
+                s.ssh_password
+            FROM lab_sessions ls
+            JOIN labs l ON ls.lab_id = l.id
+            JOIN servers s ON l.server_id = s.id
+            WHERE ls.status='ACTIVE'
+              AND ls.plan='PAID'
+              AND ls.provisioned = 0
+            ORDER BY ls.id
             LIMIT 1
             FOR UPDATE
         """)
@@ -142,14 +160,19 @@ while True:
         if session:
             session_id = session["id"]
             try:
-                provision_extension(target, session)
+                print(f"[INFO] Processing extension for session {session_id}")
+                provision_extension(session)
+
                 cur.execute("""
                     UPDATE lab_sessions
                     SET provisioned=1
                     WHERE id=%s
                 """, (session_id,))
+
+                print(f"[SUCCESS] Extension applied for session {session_id}")
+
             except Exception as e:
-                print(f"[ERROR] Extension provision failed for {session['username']}: {e}")
+                print(f"[ERROR] Extension failed for session {session_id}: {e}")
 
             cur.close()
             time.sleep(POLL_INTERVAL)
@@ -157,8 +180,8 @@ while True:
 
         cur.close()
 
-    except Exception as main_err:
-        print("[FATAL] Worker error:", main_err)
+    except Exception as fatal:
+        print("[FATAL] Worker crashed:", fatal)
 
     time.sleep(POLL_INTERVAL)
 
