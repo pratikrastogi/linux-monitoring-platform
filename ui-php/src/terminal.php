@@ -73,6 +73,10 @@ function toIST($utc) {
 include 'includes/header.php';
 ?>
 
+<!-- xterm.js for terminal emulator -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css">
+<script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
+
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
 
@@ -189,7 +193,7 @@ include 'includes/header.php';
             <div class="card-header">
               <h3 class="card-title"><i class="fas fa-terminal"></i> Interactive Terminal</h3>
               <div class="card-tools">
-                <button class="btn btn-sm btn-primary" onclick="connect()">
+                <button class="btn btn-sm btn-primary" onclick="connectTerminal()">
                   <i class="fas fa-plug"></i> Connect
                 </button>
               </div>
@@ -253,17 +257,36 @@ include 'includes/header.php';
       </div>
 
       <script>
-        let term, ws;
+        let term = null;
+        let ws = null;
 
         function connectTerminal() {
+          // Prevent multiple connections
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            console.log('Already connected');
+            return;
+          }
+
           const username = "<?= $user ?>";
           const password = "k8s" + username + "@123!";
 
+          // Initialize terminal if not already done
           if (!term) {
-            term = new Terminal({ cursorBlink: true });
+            term = new Terminal({ 
+              cursorBlink: true,
+              fontSize: 14,
+              fontFamily: 'Courier New, monospace',
+              theme: {
+                background: '#000000',
+                foreground: '#00ff00'
+              }
+            });
             term.open(document.getElementById("terminal"));
           }
 
+          // Connect WebSocket
+          term.write("🔌 Connecting to terminal...\r\n");
+          
           ws = new WebSocket(
             "wss://kubearena.pratikrastogi.co.in/terminal?" +
             "server_id=<?= $server_id ?>&user=<?= $user ?>"
@@ -271,15 +294,28 @@ include 'includes/header.php';
 
           ws.onopen = () => {
             ws.send(JSON.stringify({ password }));
-            term.write("🔐 Auto authenticating...\r\n");
+            term.write("🔐 Authenticating...\r\n");
           };
 
           ws.onmessage = e => term.write(e.data);
-          ws.onclose = () => { term.write("\r\n❌ Connection closed\r\n"); ws = null; };
-          term.onData(d => ws && ws.send(d));
+          
+          ws.onerror = (error) => {
+            term.write("\r\n❌ Connection error. Please try again.\r\n");
+            console.error('WebSocket error:', error);
+          };
+          
+          ws.onclose = () => { 
+            term.write("\r\n❌ Connection closed\r\n"); 
+            ws = null; 
+          };
+          
+          term.onData(d => ws && ws.readyState === WebSocket.OPEN && ws.send(d));
         }
 
-        connectTerminal();
+        // Auto-connect on page load
+        window.addEventListener('load', function() {
+          connectTerminal();
+        });
       </script>
 
 <?php elseif ($lab['status'] === 'EXPIRED'): ?>
