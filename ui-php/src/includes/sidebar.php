@@ -104,7 +104,7 @@
         
         <li class="nav-item">
           <a href="courses.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'courses.php' ? 'active' : ''; ?>">
-            <i class="nav-icon fas fa-book"></i>
+            <i class="nav-icon fas fa-graduation-cap"></i>
             <p>Courses</p>
           </a>
         </li>
@@ -118,7 +118,7 @@
         
         <li class="nav-item">
           <a href="admin_lab_requests.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_lab_requests.php' ? 'active' : ''; ?>">
-            <i class="nav-icon fas fa-clipboard-list"></i>
+            <i class="nav-icon fas fa-clipboard-check"></i>
             <p>
               Lab Requests
               <span class="badge badge-warning right" id="pendingLabRequests">0</span>
@@ -133,6 +133,13 @@
           </a>
         </li>
         
+        <li class="nav-item">
+          <a href="admin_users.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_users.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-users-cog"></i>
+            <p>User Management</p>
+          </a>
+        </li>
+        
         <?php endif; ?>
         
         <?php if ($_SESSION['role'] === 'user'): ?>
@@ -140,9 +147,16 @@
         <li class="nav-header">MY LEARNING</li>
         
         <li class="nav-item">
-          <a href="my_labs.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'my_labs.php' ? 'active' : ''; ?>">
-            <i class="nav-icon fas fa-graduation-cap"></i>
-            <p>My Labs</p>
+          <a href="browse_labs.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'browse_labs.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-search"></i>
+            <p>Browse Labs</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="my_active_labs.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'my_active_labs.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-laptop-code"></i>
+            <p>My Active Labs</p>
           </a>
         </li>
         
@@ -150,6 +164,20 @@
           <a href="terminal.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'terminal.php' ? 'active' : ''; ?>">
             <i class="nav-icon fas fa-terminal"></i>
             <p>Lab Terminal</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="profile.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-user"></i>
+            <p>My Profile</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="support.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'support.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-life-ring"></i>
+            <p>Support</p>
           </a>
         </li>
         
