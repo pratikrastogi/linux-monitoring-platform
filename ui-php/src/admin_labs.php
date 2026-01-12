@@ -19,44 +19,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($_POST['action'] === 'create' || $_POST['action'] === 'update') {
             $id = $_POST['id'] ?? null;
             $course_id = (int)$_POST['course_id'];
-            $lab_name = $_POST['lab_name'];
-            $bastion_host = $_POST['bastion_host'];
-            $bastion_user = $_POST['bastion_user'];
-            $bastion_password = $_POST['bastion_password'];
-            $provision_script_path = $_POST['provision_script_path'];
-            $cleanup_script_path = $_POST['cleanup_script_path'];
+            $lab_name = $db->real_escape_string($_POST['lab_name']);
+            $bastion_host = $db->real_escape_string($_POST['bastion_host']);
+            $bastion_user = $db->real_escape_string($_POST['bastion_user']);
+            $bastion_password = $db->real_escape_string($_POST['bastion_password']);
+            $provision_script_path = $db->real_escape_string($_POST['provision_script_path']);
+            $cleanup_script_path = $db->real_escape_string($_POST['cleanup_script_path']);
             $duration_minutes = (int)$_POST['duration_minutes'];
             $max_concurrent_users = (int)$_POST['max_concurrent_users'];
             $active = isset($_POST['active']) ? 1 : 0;
             
             if ($id) {
-                // Update
-                $stmt = $db->prepare("UPDATE labs SET course_id=?, lab_name=?, bastion_host=?, bastion_user=?, bastion_password=?, provision_script_path=?, cleanup_script_path=?, duration_minutes=?, max_concurrent_users=?, active=? WHERE id=?");
-                $stmt->bind_param("issssssiiii", $course_id, $lab_name, $bastion_host, $bastion_user, $bastion_password, $provision_script_path, $cleanup_script_path, $duration_minutes, $max_concurrent_users, $active, $id);
+                $db->query("UPDATE labs SET course_id=$course_id, lab_name='$lab_name', bastion_host='$bastion_host', 
+                           bastion_user='$bastion_user', bastion_password='$bastion_password', 
+                           provision_script_path='$provision_script_path', cleanup_script_path='$cleanup_script_path',
+                           duration_minutes=$duration_minutes, max_concurrent_users=$max_concurrent_users, 
+                           active=$active WHERE id=$id");
                 $message = "Lab updated successfully!";
             } else {
-                // Create
-                $stmt = $db->prepare("INSERT INTO labs (course_id, lab_name, bastion_host, bastion_user, bastion_password, provision_script_path, cleanup_script_path, duration_minutes, max_concurrent_users, active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param("issssssiii", $course_id, $lab_name, $bastion_host, $bastion_user, $bastion_password, $provision_script_path, $cleanup_script_path, $duration_minutes, $max_concurrent_users, $active);
+                $db->query("INSERT INTO labs (course_id, lab_name, bastion_host, bastion_user, bastion_password, 
+                           provision_script_path, cleanup_script_path, duration_minutes, max_concurrent_users, active) 
+                           VALUES ($course_id, '$lab_name', '$bastion_host', '$bastion_user', '$bastion_password', 
+                           '$provision_script_path', '$cleanup_script_path', $duration_minutes, $max_concurrent_users, $active)");
                 $message = "Lab created successfully!";
             }
-            
-            if ($stmt->execute()) {
-                // Success
-            } else {
-                $error = "Error: " . $stmt->error;
-            }
-            $stmt->close();
         } elseif ($_POST['action'] === 'delete') {
-            $id = $_POST['id'];
-            $stmt = $db->prepare("DELETE FROM labs WHERE id=?");
-            $stmt->bind_param("i", $id);
-            if ($stmt->execute()) {
-                $message = "Lab deleted successfully!";
-            } else {
-                $error = "Error deleting lab: " . $stmt->error;
-            }
-            $stmt->close();
+            $id = (int)$_POST['id'];
+            $db->query("DELETE FROM labs WHERE id=$id");
+            $message = "Lab deleted successfully!";
         }
     }
 }
@@ -68,9 +58,6 @@ if (isset($_GET['edit'])) {
     $result = $db->query("SELECT * FROM labs WHERE id = $edit_id");
     $edit_lab = $result->fetch_assoc();
 }
-
-// Get all courses for dropdown
-$courses = $db->query("SELECT id, name FROM courses WHERE active=1 ORDER BY name");
 
 // Get all labs with course names
 $labs = $db->query("SELECT l.*, c.name as course_name, 
@@ -84,45 +71,94 @@ $labs = $db->query("SELECT l.*, c.name as course_name,
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Labs</title>
+    <title>Lab Management | KubeArena</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    
+    <!-- AdminLTE CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini dark-mode">
 <div class="wrapper">
+    
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-dark navbar-lightblue">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            </li>
+        </ul>
+        
+        <div class="navbar-nav ml-auto">
+            <div class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#">
+                    <i class="fas fa-user-circle"></i> <?= htmlspecialchars($_SESSION['user']) ?>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a href="profile.php" class="dropdown-item"><i class="fas fa-user"></i> Profile</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Sidebar -->
     <?php include 'includes/sidebar.php'; ?>
     
+    <!-- Content Wrapper -->
     <div class="content-wrapper">
+        <!-- Content Header -->
         <div class="content-header">
             <div class="container-fluid">
-                <h1 class="m-0">Lab Management</h1>
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0"><i class="fas fa-flask"></i> Lab Management</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+                            <li class="breadcrumb-item active">Labs</li>
+                        </ol>
+                    </div>
+                </div>
             </div>
         </div>
         
+        <!-- Main Content -->
         <div class="content">
             <div class="container-fluid">
+                
                 <?php if ($message): ?>
                     <div class="alert alert-success alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h5><i class="icon fas fa-check"></i> Success!</h5>
                         <?= htmlspecialchars($message) ?>
                     </div>
                 <?php endif; ?>
+                
                 <?php if ($error): ?>
                     <div class="alert alert-danger alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <h5><i class="icon fas fa-ban"></i> Error!</h5>
                         <?= htmlspecialchars($error) ?>
                     </div>
                 <?php endif; ?>
                 
-                <!-- Lab Form -->
-                <div class="card">
+                <!-- Lab Form Card -->
+                <div class="card card-primary">
                     <div class="card-header">
                         <h3 class="card-title">
+                            <i class="fas fa-<?= $edit_lab ? 'edit' : 'plus' ?>"></i>
                             <?= $edit_lab ? 'Edit Lab' : 'Create New Lab' ?>
                         </h3>
                     </div>
-                    <div class="card-body">
-                        <form method="POST">
+                    <form method="POST">
+                        <div class="card-body">
                             <input type="hidden" name="action" value="<?= $edit_lab ? 'update' : 'create' ?>">
                             <?php if ($edit_lab): ?>
                                 <input type="hidden" name="id" value="<?= $edit_lab['id'] ?>">
@@ -131,12 +167,12 @@ $labs = $db->query("SELECT l.*, c.name as course_name,
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Course *</label>
+                                        <label><i class="fas fa-book"></i> Course *</label>
                                         <select name="course_id" class="form-control" required>
-                                            <option value="">Select Course</option>
+                                            <option value="">-- Select Course --</option>
                                             <?php 
-                                            $courses_copy = $db->query("SELECT id, name FROM courses WHERE active=1 ORDER BY name");
-                                            while ($c = $courses_copy->fetch_assoc()): 
+                                            $courses = $db->query("SELECT id, name FROM courses WHERE active=1 ORDER BY name");
+                                            while ($c = $courses->fetch_assoc()): 
                                             ?>
                                                 <option value="<?= $c['id'] ?>" 
                                                     <?= ($edit_lab && $edit_lab['course_id'] == $c['id']) ? 'selected' : '' ?>>
@@ -148,119 +184,123 @@ $labs = $db->query("SELECT l.*, c.name as course_name,
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Lab Name *</label>
-                                        <input type="text" name="lab_name" class="form-control" required 
-                                               value="<?= htmlspecialchars($edit_lab['lab_name'] ?? '') ?>"
-                                               placeholder="e.g., Lab 1 - Introduction">
+                                        <label><i class="fas fa-flask"></i> Lab Name *</label>
+                                        <input type="text" name="lab_name" class="form-control" 
+                                               value="<?= $edit_lab ? htmlspecialchars($edit_lab['lab_name']) : '' ?>" required>
                                     </div>
                                 </div>
                             </div>
                             
-                            <h5 class="mt-3">Bastion Server Configuration</h5>
                             <hr>
+                            <h5><i class="fas fa-server"></i> Bastion Server Configuration</h5>
                             
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Bastion Host (IP/Hostname) *</label>
-                                        <input type="text" name="bastion_host" class="form-control" required 
-                                               value="<?= htmlspecialchars($edit_lab['bastion_host'] ?? '192.168.1.46') ?>"
-                                               placeholder="192.168.1.46 or master.local">
+                                        <label>Host (IP/Hostname) *</label>
+                                        <input type="text" name="bastion_host" class="form-control" placeholder="192.168.1.46"
+                                               value="<?= $edit_lab ? htmlspecialchars($edit_lab['bastion_host']) : '' ?>" required>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Username *</label>
-                                        <input type="text" name="bastion_user" class="form-control" required 
-                                               value="<?= htmlspecialchars($edit_lab['bastion_user'] ?? 'root') ?>"
-                                               placeholder="root">
+                                        <input type="text" name="bastion_user" class="form-control"
+                                               value="<?= $edit_lab ? htmlspecialchars($edit_lab['bastion_user']) : '' ?>" required>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Password *</label>
-                                        <input type="password" name="bastion_password" class="form-control" required 
-                                               value="<?= htmlspecialchars($edit_lab['bastion_password'] ?? '') ?>"
-                                               placeholder="Enter SSH password">
+                                        <input type="password" name="bastion_password" class="form-control"
+                                               value="<?= $edit_lab ? htmlspecialchars($edit_lab['bastion_password']) : '' ?>" required>
                                     </div>
                                 </div>
                             </div>
                             
-                            <h5 class="mt-3">Provisioning Scripts</h5>
                             <hr>
+                            <h5><i class="fas fa-cogs"></i> Provisioning Scripts</h5>
                             
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Provision Script Path *</label>
-                                        <input type="text" name="provision_script_path" class="form-control" required 
-                                               value="<?= htmlspecialchars($edit_lab['provision_script_path'] ?? '/opt/lab/create_lab_user.sh') ?>"
-                                               placeholder="/opt/lab/create_lab_user.sh">
-                                        <small class="form-text text-muted">Script to create lab environment for user</small>
+                                        <input type="text" name="provision_script_path" class="form-control" 
+                                               placeholder="/opt/lab/create_lab_user.sh"
+                                               value="<?= $edit_lab ? htmlspecialchars($edit_lab['provision_script_path']) : '' ?>" required>
+                                        <small class="text-muted">Script to create lab environment</small>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Cleanup Script Path *</label>
-                                        <input type="text" name="cleanup_script_path" class="form-control" required 
-                                               value="<?= htmlspecialchars($edit_lab['cleanup_script_path'] ?? '/opt/lab/cleanup_lab_user.sh') ?>"
-                                               placeholder="/opt/lab/cleanup_lab_user.sh">
-                                        <small class="form-text text-muted">Script to cleanup after lab expires</small>
+                                        <input type="text" name="cleanup_script_path" class="form-control"
+                                               placeholder="/opt/lab/cleanup_lab_user.sh"
+                                               value="<?= $edit_lab ? htmlspecialchars($edit_lab['cleanup_script_path']) : '' ?>" required>
+                                        <small class="text-muted">Script to cleanup when lab expires</small>
                                     </div>
                                 </div>
                             </div>
                             
+                            <hr>
+                            <h5><i class="fas fa-sliders-h"></i> Lab Settings</h5>
+                            
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Duration (minutes) *</label>
-                                        <input type="number" name="duration_minutes" class="form-control" required 
-                                               value="<?= $edit_lab['duration_minutes'] ?? 60 ?>" min="1" max="240">
+                                        <label><i class="fas fa-clock"></i> Duration (minutes) *</label>
+                                        <input type="number" name="duration_minutes" class="form-control" min="10" max="1440"
+                                               value="<?= $edit_lab ? $edit_lab['duration_minutes'] : 60 ?>" required>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label>Max Concurrent Users</label>
-                                        <input type="number" name="max_concurrent_users" class="form-control" 
-                                               value="<?= $edit_lab['max_concurrent_users'] ?? 10 ?>" min="1" max="100">
+                                        <label><i class="fas fa-users"></i> Max Concurrent Users *</label>
+                                        <input type="number" name="max_concurrent_users" class="form-control" min="1" max="100"
+                                               value="<?= $edit_lab ? $edit_lab['max_concurrent_users'] : 10 ?>" required>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>&nbsp;</label>
                                         <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" name="active" class="custom-control-input" id="active" 
-                                                   <?= ($edit_lab['active'] ?? 1) ? 'checked' : '' ?>>
-                                            <label class="custom-control-label" for="active">Active (visible to users)</label>
+                                            <input type="checkbox" class="custom-control-input" id="active" name="active"
+                                                   <?= (!$edit_lab || $edit_lab['active']) ? 'checked' : '' ?>>
+                                            <label class="custom-control-label" for="active">
+                                                <i class="fas fa-check"></i> Active (visible to users)
+                                            </label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
+                        </div>
+                        
+                        <div class="card-footer">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i> <?= $edit_lab ? 'Update Lab' : 'Create Lab' ?>
                             </button>
                             <?php if ($edit_lab): ?>
-                                <a href="admin_labs.php" class="btn btn-secondary">Cancel</a>
+                                <a href="admin_labs.php" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Cancel
+                                </a>
                             <?php endif; ?>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
                 
-                <!-- Labs List -->
+                <!-- Labs Table -->
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Existing Labs</h3>
+                        <h3 class="card-title"><i class="fas fa-list"></i> Available Labs</h3>
                     </div>
                     <div class="card-body table-responsive p-0">
-                        <table class="table table-striped">
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Course</th>
                                     <th>Lab Name</th>
-                                    <th>Bastion Host</th>
+                                    <th>Course</th>
                                     <th>Duration</th>
+                                    <th>Max Users</th>
                                     <th>Active Sessions</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -268,45 +308,65 @@ $labs = $db->query("SELECT l.*, c.name as course_name,
                             </thead>
                             <tbody>
                                 <?php while ($lab = $labs->fetch_assoc()): ?>
-                                    <tr>
-                                        <td><?= $lab['id'] ?></td>
-                                        <td><span class="badge badge-primary"><?= htmlspecialchars($lab['course_name']) ?></span></td>
-                                        <td><strong><?= htmlspecialchars($lab['lab_name']) ?></strong></td>
-                                        <td><?= htmlspecialchars($lab['bastion_user']) ?>@<?= htmlspecialchars($lab['bastion_host']) ?></td>
-                                        <td><?= $lab['duration_minutes'] ?> min</td>
-                                        <td><span class="badge badge-info"><?= $lab['active_sessions'] ?></span></td>
-                                        <td>
-                                            <?php if ($lab['active']): ?>
-                                                <span class="badge badge-success">Active</span>
-                                            <?php else: ?>
-                                                <span class="badge badge-secondary">Inactive</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>
-                                            <a href="?edit=<?= $lab['id'] ?>" class="btn btn-sm btn-primary">
-                                                <i class="fas fa-edit"></i> Edit
-                                            </a>
-                                            <form method="POST" style="display:inline;" onsubmit="return confirm('Delete this lab?')">
-                                                <input type="hidden" name="action" value="delete">
-                                                <input type="hidden" name="id" value="<?= $lab['id'] ?>">
-                                                <button type="submit" class="btn btn-sm btn-danger">
-                                                    <i class="fas fa-trash"></i> Delete
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td><strong><?= htmlspecialchars($lab['lab_name']) ?></strong></td>
+                                    <td><span class="badge badge-info"><?= htmlspecialchars($lab['course_name'] ?? 'N/A') ?></span></td>
+                                    <td><span class="badge badge-secondary"><?= $lab['duration_minutes'] ?> min</span></td>
+                                    <td><?= $lab['max_concurrent_users'] ?></td>
+                                    <td><span class="badge badge-success"><?= $lab['active_sessions'] ?></span></td>
+                                    <td>
+                                        <?php if ($lab['active']): ?>
+                                            <span class="badge badge-success"><i class="fas fa-check-circle"></i> Active</span>
+                                        <?php else: ?>
+                                            <span class="badge badge-secondary"><i class="fas fa-ban"></i> Inactive</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <a href="?edit=<?= $lab['id'] ?>" class="btn btn-sm btn-info">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <form method="POST" style="display:inline;">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="id" value="<?= $lab['id'] ?>">
+                                            <button type="submit" class="btn btn-sm btn-danger" 
+                                                    onclick="return confirm('Delete this lab?')">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
                                 <?php endwhile; ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
+                
             </div>
         </div>
     </div>
+    
+    <!-- Footer -->
+    <footer class="main-footer">
+        <strong>KubeArena</strong> Learning Platform &copy; 2026
+        <div class="float-right d-none d-sm-inline-block">
+            <b>Version</b> 2.0
+        </div>
+    </footer>
 </div>
 
+<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- AdminLTE -->
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('[data-widget="pushmenu"]').PushMenu();
+    });
+</script>
 </body>
 </html>

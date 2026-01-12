@@ -50,10 +50,10 @@ $user_q = $conn->query("SELECT * FROM users WHERE id=$uid");
 $user = $user_q->fetch_assoc();
 
 // Get stats
-$completed_q = $conn->query("SELECT COUNT(*) as cnt FROM lab_progress WHERE user_id=$uid AND status='completed'");
+$completed_q = $conn->query("SELECT COUNT(*) as cnt FROM lab_sessions WHERE user_id=$uid AND status='ACTIVE' AND access_expiry > NOW()");
 $completed = $completed_q->fetch_assoc()['cnt'];
 
-$courses_q = $conn->query("SELECT COUNT(DISTINCT lt.course_id) as cnt FROM lab_progress lp JOIN lab_templates lt ON lp.lab_template_id=lt.id WHERE lp.user_id=$uid");
+$courses_q = $conn->query("SELECT COUNT(DISTINCT l.course_id) as cnt FROM lab_sessions ls JOIN labs l ON ls.lab_id=l.id WHERE ls.user_id=$uid");
 $courses_enrolled = $courses_q->fetch_assoc()['cnt'];
 
 include 'includes/header.php';

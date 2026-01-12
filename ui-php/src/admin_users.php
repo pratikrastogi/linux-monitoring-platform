@@ -12,17 +12,22 @@ if ($conn->connect_error) die("DB Error");
 // Handle direct lab assignment
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_lab'])) {
     $user_id = (int)$_POST['user_id'];
-    $lab_type = $conn->real_escape_string($_POST['lab_type']);
+    $lab_id = (int)$_POST['lab_id'];
     $validity_hours = (int)$_POST['validity_hours'];
     $notes = $conn->real_escape_string($_POST['notes']);
     
+    // Get user info
+    $user_info = $conn->query("SELECT email FROM users WHERE id=$user_id")->fetch_assoc();
+    $username = $user_info['email'];
+    
     // Calculate expiry
-    $expires_at = date('Y-m-d H:i:s', strtotime("+{$validity_hours} hours"));
+    $access_expiry = date('Y-m-d H:i:s', time() + ($validity_hours * 3600));
+    $session_token = bin2hex(random_bytes(16));
     
     // Create lab session
     $conn->query("INSERT INTO lab_sessions 
-                  (user_id, lab_type, pod_name, status, created_at, expires_at, admin_notes)
-                  VALUES ($user_id, '$lab_type', 'pending-provision', 'REQUESTED', NOW(), '$expires_at', '$notes')");
+                  (user_id, username, lab_id, namespace, access_start, access_expiry, status, session_token, plan, provisioned, created_at, updated_at)
+                  VALUES ($user_id, '$username', $lab_id, 'pending', NOW(), '$access_expiry', 'ACTIVE', '$session_token', 'standard', 0, NOW(), NOW())");
     
     $session_id = $conn->insert_id;
     
@@ -189,9 +194,9 @@ include 'includes/header.php';
               <i class="fas fa-save"></i> Update Provision Target
             </button>
 
-            <?php if ($provision_target): ?>
+            <?php if ($provision_target && isset($provision_target['target_ip'])): ?>
             <span class="badge badge-success ml-2">
-              <i class="fas fa-check"></i> Configured: <?= htmlspecialchars($provision_target['target_ip']) ?>
+              <i class="fas fa-check"></i> Configured: <?= htmlspecialchars($provision_target['target_ip'] ?? 'Not set') ?>
             </span>
             <?php else: ?>
             <span class="badge badge-danger ml-2">
@@ -238,7 +243,7 @@ include 'includes/header.php';
                 $time_left = '';
                 $time_class = 'muted';
                 if ($active_lab) {
-                    $remaining = strtotime($active_lab['expires_at']) - time();
+                    $remaining = strtotime($active_lab['access_expiry']) - time();
                     if ($remaining > 0) {
                         $hours = floor($remaining / 3600);
                         $mins = floor(($remaining % 3600) / 60);
@@ -269,9 +274,9 @@ include 'includes/header.php';
                 <td>
                   <?php if ($active_lab): ?>
                   <span class="badge badge-success">
-                    <?= htmlspecialchars($active_lab['lab_type'] ?? 'Active') ?>
+                    Lab Active
                   </span><br>
-                  <small>Pod: <?= htmlspecialchars($active_lab['pod_name']) ?></small>
+                  <small>ID: <?= htmlspecialchars($active_lab['id']) ?></small>
                   <?php else: ?>
                   <span class="text-muted">No active lab</span>
                   <?php endif; ?>
@@ -281,7 +286,7 @@ include 'includes/header.php';
                   <span class="text-<?= $time_class ?>">
                     <i class="fas fa-clock"></i> <?= $time_left ?>
                   </span><br>
-                  <small class="text-muted"><?= date('M j, g:i A', strtotime($active_lab['expires_at'])) ?></small>
+                  <small class="text-muted"><?= date('M j, g:i A', strtotime($active_lab['access_expiry'])) ?></small>
                   <?php else: ?>
                   -
                   <?php endif; ?>
@@ -338,11 +343,11 @@ include 'includes/header.php';
                                     placeholder="Optional notes about this assignment..."></textarea>
                         </div>
 
-                        <?php if ($provision_target): ?>
+                        <?php if ($provision_target && isset($provision_target['target_ip'])): ?>
                         <div class="alert alert-info mb-0">
                           <i class="fas fa-info-circle"></i> 
                           <strong>Auto-Provisioning Enabled</strong><br>
-                          Lab will be automatically provisioned on: <code><?= htmlspecialchars($provision_target['target_ip']) ?></code>
+                          Lab will be automatically provisioned on: <code><?= htmlspecialchars($provision_target['target_ip'] ?? '') ?></code>
                         </div>
                         <?php else: ?>
                         <div class="alert alert-warning mb-0">

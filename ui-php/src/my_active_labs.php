@@ -1,16 +1,9 @@
 <?php
 session_start();
-if (!isset($_SESSION['user'])) {
-    header("Location: login.php");
-    exit;
-}
-
-$page_title = "My Active Labs";
-$uid = $_SESSION['uid'];
-$conn = new mysqli("mysql","monitor","monitor123","monitoring");
-if ($conn->connect_error) die("DB Error");
-
-include 'includes/header.php';
+// Redirect to new my_labs.php
+header("Location: my_labs.php");
+exit;
+?>
 ?>
 
 <body class="hold-transition sidebar-mini">

@@ -1,13 +1,9 @@
 <?php
 session_start();
-if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
-    header("Location: index.php");
-    exit;
-}
-
-$page_title = "Lab Templates Management";
-$conn = new mysqli("mysql","monitor","monitor123","monitoring");
-if ($conn->connect_error) die("DB Error");
+// Redirect to new admin_labs.php
+header("Location: admin_labs.php");
+exit;
+?>
 
 // Handle CRUD operations
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -37,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $course_id = (int)$_POST['course_id'];
         $title = $conn->real_escape_string($_POST['title']);
         $description = $conn->real_escape_string($_POST['description']);
-        $difficulty = $conn->real_escape_string($_POST['difficulty'];
+        $difficulty = $conn->real_escape_string($_POST['difficulty']);
         $duration_minutes = (int)$_POST['duration_minutes'];
         $lab_guide_content = $conn->real_escape_string($_POST['lab_guide_content']);
         $docker_image = $conn->real_escape_string($_POST['docker_image']);

@@ -219,15 +219,15 @@ include 'includes/header.php';
               $result = $conn->query("SELECT * FROM courses ORDER BY created_at DESC");
               while($course = $result->fetch_assoc()):
                 // Count labs
-                $labs_q = $conn->query("SELECT COUNT(*) as cnt FROM lab_templates WHERE course_id={$course['id']}");
+                $labs_q = $conn->query("SELECT COUNT(*) as cnt FROM labs WHERE course_id={$course['id']} AND active=1");
                 $labs_count = $labs_q->fetch_assoc()['cnt'];
                 
-                // Count unique enrollments
+                // Count unique users who accessed labs
                 $enroll_q = $conn->query("
-                  SELECT COUNT(DISTINCT lp.user_id) as cnt 
-                  FROM lab_progress lp
-                  JOIN lab_templates lt ON lp.lab_template_id = lt.id
-                  WHERE lt.course_id = {$course['id']}
+                  SELECT COUNT(DISTINCT ls.user_id) as cnt 
+                  FROM lab_sessions ls
+                  JOIN labs l ON ls.lab_id = l.id
+                  WHERE l.course_id = {$course['id']}
                 ");
                 $enrollments = $enroll_q->fetch_assoc()['cnt'];
               ?>

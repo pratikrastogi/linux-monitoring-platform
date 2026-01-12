@@ -7,25 +7,78 @@ $uid = $_SESSION['uid'];
 $role = $_SESSION['role'];
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | KubeArena</title>
+    
+    <!-- Bootstrap CSS for responsiveness -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    
+    <!-- AdminLTE CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar-mini.sidebar-closed .sidebar {
+            margin-left: -230px;
+        }
+        .sidebar-mini .sidebar-open .sidebar {
+            margin-left: 0;
+        }
+    </style>
 </head>
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini dark-mode">
 <div class="wrapper">
+    
+    <!-- Navbar with toggle -->
+    <nav class="main-header navbar navbar-expand navbar-dark navbar-lightblue">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            </li>
+        </ul>
+        
+        <div class="navbar-nav ml-auto">
+            <div class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#">
+                    <i class="fas fa-user-circle"></i> <?= htmlspecialchars($_SESSION['user']) ?>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                    <a href="profile.php" class="dropdown-item"><i class="fas fa-user"></i> Profile</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Sidebar -->
     <?php include 'includes/sidebar.php'; ?>
     
+    <!-- Content Wrapper -->
     <div class="content-wrapper">
+        <!-- Content Header -->
         <div class="content-header">
             <div class="container-fluid">
-                <h1 class="m-0">Dashboard</h1>
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0"><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+                    </div>
+                </div>
             </div>
         </div>
         
+        <!-- Main Content -->
         <div class="content">
             <div class="container-fluid">
+                
                 <?php if ($role === 'admin'): ?>
                     <!-- ADMIN DASHBOARD -->
                     <div class="row">
@@ -226,11 +279,11 @@ $role = $_SESSION['role'];
                                 $courses_list = $db->query("SELECT c.*, (SELECT COUNT(*) FROM labs WHERE course_id=c.id AND active=1) as lab_count FROM courses c WHERE c.active=1 ORDER BY c.created_at DESC LIMIT 6");
                                 while ($course = $courses_list->fetch_assoc()):
                                 ?>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 col-sm-6 col-xs-12">
                                         <div class="card bg-light">
                                             <div class="card-body">
                                                 <h5><?= htmlspecialchars($course['name']) ?></h5>
-                                                <p class="text-muted"><?= htmlspecialchars(substr($course['description'], 0, 80)) ?>...</p>
+                                                <p class="text-muted"><?= htmlspecialchars(substr($course['description'] ?? '', 0, 80)) ?>...</p>
                                                 <p><i class="fas fa-flask"></i> <?= $course['lab_count'] ?> labs available</p>
                                                 <a href="browse_labs.php?course=<?= $course['id'] ?>" class="btn btn-primary btn-sm">
                                                     <i class="fas fa-search"></i> Browse Labs
@@ -243,14 +296,35 @@ $role = $_SESSION['role'];
                         </div>
                     </div>
                 <?php endif; ?>
+                
             </div>
         </div>
     </div>
+    
+    <!-- Footer -->
+    <footer class="main-footer">
+        <strong>KubeArena</strong> Learning Platform &copy; 2026
+        <div class="float-right d-none d-sm-inline-block">
+            <b>Version</b> 2.0
+        </div>
+    </footer>
 </div>
 
+<!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- AdminLTE App -->
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+<script>
+    // Initialize sidebar toggle
+    $(document).ready(function() {
+        $('[data-widget="pushmenu"]').PushMenu();
+    });
+</script>
 </body>
 </html>
 

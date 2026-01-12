@@ -12,15 +12,17 @@ if ($conn->connect_error) die("DB Error");
 // Handle approve/deny actions
 if (isset($_GET['approve'])) {
     $id = (int)$_GET['approve'];
-    $conn->query("UPDATE lab_requests SET status='approved', reviewed_at=NOW() WHERE id=$id");
+    $conn->query("UPDATE lab_requests SET status='approved', reviewed_by={$_SESSION['uid']}, reviewed_at=NOW() WHERE id=$id");
     
     // Create lab session
     $req = $conn->query("SELECT * FROM lab_requests WHERE id=$id")->fetch_assoc();
-    $duration_mins = $conn->query("SELECT duration_minutes FROM lab_templates WHERE id={$req['lab_template_id']}")->fetch_assoc()['duration_minutes'];
-    $expires_at = date('Y-m-d H:i:s', strtotime("+{$duration_mins} minutes"));
+    $lab = $conn->query("SELECT duration_minutes FROM labs WHERE id={$req['lab_id']}")->fetch_assoc();
+    $duration_mins = $lab['duration_minutes'] ?? 60;
+    $access_expiry = date('Y-m-d H:i:s', time() + ($duration_mins * 60));
+    $session_token = bin2hex(random_bytes(16));
     
-    $conn->query("INSERT INTO lab_sessions (user_id, lab_template_id, pod_name, status, created_at, expires_at)
-                  VALUES ({$req['user_id']}, {$req['lab_template_id']}, 'pending-provision', 'REQUESTED', NOW(), '$expires_at')");
+    $conn->query("INSERT INTO lab_sessions (user_id, username, lab_id, namespace, access_start, access_expiry, status, session_token, plan, provisioned, created_at, updated_at)
+                  VALUES ({$req['user_id']}, '{$_SESSION['user']}', {$req['lab_id']}, 'pending', NOW(), '$access_expiry', 'ACTIVE', '$session_token', 'standard', 0, NOW(), NOW())");
     
     $_SESSION['success'] = "Lab request approved! Session created.";
     header("Location: admin_lab_requests.php");
@@ -194,11 +196,11 @@ include 'includes/header.php';
             <tbody>
               <?php
               $pending_q = $conn->query("
-                SELECT lr.*, u.email, u.name, lt.title as lab_title, c.title as course_title
+                SELECT lr.*, u.email, u.name, l.lab_name, c.name as course_name
                 FROM lab_requests lr
                 JOIN users u ON lr.user_id = u.id
-                JOIN lab_templates lt ON lr.lab_template_id = lt.id
-                JOIN courses c ON lt.course_id = c.id
+                JOIN labs l ON lr.lab_id = l.id
+                JOIN courses c ON l.course_id = c.id
                 WHERE lr.status = 'pending'
                 ORDER BY lr.created_at ASC
               ");
@@ -210,8 +212,8 @@ include 'includes/header.php';
                   <strong><?= htmlspecialchars($r['name'] ?? $r['email']) ?></strong><br>
                   <small class="text-muted"><?= htmlspecialchars($r['email']) ?></small>
                 </td>
-                <td><?= htmlspecialchars($r['lab_title']) ?></td>
-                <td><?= htmlspecialchars($r['course_title']) ?></td>
+                <td><?= htmlspecialchars($r['lab_name']) ?></td>
+                <td><?= htmlspecialchars($r['course_name']) ?></td>
                 <td><?= htmlspecialchars($r['justification'] ?? 'N/A') ?></td>
                 <td><?= date('M j, Y g:i A', strtotime($r['created_at'])) ?></td>
                 <td>
@@ -263,30 +265,32 @@ include 'includes/header.php';
               
               $where_sql = !empty($where_clauses) ? 'WHERE ' . implode(' AND ', $where_clauses) : '';
               
-              $all_q
-                  <strong><?= htmlspecialchars($r['name'] ?? $r['email']) ?></strong><br>
-                  <small class="text-muted"><?= htmlspecialchars($r['email']) ?></small>
-                
-                SELECT lr.*, u.email, u.name, lt.title as lab_title
+              $query = "
+                SELECT lr.*, u.email, u.name, l.lab_name
                 FROM lab_requests lr
                 JOIN users u ON lr.user_id = u.id
-                JOIN lab_templates lt ON lr.lab_template_id = lt.id
+                JOIN labs l ON lr.lab_id = l.id
                 $where_sql
                 ORDER BY lr.created_at DESC
                 LIMIT 100
-              ");
-              while($r = $all_q->fetch_assoc()):
+              ";
+              $all_q = $conn->query($query);
+              if (!$all_q) {
+                  echo "<tr><td colspan='6' class='text-danger'>Query error: " . $conn->error . "</td></tr>";
+              } else {
+                while($r = $all_q->fetch_assoc()):
                 $badge = $r['status'] === 'approved' ? 'success' : ($r['status'] === 'denied' ? 'danger' : 'warning');
               ?>
               <tr>
                 <td><?= $r['id'] ?></td>
                 <td><?= htmlspecialchars($r['email']) ?></td>
-                <td><?= htmlspecialchars($r['lab_title']) ?></td>
+                <td><?= htmlspecialchars($r['lab_name']) ?></td>
                 <td><span class="badge badge-<?= $badge ?>"><?= ucfirst($r['status']) ?></span></td>
                 <td><?= date('M j, g:i A', strtotime($r['created_at'])) ?></td>
                 <td><?= $r['reviewed_at'] ? date('M j, g:i A', strtotime($r['reviewed_at'])) : '-' ?></td>
               </tr>
               <?php endwhile; ?>
+              <?php } ?>
             </tbody>
           </table>
         </div>

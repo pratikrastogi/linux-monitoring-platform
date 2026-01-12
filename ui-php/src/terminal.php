@@ -1,12 +1,9 @@
 <?php
 session_start();
-
-if (!isset($_SESSION['user'], $_SESSION['uid'])) {
-    die("Login required");
-}
-
-$conn = new mysqli("mysql","monitor","monitor123","monitoring");
-if ($conn->connect_error) die("DB error");
+// Redirect to new lab_terminal.php
+header("Location: lab_terminal.php");
+exit;
+?>
 
 $user = $_SESSION['user'];
 $uid  = (int)$_SESSION['uid'];

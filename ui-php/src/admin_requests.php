@@ -73,17 +73,33 @@ $history = $db->query("SELECT lr.*, u.email, c.name as course_name, l.lab_name, 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Lab Requests</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Requests | KubeArena</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini dark-mode">
 <div class="wrapper">
+    <?php include 'includes/navbar.php'; ?>
     <?php include 'includes/sidebar.php'; ?>
     
     <div class="content-wrapper">
         <div class="content-header">
-            <h1 class="m-0">Lab Access Requests</h1>
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0"><i class="fas fa-list"></i> Lab Access Requests</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+                            <li class="breadcrumb-item active">Requests</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div class="content">
@@ -230,13 +246,24 @@ $history = $db->query("SELECT lr.*, u.email, c.name as course_name, l.lab_name, 
         </div>
     </div>
 </div>
+    
+    <!-- Footer -->
+    <footer class="main-footer">
+        <strong>KubeArena</strong> Learning Platform &copy; 2026
+        <div class="float-right d-none d-sm-inline-block">
+            <b>Version</b> 2.0
+        </div>
+    </footer>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 <script>
-function approveRequest(id) {
-    $('#approve_request_id').val(id);
+$(document).ready(function() {
+    $('[data-widget="pushmenu"]').PushMenu();
+});
+
     $('#approveModal').modal('show');
 }
 
