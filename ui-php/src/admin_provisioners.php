@@ -302,7 +302,7 @@ include 'includes/header.php';
                 window.addEventListener('resize', () => fitAddon.fit());
                 
                 // SECURE: server_id and user in URL, password sent in JSON message
-                let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in:32000/terminal?server_id=' + serverId + '&user=' + encodeURIComponent('<?= htmlspecialchars($server['ssh_user']) ?>'));
+                let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in/terminal?server_id=' + serverId + '&user=' + encodeURIComponent('<?= htmlspecialchars($server['ssh_user']) ?>'));
                 
                 let passwordSent = false;
                 ws.onopen = () => {

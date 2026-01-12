@@ -227,7 +227,7 @@ function initializeTerminal() {
     }
     
     // SECURE: server_id and user in URL, password sent in JSON message
-    let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in:32000/terminal?server_id=' + serverId + '&user=' + encodeURIComponent(sshUser));
+    let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in/terminal?server_id=' + serverId + '&user=' + encodeURIComponent(sshUser));
     
     ws.onopen = () => {
         term.write('\r\n🔗 Connecting to lab server (' + labName + ')...\r\n');
