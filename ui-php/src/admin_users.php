@@ -359,34 +359,55 @@ include 'includes/header.php';
 <script>
 // Dynamic lab loading based on course selection
 function loadLabsForCourse(courseId, userId) {
-    const labSelect = document.querySelector('#assignLab' + userId + ' .lab-select');
+    const labSelect = document.querySelector('#assignLab' + userId + ' select[name="lab_id"]');
     
-    if (!courseId) {
-        labSelect.innerHTML = '<option value="">-- Select a course first --</option>';
+    if (!labSelect) {
+        console.error('Lab select not found for user', userId);
         return;
     }
     
-    // Fetch labs for the selected course
-    fetch('api/get_course_labs.php?course_id=' + courseId)
+    if (!courseId) {
+        labSelect.innerHTML = '<option value="">-- Select a course first --</option>';
+        labSelect.disabled = true;
+        return;
+    }
+    
+    labSelect.disabled = true;
+    labSelect.innerHTML = '<option value="">Loading labs...</option>';
+    
+    // Use absolute path for API call
+    const apiUrl = window.location.origin + '/api/get_course_labs.php?course_id=' + courseId;
+    
+    console.log('Fetching from:', apiUrl);
+    
+    fetch(apiUrl)
         .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
             return response.json();
         })
         .then(data => {
-            if (data.success && data.labs.length > 0) {
+            console.log('Data received:', data);
+            if (data.success && data.labs && data.labs.length > 0) {
                 let html = '<option value="">-- Select Lab --</option>';
                 data.labs.forEach(lab => {
                     html += '<option value="' + lab.id + '">' + 
-                            lab.lab_name + ' (' + lab.duration_minutes + ' min)</option>';
+                            lab.lab_name + ' (' + lab.duration_minutes + ' min)' +
+                            (lab.hostname ? ' - ' + lab.hostname : '') + '</option>';
                 });
                 labSelect.innerHTML = html;
+                labSelect.disabled = false;
             } else {
                 labSelect.innerHTML = '<option value="">No labs available for this course</option>';
+                labSelect.disabled = true;
             }
         })
         .catch(error => {
             console.error('Error loading labs:', error);
-            labSelect.innerHTML = '<option value="">Error loading labs</option>';
+            labSelect.innerHTML = '<option value="">Error loading labs. Check console.</option>';
+            labSelect.disabled = true;
         });
 }
 </script>
