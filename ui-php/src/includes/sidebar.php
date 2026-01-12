@@ -127,9 +127,9 @@
         </li>
         
         <li class="nav-item">
-          <a href="provisioners.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'provisioners.php' ? 'active' : ''; ?>">
+          <a href="admin_provisioners.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_provisioners.php' ? 'active' : ''; ?>">
             <i class="nav-icon fas fa-server"></i>
-            <p>Provisioners</p>
+            <p>Manage Servers</p>
           </a>
         </li>
         

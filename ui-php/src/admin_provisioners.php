@@ -37,8 +37,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         } elseif ($_POST['action'] === 'delete') {
             $id = (int)$_POST['id'];
-            $db->query("DELETE FROM servers WHERE id=$id");
-            $message = "Server deleted successfully!";
+            
+            // Check if server is mapped to any labs
+            $check = $db->query("SELECT COUNT(*) as lab_count FROM labs WHERE server_id=$id");
+            $result = $check->fetch_assoc();
+            
+            if ($result['lab_count'] > 0) {
+                $error = "Cannot delete this server! It is mapped to " . $result['lab_count'] . " lab(s). Remove the server from labs first.";
+            } else {
+                $db->query("DELETE FROM servers WHERE id=$id");
+                $message = "Server deleted successfully!";
+            }
         }
     }
 }
@@ -52,7 +61,9 @@ if (isset($_GET['edit'])) {
 }
 
 // Get all servers
-$servers = $db->query("SELECT * FROM servers ORDER BY created_at DESC");
+$servers = $db->query("SELECT s.*, 
+    (SELECT COUNT(*) FROM labs WHERE server_id = s.id) as mapped_labs
+    FROM servers s ORDER BY s.added_on DESC");
 
 include 'includes/header.php';
 ?>
@@ -86,6 +97,13 @@ include 'includes/header.php';
         <div class="alert alert-success alert-dismissible">
           <button type="button" class="close" data-dismiss="alert">&times;</button>
           <i class="fas fa-check"></i> <?= htmlspecialchars($message) ?>
+        </div>
+      <?php endif; ?>
+      
+      <?php if ($error): ?>
+        <div class="alert alert-danger alert-dismissible">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          <i class="fas fa-exclamation"></i> <?= htmlspecialchars($error) ?>
         </div>
       <?php endif; ?>
       
@@ -184,6 +202,7 @@ include 'includes/header.php';
                 <th>IP Address</th>
                 <th>Purpose</th>
                 <th>SSH User</th>
+                <th>Mapped Labs</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -196,6 +215,13 @@ include 'includes/header.php';
                 <td><span class="badge badge-info"><?= htmlspecialchars($server['purpose']) ?></span></td>
                 <td><?= htmlspecialchars($server['ssh_user']) ?></td>
                 <td>
+                  <?php if ($server['mapped_labs'] > 0): ?>
+                    <span class="badge badge-warning"><?= $server['mapped_labs'] ?> lab(s)</span>
+                  <?php else: ?>
+                    <span class="badge badge-light">Unmapped</span>
+                  <?php endif; ?>
+                </td>
+                <td>
                   <?php if ($server['enabled']): ?>
                     <span class="badge badge-success"><i class="fas fa-check-circle"></i> Enabled</span>
                   <?php else: ?>
@@ -203,16 +229,25 @@ include 'includes/header.php';
                   <?php endif; ?>
                 </td>
                 <td>
+                  <button class="btn btn-sm btn-success" onclick="openTerminal('<?= htmlspecialchars($server['ip_address']) ?>', '<?= htmlspecialchars($server['ssh_user']) ?>', '<?= htmlspecialchars($server['ssh_password']) ?>', '<?= htmlspecialchars($server['hostname']) ?>')" title="Open terminal access">
+                    <i class="fas fa-terminal"></i> Connect
+                  </button>
                   <a href="?edit=<?= $server['id'] ?>" class="btn btn-sm btn-info">
                     <i class="fas fa-edit"></i> Edit
                   </a>
-                  <form method="POST" style="display:inline;">
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="id" value="<?= $server['id'] ?>">
-                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this server?')">
+                  <?php if ($server['mapped_labs'] == 0): ?>
+                    <form method="POST" style="display:inline;">
+                      <input type="hidden" name="action" value="delete">
+                      <input type="hidden" name="id" value="<?= $server['id'] ?>">
+                      <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this server?')">
+                        <i class="fas fa-trash"></i> Delete
+                      </button>
+                    </form>
+                  <?php else: ?>
+                    <button class="btn btn-sm btn-secondary" disabled title="Cannot delete - server is in use">
                       <i class="fas fa-trash"></i> Delete
                     </button>
-                  </form>
+                  <?php endif; ?>
                 </td>
               </tr>
               <?php endwhile; ?>
@@ -230,6 +265,68 @@ include 'includes/header.php';
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+<script>
+    // Terminal access function for admin
+    function openTerminal(host, user, password, hostname) {
+        const modal = document.createElement('div');
+        modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; flex-direction: column;';
+        modal.innerHTML = `
+            <div style="background: #2c3e50; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center; flex: 0 0 auto;">
+                <span><i class="fas fa-terminal"></i> Terminal - ${hostname} (${host})</span>
+                <button onclick="this.closest('[data-modal]').remove()" style="background: #e74c3c; border: none; color: white; padding: 5px 15px; cursor: pointer; border-radius: 3px;">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+            <div id="terminal" style="flex: 1; background: #000; overflow: hidden;"></div>
+        `;
+        modal.setAttribute('data-modal', '1');
+        document.body.appendChild(modal);
+        
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css';
+        document.head.appendChild(link);
+        
+        const s1 = document.createElement('script');
+        s1.src = 'https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.js';
+        s1.onload = () => {
+            const s2 = document.createElement('script');
+            s2.src = 'https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.js';
+            s2.onload = () => {
+                const term = new Terminal({cursorBlink: true, fontSize: 12, fontFamily: 'Courier New'});
+                const fitAddon = new FitAddon.FitAddon();
+                term.loadAddon(fitAddon);
+                term.open(document.getElementById('terminal'));
+                setTimeout(() => fitAddon.fit(), 100);
+                window.addEventListener('resize', () => fitAddon.fit());
+                
+                let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in/terminal?' + 
+                    'host=' + encodeURIComponent(host) + 
+                    '&user=' + encodeURIComponent(user) +
+                    '&password=' + encodeURIComponent(password));
+                
+                ws.onopen = () => {
+                    term.write('\r\n🔗 Connecting to ' + hostname + ' (' + host + ')...\r\n');
+                };
+                ws.onmessage = (e) => term.write(e.data);
+                ws.onerror = (err) => {
+                    term.write('\r\n❌ Connection error: ' + (err.message || 'Unknown error') + '\r\n');
+                    console.error('WebSocket error:', err);
+                };
+                ws.onclose = () => term.write('\r\n❌ Connection closed\r\n');
+                
+                term.onData(d => {
+                    if (ws.readyState === WebSocket.OPEN) {
+                        ws.send(d);
+                    }
+                });
+            };
+            document.head.appendChild(s2);
+        };
+        document.head.appendChild(s1);
+    }
+</script>
 
 </body>
 </html>

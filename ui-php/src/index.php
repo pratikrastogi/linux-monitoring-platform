@@ -36,6 +36,66 @@ include 'includes/header.php';
                 <?php if ($role === 'admin'): ?>
                     <!-- ADMIN DASHBOARD -->
                     <div class="row">
+                        <!-- Total Users -->
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-primary">
+                                <div class="inner">
+                                    <?php
+                                    $total_users = $db->query("SELECT COUNT(*) as cnt FROM users WHERE role='user'")->fetch_assoc()['cnt'];
+                                    ?>
+                                    <h3><?= $total_users ?></h3>
+                                    <p>Total Users</p>
+                                </div>
+                                <div class="icon"><i class="fas fa-users"></i></div>
+                                <a href="admin_users.php" class="small-box-footer">Manage <i class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- Logged In Users -->
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-success">
+                                <div class="inner">
+                                    <?php
+                                    $logged_in = $db->query("SELECT COUNT(*) as cnt FROM users WHERE role='user' AND last_login > DATE_SUB(NOW(), INTERVAL 1 HOUR)")->fetch_assoc()['cnt'];
+                                    ?>
+                                    <h3><?= $logged_in ?></h3>
+                                    <p>Logged In (Last Hour)</p>
+                                </div>
+                                <div class="icon"><i class="fas fa-user-check"></i></div>
+                                <a href="admin_users.php" class="small-box-footer">View <i class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- Active Courses -->
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-info">
+                                <div class="inner">
+                                    <?php
+                                    $courses = $db->query("SELECT COUNT(*) as cnt FROM courses WHERE active=1")->fetch_assoc()['cnt'];
+                                    ?>
+                                    <h3><?= $courses ?></h3>
+                                    <p>Active Courses</p>
+                                </div>
+                                <div class="icon"><i class="fas fa-book"></i></div>
+                                <a href="courses.php" class="small-box-footer">Manage <i class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- Live Labs -->
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-success">
+                                <div class="inner">
+                                    <?php
+                                    $active_labs = $db->query("SELECT COUNT(*) as cnt FROM lab_sessions WHERE status='ACTIVE' AND access_expiry > NOW()")->fetch_assoc()['cnt'];
+                                    ?>
+                                    <h3><?= $active_labs ?></h3>
+                                    <p>Live Lab Sessions</p>
+                                </div>
+                                <div class="icon"><i class="fas fa-laptop-code"></i></div>
+                                <a href="admin_lab_requests.php" class="small-box-footer">View <i class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+
                         <!-- Pending Requests -->
                         <div class="col-lg-3 col-6">
                             <div class="small-box bg-warning">
@@ -47,49 +107,34 @@ include 'includes/header.php';
                                     <p>Pending Requests</p>
                                 </div>
                                 <div class="icon"><i class="fas fa-clipboard-list"></i></div>
-                                <a href="admin_requests.php" class="small-box-footer">View <i class="fas fa-arrow-circle-right"></i></a>
+                                <a href="admin_lab_requests.php" class="small-box-footer">Review <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
-                        
-                        <!-- Active Labs -->
+
+                        <!-- Server Count -->
                         <div class="col-lg-3 col-6">
-                            <div class="small-box bg-success">
+                            <div class="small-box bg-danger">
                                 <div class="inner">
                                     <?php
-                                    $active = $db->query("SELECT COUNT(*) as cnt FROM lab_sessions WHERE status='ACTIVE' AND access_expiry > NOW()")->fetch_assoc()['cnt'];
+                                    $servers = $db->query("SELECT COUNT(*) as cnt FROM servers WHERE enabled=1")->fetch_assoc()['cnt'];
                                     ?>
-                                    <h3><?= $active ?></h3>
-                                    <p>Active Lab Sessions</p>
+                                    <h3><?= $servers ?></h3>
+                                    <p>Available Servers</p>
                                 </div>
-                                <div class="icon"><i class="fas fa-laptop-code"></i></div>
-                                <a href="servers.php" class="small-box-footer">View <i class="fas fa-arrow-circle-right"></i></a>
+                                <div class="icon"><i class="fas fa-server"></i></div>
+                                <a href="admin_provisioners.php" class="small-box-footer">Manage <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
-                        
-                        <!-- Total Courses -->
-                        <div class="col-lg-3 col-6">
-                            <div class="small-box bg-info">
-                                <div class="inner">
-                                    <?php
-                                    $courses = $db->query("SELECT COUNT(*) as cnt FROM courses WHERE active=1")->fetch_assoc()['cnt'];
-                                    ?>
-                                    <h3><?= $courses ?></h3>
-                                    <p>Active Courses</p>
-                                </div>
-                                <div class="icon"><i class="fas fa-book"></i></div>
-                                <a href="admin_courses.php" class="small-box-footer">Manage <i class="fas fa-arrow-circle-right"></i></a>
-                            </div>
-                        </div>
-                        
+
                         <!-- Total Labs -->
                         <div class="col-lg-3 col-6">
-                            <div class="small-box bg-primary">
+                            <div class="small-box bg-secondary">
                                 <div class="inner">
                                     <?php
-                                    $labs = $db->query("SELECT COUNT(*) as cnt FROM labs WHERE active=1")->fetch_assoc()['cnt'];
+                                    $total_labs = $db->query("SELECT COUNT(*) as cnt FROM labs WHERE active=1")->fetch_assoc()['cnt'];
                                     ?>
-                                    <h3><?= $labs ?></h3>
-                                    <p>Available Labs</p>
+                                    <h3><?= $total_labs ?></h3>
+                                    <p>Total Labs</p>
                                 </div>
                                 <div class="icon"><i class="fas fa-flask"></i></div>
                                 <a href="admin_labs.php" class="small-box-footer">Manage <i class="fas fa-arrow-circle-right"></i></a>
@@ -140,7 +185,7 @@ include 'includes/header.php';
                                             <td><?= date('M d, H:i', strtotime($r['created_at'])) ?></td>
                                             <td>
                                                 <?php if ($r['status'] === 'pending'): ?>
-                                                    <a href="admin_requests.php" class="btn btn-sm btn-primary">Review</a>
+                                                    <a href="admin_lab_requests.php" class="btn btn-sm btn-primary">Review</a>
                                                 <?php endif; ?>
                                             </td>
                                         </tr>
