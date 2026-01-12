@@ -126,6 +126,22 @@ include 'includes/header.php';
           <div class="card">
             <div class="card-body text-center">
               <i class="fas fa-cog fa-spin fa-4x mb-3" style="color: #667eea;"></i>
+              <h4>Provisioning Your Lab Environment</h4>
+              <p class="text-muted">Please wait while we set up your Kubernetes lab...</p>
+              <div class="progress mt-3">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                     role="progressbar" style="width: 75%; background: linear-gradient(135deg, #667eea, #764ba2);">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>setTimeout(() => location.reload(), 5000);</script>
+
+<?php elseif ($lab['status'] === 'ACTIVE'): ?>
+
       <style>
         #terminal { 
           background: #000; 
@@ -266,9 +282,7 @@ include 'includes/header.php';
         connectTerminal();
       </script>
 
-    <?php endif; ?>
-
-  <?php elseif ($lab['status'] === 'EXPIRED'): ?>
+<?php elseif ($lab['status'] === 'EXPIRED'): ?>
 
     <!-- EXPIRED LAB STATE -->
     <div class="row">
