@@ -5,62 +5,16 @@ require_once 'auth.php';
 $db = new mysqli("mysql", "monitor", "monitor123", "monitoring");
 $uid = $_SESSION['uid'];
 $role = $_SESSION['role'];
+$page_title = "Dashboard";
+
+include 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | KubeArena</title>
-    
-    <!-- Bootstrap CSS for responsiveness -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
-    
-    <!-- AdminLTE CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-    
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
-        .sidebar-mini.sidebar-closed .sidebar {
-            margin-left: -230px;
-        }
-        .sidebar-mini .sidebar-open .sidebar {
-            margin-left: 0;
-        }
-    </style>
-</head>
-<body class="hold-transition sidebar-mini dark-mode">
+
+<body class="hold-transition sidebar-mini">
 <div class="wrapper">
-    
-    <!-- Navbar with toggle -->
-    <nav class="main-header navbar navbar-expand navbar-dark navbar-lightblue">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-            </li>
-        </ul>
-        
-        <div class="navbar-nav ml-auto">
-            <div class="nav-item dropdown">
-                <a class="nav-link" data-toggle="dropdown" href="#">
-                    <i class="fas fa-user-circle"></i> <?= htmlspecialchars($_SESSION['user']) ?>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right">
-                    <a href="profile.php" class="dropdown-item"><i class="fas fa-user"></i> Profile</a>
-                    <div class="dropdown-divider"></div>
-                    <a href="logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-    
-    <!-- Sidebar -->
-    <?php include 'includes/sidebar.php'; ?>
+
+<?php include 'includes/navbar.php'; ?>
+<?php include 'includes/sidebar.php'; ?>
     
     <!-- Content Wrapper -->
     <div class="content-wrapper">
@@ -302,12 +256,7 @@ $role = $_SESSION['role'];
     </div>
     
     <!-- Footer -->
-    <footer class="main-footer">
-        <strong>KubeArena</strong> Learning Platform &copy; 2026
-        <div class="float-right d-none d-sm-inline-block">
-            <b>Version</b> 2.0
-        </div>
-    </footer>
+    <?php include 'includes/footer.php'; ?>
 </div>
 
 <!-- jQuery -->

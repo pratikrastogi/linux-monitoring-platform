@@ -248,12 +248,7 @@ $history = $db->query("SELECT lr.*, u.email, c.name as course_name, l.lab_name, 
 </div>
     
     <!-- Footer -->
-    <footer class="main-footer">
-        <strong>KubeArena</strong> Learning Platform &copy; 2026
-        <div class="float-right d-none d-sm-inline-block">
-            <b>Version</b> 2.0
-        </div>
-    </footer>
+    <?php include 'includes/footer.php'; ?>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -15,9 +15,9 @@ include 'includes/header.php';
 <?php include 'includes/sidebar.php'; ?>
 
 <!-- Content Wrapper -->
-<div class="content-wrapper">
+<div class="content-wrapper" style="display: flex; flex-direction: column; overflow: hidden;">
   <!-- Content Header -->
-  <div class="content-header">
+  <div class="content-header" style="flex: 0 0 auto;">
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
@@ -34,7 +34,7 @@ include 'includes/header.php';
   </div>
 
   <!-- Main content -->
-  <section class="content">
+  <section class="content" style="flex: 1; overflow-y: auto;">
     <div class="container-fluid">
       
       <!-- Server Selection -->

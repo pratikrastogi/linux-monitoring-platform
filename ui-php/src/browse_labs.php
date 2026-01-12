@@ -22,41 +22,69 @@ include 'includes/header.php';
 <?php include 'includes/navbar.php'; ?>
 <?php include 'includes/sidebar.php'; ?>
     
-    <div class="content-wrapper">
-        <div class="content-header"><h1>Browse Labs</h1></div>
-        
-        <div class="content"><div class="container-fluid">
-            <?php while ($course = $labs->fetch_assoc()): ?>
-                <div class="card">
-                    <div class="card-header">
-                        <h3><?= htmlspecialchars($course['name']) ?></h3>
-                        <p><?= htmlspecialchars($course['description']) ?></p>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <?php
-                            $course_labs = $db->query("SELECT * FROM labs WHERE course_id={$course['id']} AND active=1");
-                            while ($lab = $course_labs->fetch_assoc()):
-                            ?>
-                                <div class="col-md-6">
-                                    <div class="card bg-light">
-                                        <div class="card-body">
-                                            <h5><?= htmlspecialchars($lab['lab_name']) ?></h5>
-                                            <p><i class="fas fa-clock"></i> <?= $lab['duration_minutes'] ?> minutes</p>
-                                            <a href="request_lab.php?lab_id=<?= $lab['id'] ?>" class="btn btn-primary">
-                                                <i class="fas fa-play"></i> Request Access
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endwhile; ?>
-                        </div>
-                    </div>
-                </div>
-            <?php endwhile; ?>
-        </div></div>
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0"><i class="fas fa-search"></i> Browse Labs</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+            <li class="breadcrumb-item active">Browse Labs</li>
+          </ol>
+        </div>
+      </div>
     </div>
+  </div>
+  
+  <section class="content">
+    <div class="container-fluid">
+      <?php while ($course = $labs->fetch_assoc()): ?>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-book"></i> <?= htmlspecialchars($course['name']) ?></h3>
+          </div>
+          <div class="card-body">
+            <p class="text-muted"><?= htmlspecialchars($course['description']) ?></p>
+            <div class="row">
+              <?php
+              $course_labs = $db->query("SELECT * FROM labs WHERE course_id={$course['id']} AND active=1");
+              while ($lab = $course_labs->fetch_assoc()):
+              ?>
+                <div class="col-md-6 col-lg-4">
+                  <div class="card bg-light">
+                    <div class="card-body">
+                      <h5 class="card-title"><i class="fas fa-flask"></i> <?= htmlspecialchars($lab['lab_name']) ?></h5>
+                      <p class="card-text"><i class="fas fa-clock"></i> Duration: <?= $lab['duration_minutes'] ?> minutes</p>
+                      <p class="card-text"><i class="fas fa-users"></i> Max Users: <?= $lab['max_concurrent_users'] ?></p>
+                      <a href="request_lab.php?lab_id=<?= $lab['id'] ?>" class="btn btn-primary btn-sm">
+                        <i class="fas fa-play"></i> Request Access
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              <?php endwhile; ?>
+            </div>
+          </div>
+        </div>
+      <?php endwhile; ?>
+    </div>
+  </section>
 </div>
+
+<?php include 'includes/footer.php'; ?>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('[data-widget="pushmenu"]').PushMenu();
+  });
+</script>
 </body>
 </html>
 ```

@@ -12,46 +12,33 @@ if ($db->connect_error) die("Connection failed");
 
 $message = '';
 $error = '';
+$page_title = "Course Management";
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
         if ($_POST['action'] === 'create' || $_POST['action'] === 'update') {
             $id = $_POST['id'] ?? null;
-            $name = $_POST['name'];
-            $description = $_POST['description'];
-            $lab_guide_content = $_POST['lab_guide_content'];
+            $name = $db->real_escape_string($_POST['name']);
+            $description = $db->real_escape_string($_POST['description']);
+            $lab_guide_content = $db->real_escape_string($_POST['lab_guide_content']);
             $duration_minutes = (int)$_POST['duration_minutes'];
             $active = isset($_POST['active']) ? 1 : 0;
             
             if ($id) {
-                // Update
-                $stmt = $db->prepare("UPDATE courses SET name=?, description=?, lab_guide_content=?, duration_minutes=?, active=? WHERE id=?");
-                $stmt->bind_param("sssiii", $name, $description, $lab_guide_content, $duration_minutes, $active, $id);
+                $db->query("UPDATE courses SET name='$name', description='$description', 
+                           lab_guide_content='$lab_guide_content', duration_minutes=$duration_minutes, 
+                           active=$active WHERE id=$id");
                 $message = "Course updated successfully!";
             } else {
-                // Create
-                $stmt = $db->prepare("INSERT INTO courses (name, description, lab_guide_content, duration_minutes, active) VALUES (?, ?, ?, ?, ?)");
-                $stmt->bind_param("sssii", $name, $description, $lab_guide_content, $duration_minutes, $active);
+                $db->query("INSERT INTO courses (name, description, lab_guide_content, duration_minutes, active) 
+                           VALUES ('$name', '$description', '$lab_guide_content', $duration_minutes, $active)");
                 $message = "Course created successfully!";
             }
-            
-            if ($stmt->execute()) {
-                // Success
-            } else {
-                $error = "Error: " . $stmt->error;
-            }
-            $stmt->close();
         } elseif ($_POST['action'] === 'delete') {
-            $id = $_POST['id'];
-            $stmt = $db->prepare("DELETE FROM courses WHERE id=?");
-            $stmt->bind_param("i", $id);
-            if ($stmt->execute()) {
-                $message = "Course deleted successfully!";
-            } else {
-                $error = "Error deleting course: " . $stmt->error;
-            }
-            $stmt->close();
+            $id = (int)$_POST['id'];
+            $db->query("DELETE FROM courses WHERE id=$id");
+            $message = "Course deleted successfully!";
         }
     }
 }
@@ -68,21 +55,15 @@ if (isset($_GET['edit'])) {
 $courses = $db->query("SELECT c.*, 
     (SELECT COUNT(*) FROM labs WHERE course_id = c.id) as lab_count 
     FROM courses c ORDER BY c.created_at DESC");
+
+include 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Management | KubeArena</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-</head>
-<body class="hold-transition sidebar-mini dark-mode">
+
+<body class="hold-transition sidebar-mini">
 <div class="wrapper">
-    <?php include 'includes/navbar.php'; ?>
-    <?php include 'includes/sidebar.php'; ?>
+
+<?php include 'includes/navbar.php'; ?>
+<?php include 'includes/sidebar.php'; ?>
     
     <div class="content-wrapper">
         <div class="content-header">
@@ -236,12 +217,7 @@ $courses = $db->query("SELECT c.*,
     </div>
     
     <!-- Footer -->
-    <footer class="main-footer">
-        <strong>KubeArena</strong> Learning Platform &copy; 2026
-        <div class="float-right d-none d-sm-inline-block">
-            <b>Version</b> 2.0
-        </div>
-    </footer>
+    <?php include 'includes/footer.php'; ?>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

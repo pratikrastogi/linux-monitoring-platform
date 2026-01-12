@@ -77,9 +77,9 @@ include 'includes/header.php';
 <?php include 'includes/sidebar.php'; ?>
     
     <!-- Content Wrapper -->
-    <div class="content-wrapper">
+    <div class="content-wrapper" style="display: flex; flex-direction: column; overflow: hidden;">
         <!-- Content Header -->
-        <div class="content-header">
+        <div class="content-header" style="flex: 0 0 auto;">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
@@ -96,7 +96,7 @@ include 'includes/header.php';
         </div>
         
         <!-- Main Content -->
-        <div class="content">
+        <div class="content" style="flex: 1; overflow-y: auto;">
             <div class="container-fluid">
                 
                 <?php if ($message): ?>
@@ -315,12 +315,7 @@ include 'includes/header.php';
     </div>
     
     <!-- Footer -->
-    <footer class="main-footer">
-        <strong>KubeArena</strong> Learning Platform &copy; 2026
-        <div class="float-right d-none d-sm-inline-block">
-            <b>Version</b> 2.0
-        </div>
-    </footer>
+    <?php include 'includes/footer.php'; ?>
 </div>
 
 <!-- jQuery -->
@@ -339,59 +334,51 @@ include 'includes/header.php';
     
     // Terminal access function for admin
     function openTerminal(host, user, password) {
-        // Create a temporary modal or open terminal in new window
-        const terminalWindow = window.open('', '_blank', 'width=1000,height=600');
-        terminalWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Terminal Access - ${host}</title>
-                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css">
-                <script src="https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.js"></script>
-                <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.js"></script>
-                <style>
-                    body { margin: 0; overflow: hidden; background: #000; }
-                    #terminal { height: 100vh; width: 100vw; }
-                </style>
-            </head>
-            <body>
-                <div id="terminal"></div>
-                <script>
-                    const term = new Terminal({cursorBlink: true, fontSize: 14});
-                    const fitAddon = new FitAddon.FitAddon();
-                    term.loadAddon(fitAddon);
-                    term.open(document.getElementById('terminal'));
-                    fitAddon.fit();
-                    
-                    // Connect to terminal WebSocket
-                    const ws = new WebSocket('wss://kubearena.pratikrastogi.co.in/terminal');
-                    ws.onopen = () => {
-                        ws.send(JSON.stringify({
-                            type: 'auth',
-                            host: '${host}',
-                            user: '${user}',
-                            password: '${password}'
-                        }));
-                        term.write('\\r\\n🔗 Connecting to ${host}...\\r\\n');
-                    };
-                    
-                    ws.onmessage = (event) => {
-                        term.write(event.data);
-                    };
-                    
-                    ws.onerror = (error) => {
-                        term.write('\\r\\n❌ Connection error: ' + error.message);
-                    };
-                    
-                    term.onData(data => {
-                        if (ws.readyState === WebSocket.OPEN) {
-                            ws.send(JSON.stringify({type: 'input', data: data}));
-                        }
-                    });
-                </script>
-            </body>
-            </html>
-        `);
+        const modal = document.createElement('div');
+        modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; flex-direction: column;';
+        modal.innerHTML = `
+            <div style="background: #2c3e50; color: white; padding: 10px; display: flex; justify-content: space-between; flex: 0 0 auto;">
+                <span><i class="fas fa-terminal"></i> Terminal - ${host}</span>
+                <button onclick="this.closest('[data-modal]').remove()" style="background: #e74c3c; border: none; color: white; padding: 5px 15px; cursor: pointer; border-radius: 3px;">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+            <div id="terminal" style="flex: 1; background: #000; overflow: hidden;"></div>
+        `;
+        modal.setAttribute('data-modal', '1');
+        document.body.appendChild(modal);
+        
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css';
+        document.head.appendChild(link);
+        
+        const s1 = document.createElement('script');
+        s1.src = 'https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.js';
+        s1.onload = () => {
+            const s2 = document.createElement('script');
+            s2.src = 'https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.js';
+            s2.onload = () => {
+                const term = new Terminal({cursorBlink: true, fontSize: 12, fontFamily: 'Courier New'});
+                const fitAddon = new FitAddon.FitAddon();
+                term.loadAddon(fitAddon);
+                term.open(document.getElementById('terminal'));
+                setTimeout(() => fitAddon.fit(), 100);
+                window.addEventListener('resize', () => fitAddon.fit());
+                
+                let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in/terminal');
+                ws.onopen = () => {
+                    ws.send(JSON.stringify({type: 'auth', host: host, user: user, password: password}));
+                    term.write('\r\n🔗 Connecting to ' + host + '...\r\n');
+                };
+                ws.onmessage = (e) => term.write(e.data);
+                ws.onerror = () => term.write('\r\n❌ Connection error\r\n');
+                ws.onclose = () => term.write('\r\n❌ Connection closed\r\n');
+                term.onData(d => ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify({type: 'data', data: d})));
+            };
+            document.head.appendChild(s2);
+        };
+        document.head.appendChild(s1);
     }
 </script>
 </body>
