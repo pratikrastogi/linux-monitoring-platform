@@ -60,7 +60,7 @@ include 'includes/header.php';
         <small class="text-muted">
           <?= htmlspecialchars($session['course_name']) ?> • 
           Server: <?= htmlspecialchars($session['ip_address']) ?> • 
-          User: <code><?= htmlspecialchars($session['username']) ?></code> • 
+          Provisioned User: <code><?= htmlspecialchars($session['namespace']) ?></code> • 
           <i class="fas fa-clock"></i> <span id="countdown" style="font-weight: bold; color: #ff6b6b;"><?= $mins ?></span> minutes remaining
         </small>
       </div>
@@ -78,7 +78,7 @@ include 'includes/header.php';
     <div style="flex: 1; display: flex; flex-direction: column; background: #000; border-right: 2px solid #dee2e6; overflow: hidden;">
       <div style="background: #2c3e50; color: white; padding: 8px 12px; font-weight: bold; flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center;">
         <span><i class="fas fa-terminal"></i> Terminal - <?= htmlspecialchars($session['ip_address'] ?? 'Lab Server') ?></span>
-        <small style="font-weight: normal; opacity: 0.8;">User: <?= htmlspecialchars($session['username']) ?></small>
+        <small style="font-weight: normal; opacity: 0.8;">Provisioned User: <code><?= htmlspecialchars($session['namespace']) ?></code></small>
       </div>
       <div id="terminal" style="flex: 1; background: #000; overflow: hidden;"></div>
     </div>
@@ -124,12 +124,8 @@ include 'includes/header.php';
                 <td><code style="font-size: 11px;"><?= htmlspecialchars($session['ip_address'] ?? 'N/A') ?></code></td>
               </tr>
               <tr>
-                <td><strong>User:</strong></td>
-                <td><code style="font-size: 11px;"><?= htmlspecialchars($session['username']) ?></code></td>
-              </tr>
-              <tr>
-                <td><strong>Namespace:</strong></td>
-                <td><code style="font-size: 11px;"><?= htmlspecialchars($session['namespace']) ?></code></td>
+                <td><strong>K8s Namespace:</strong></td>
+                <td><code style="font-size: 11px;">lab-<?= htmlspecialchars($session['namespace']) ?></code></td>
               </tr>
               <tr>
                 <td><strong>SSH Port:</strong></td>
@@ -191,9 +187,9 @@ function initializeTerminal() {
 
     // Get server and authentication details
     const serverId = <?= $session['server_id'] ?>;
-    const username = "<?= htmlspecialchars($session['username']) ?>";
-    const sshUser = "<?= htmlspecialchars($session['username']) ?>";
-    const sshPassword = "k8s" + username + "@123!";  // Default provisioner password format
+    const provisionedUser = "<?= htmlspecialchars($session['namespace']) ?>";  // The actual provisioned username (e.g., user-9-1768241321)
+    const sshUser = provisionedUser;  // Use provisioned username for SSH
+    const sshPassword = "k8s" + provisionedUser + "@123!";  // Default provisioner password format
     const sshHost = "<?= htmlspecialchars($session['ip_address']) ?>";
     const sshPort = <?= $session['ssh_port'] ?? 22 ?>;
 
@@ -206,7 +202,7 @@ function initializeTerminal() {
     let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in/terminal?server_id=' + serverId + '&user=' + encodeURIComponent(sshUser));
     
     ws.onopen = () => {
-        term.write('\r\n🔗 Connecting to lab server (' + username + ')...\r\n');
+        term.write('\r\n🔗 Connecting to lab server (' + provisionedUser + ')...\r\n');
         // Send password as JSON
         ws.send(JSON.stringify({ password: sshPassword }));
     };
