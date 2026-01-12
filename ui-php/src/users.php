@@ -36,99 +36,123 @@ if (isset($_GET['delete'])) {
 
 /* ---------- USER LIST ---------- */
 $users = $conn->query("SELECT username, role FROM users ORDER BY username");
+$page_title = "User Management";
+include 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-<title>Manage Users</title>
-<link rel="stylesheet" href="assets/style.css">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
 
-<body>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
 
-<!-- ===== TOP BAR ===== -->
-<div class="topbar">
-  <div class="logo">🖥️ Pratik Rastogi LAB Linux Monitoring</div>
-  <div class="top-actions">
-    <span class="user">👤 <?= $_SESSION['user'] ?></span>
-    <a href="logout.php" class="logout">Logout</a>
-  </div>
-</div>
+<?php include 'includes/navbar.php'; ?>
+<?php include 'includes/sidebar.php'; ?>
 
-<div class="layout">
-
-<!-- ===== SIDEBAR ===== -->
-<div class="sidebar">
-  <a href="index.php">📊 Dashboard</a>
-  <a href="charts.php">📈 Charts</a>
-  <a href="alerts.php">🚨 Alerts</a>
-  <hr>
-  <a href="add_server.php">➕ Add Server</a>
-  <a class="active" href="users.php">👥 Users</a>
-</div>
-
-<!-- ===== CONTENT ===== -->
-<div class="content">
-
-<!-- ADD USER -->
-<div class="card">
-  <h3>Add New User</h3>
-
-  <form method="post">
-    <label>Username</label>
-    <input name="username" required>
-
-    <label>Password</label>
-    <div style="position:relative">
-      <input id="pwd" type="password" name="password" required>
-      <span onclick="togglePwd()"
-            style="position:absolute;right:10px;top:12px;cursor:pointer">👁</span>
+<!-- Content Wrapper -->
+<div class="content-wrapper">
+  <!-- Content Header -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0"><i class="fas fa-users"></i> User Management</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+            <li class="breadcrumb-item active">Users</li>
+          </ol>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <label>Role</label>
-    <select name="role">
-      <option value="user">User</option>
-      <option value="admin">Admin</option>
-    </select>
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
 
-    <button name="add_user">Add User</button>
-  </form>
+      <!-- Add User Form -->
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title"><i class="fas fa-user-plus"></i> Add New User</h3>
+            </div>
+            <div class="card-body">
+              <form method="post">
+                <div class="form-group">
+                  <label>Username</label>
+                  <input type="text" name="username" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label>Password</label>
+                  <div class="input-group">
+                    <input id="pwd" type="password" name="password" class="form-control" required>
+                    <div class="input-group-append">
+                      <button type="button" class="btn btn-outline-secondary" onclick="togglePwd()">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Role</label>
+                  <select name="role" class="form-control">
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <button type="submit" name="add_user" class="btn btn-primary"><i class="fas fa-plus"></i> Add User</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User List -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title"><i class="fas fa-list"></i> Existing Users</h3>
+            </div>
+            <div class="card-body">
+              <table class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php while($u = $users->fetch_assoc()): ?>
+                  <tr>
+                    <td><?= htmlspecialchars($u['username']) ?></td>
+                    <td><span class="badge badge-<?= $u['role'] == 'admin' ? 'danger' : 'info' ?>"><?= htmlspecialchars($u['role']) ?></span></td>
+                    <td>
+                      <?php if ($u['username'] != $_SESSION['user']) { ?>
+                        <a class="btn btn-sm btn-danger"
+                           href="?delete=<?= urlencode($u['username']) ?>"
+                           onclick="return confirm('Delete this user?')">
+                           <i class="fas fa-trash"></i> Delete
+                        </a>
+                      <?php } else { ?>
+                        <span class="badge badge-secondary">Current User</span>
+                      <?php } ?>
+                    </td>
+                  </tr>
+                  <?php endwhile; ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
 </div>
 
-<!-- USER LIST -->
-<div class="card">
-  <h3>Existing Users</h3>
-
-  <table class="modern-table">
-    <tr>
-      <th>Username</th>
-      <th>Role</th>
-      <th>Action</th>
-    </tr>
-
-    <?php while($u = $users->fetch_assoc()): ?>
-    <tr>
-      <td><?= htmlspecialchars($u['username']) ?></td>
-      <td><?= htmlspecialchars($u['role']) ?></td>
-      <td>
-        <?php if ($u['username'] != $_SESSION['user']) { ?>
-          <a class="del"
-             href="?delete=<?= urlencode($u['username']) ?>"
-             onclick="return confirm('Delete this user?')">
-             Delete
-          </a>
-        <?php } else { ?>
-          <span style="color:#999">Current</span>
-        <?php } ?>
-      </td>
-    </tr>
-    <?php endwhile; ?>
-  </table>
-</div>
-
-</div>
-</div>
+<?php include 'includes/footer.php'; ?>
 
 <script>
 function togglePwd(){
