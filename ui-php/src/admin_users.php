@@ -214,11 +214,11 @@ include 'includes/header.php';
 
               <!-- Assign Lab Modal -->
               <div class="modal fade" id="assignLab<?= $user['id'] ?>">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg">
                   <div class="modal-content">
                     <div class="modal-header bg-primary">
                       <h4 class="modal-title">
-                        <i class="fas fa-flask"></i> Assign Lab to <?= htmlspecialchars($user['name'] ?? $user['email']) ?>
+                        <i class="fas fa-flask"></i> Assign Course/Lab to <?= htmlspecialchars($user['name'] ?? $user['email']) ?>
                       </h4>
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
@@ -227,17 +227,25 @@ include 'includes/header.php';
                         <input type="hidden" name="user_id" value="<?= $user['id'] ?>">
                         
                         <div class="form-group">
-                          <label>Lab Type <span class="text-danger">*</span></label>
-                          <select name="lab_type" class="form-control" required>
-                            <option value="">-- Select Lab Type --</option>
-                            <option value="kubernetes-basics">Kubernetes Basics</option>
-                            <option value="docker-fundamentals">Docker Fundamentals</option>
-                            <option value="k8s-advanced">Kubernetes Advanced</option>
-                            <option value="helm-charts">Helm Charts</option>
-                            <option value="cicd-pipeline">CI/CD Pipeline</option>
-                            <option value="monitoring-prometheus">Monitoring with Prometheus</option>
-                            <option value="custom">Custom Lab</option>
+                          <label>Select Course <span class="text-danger">*</span></label>
+                          <select name="course_id" class="form-control course-select" required 
+                                  onchange="loadLabsForCourse(this.value, <?= $user['id'] ?>)">
+                            <option value="">-- Select Course --</option>
+                            <?php 
+                            $courses = $conn->query("SELECT id, name FROM courses WHERE active=1 ORDER BY name");
+                            while($course = $courses->fetch_assoc()):
+                            ?>
+                            <option value="<?= $course['id'] ?>"><?= htmlspecialchars($course['name']) ?></option>
+                            <?php endwhile; ?>
                           </select>
+                        </div>
+
+                        <div class="form-group">
+                          <label>Select Lab <span class="text-danger">*</span></label>
+                          <select name="lab_id" class="form-control lab-select" required>
+                            <option value="">-- Select a course first --</option>
+                          </select>
+                          <small class="form-text text-muted">Available labs for the selected course will appear here</small>
                         </div>
 
                         <div class="form-group">
@@ -256,7 +264,7 @@ include 'includes/header.php';
                         <div class="alert alert-info mb-0">
                           <i class="fas fa-info-circle"></i> 
                           <strong>Auto-Provisioning Enabled</strong><br>
-                          Lab will be automatically provisioned on the configured bastion server.
+                          Lab will be automatically provisioned on the configured server.
                         </div>
                       </div>
 
@@ -347,5 +355,41 @@ include 'includes/header.php';
 <?php include 'includes/footer.php'; ?>
 
 </div>
+
+<script>
+// Dynamic lab loading based on course selection
+function loadLabsForCourse(courseId, userId) {
+    const labSelect = document.querySelector('#assignLab' + userId + ' .lab-select');
+    
+    if (!courseId) {
+        labSelect.innerHTML = '<option value="">-- Select a course first --</option>';
+        return;
+    }
+    
+    // Fetch labs for the selected course
+    fetch('api/get_course_labs.php?course_id=' + courseId)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success && data.labs.length > 0) {
+                let html = '<option value="">-- Select Lab --</option>';
+                data.labs.forEach(lab => {
+                    html += '<option value="' + lab.id + '">' + 
+                            lab.lab_name + ' (' + lab.duration_minutes + ' min)</option>';
+                });
+                labSelect.innerHTML = html;
+            } else {
+                labSelect.innerHTML = '<option value="">No labs available for this course</option>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading labs:', error);
+            labSelect.innerHTML = '<option value="">Error loading labs</option>';
+        });
+}
+</script>
+
 </body>
 </html>
