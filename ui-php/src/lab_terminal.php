@@ -72,17 +72,73 @@ include 'includes/header.php';
     </div>
   </div>
   
-  <!-- Split View: Guide + Terminal -->
-  <div style="flex: 1; display: flex; overflow: hidden; gap: 1px; background: #ddd;">
-    <!-- Left: Lab Guide (30%) -->
-    <div style="flex: 0 0 30%; overflow-y: auto; background: white; padding: 20px;">
-      <h6 class="font-weight-bold mb-3"><i class="fas fa-book"></i> Lab Guide</h6>
-      <div id="guide-content" style="font-size: 13px; line-height: 1.6; color: #333;"></div>
+  <!-- Split View: Terminal + Guide -->
+  <div style="flex: 1; display: flex; overflow: hidden; gap: 0; background: #ddd;">
+    <!-- Left: Terminal (70%) -->
+    <div style="flex: 1; display: flex; flex-direction: column; background: #000; border-right: 2px solid #dee2e6; overflow: hidden;">
+      <div style="background: #2c3e50; color: white; padding: 8px 12px; font-weight: bold; flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center;">
+        <span><i class="fas fa-terminal"></i> Terminal - <?= htmlspecialchars($session['ip_address'] ?? 'Lab Server') ?></span>
+        <small style="font-weight: normal; opacity: 0.8;">User: <?= htmlspecialchars($session['username']) ?></small>
+      </div>
+      <div id="terminal" style="flex: 1; background: #000; overflow: hidden;"></div>
     </div>
     
-    <!-- Right: Terminal (70%) -->
-    <div style="flex: 1; background: #1e1e1e; overflow: hidden;">
-      <div id="terminal" style="height: 100%;"></div>
+    <!-- Right: Lab Guide (30%) -->
+    <div style="flex: 0 0 30%; display: flex; flex-direction: column; background: #f8f9fa; overflow: hidden;">
+      <div style="background: #f1f3f4; padding: 8px 12px; font-weight: bold; border-bottom: 1px solid #dee2e6; flex: 0 0 auto;">
+        <i class="fas fa-book"></i> Lab Information & Guide
+      </div>
+      
+      <!-- Guide Content -->
+      <div style="flex: 1; overflow-y: auto; padding: 20px;" id="labGuidePanel">
+        <?php if (!empty($session['lab_guide_content'])): ?>
+          <!-- Lab Guide Content from Course -->
+          <div class="lab-guide-content">
+            <div id="guide-content"></div>
+          </div>
+        <?php else: ?>
+          <!-- Default Lab Information -->
+          <div class="alert alert-info">
+            <h5><i class="fas fa-info-circle"></i> Lab Information</h5>
+            <p>No lab guide available for this course.</p>
+          </div>
+        <?php endif; ?>
+        
+        <!-- Lab Specifications -->
+        <div class="card mt-4" style="border: 1px solid #dee2e6;">
+          <div class="card-header bg-light" style="background: #f1f3f4;">
+            <h6 class="mb-0" style="font-size: 12px;"><i class="fas fa-cogs"></i> Lab Specifications</h6>
+          </div>
+          <div class="card-body" style="padding: 10px;">
+            <table class="table table-sm table-borderless" style="margin: 0; font-size: 12px;">
+              <tr>
+                <td><strong>Lab:</strong></td>
+                <td><?= htmlspecialchars($session['lab_name']) ?></td>
+              </tr>
+              <tr>
+                <td><strong>Course:</strong></td>
+                <td><?= htmlspecialchars($session['course_name'] ?? 'N/A') ?></td>
+              </tr>
+              <tr>
+                <td><strong>Server IP:</strong></td>
+                <td><code style="font-size: 11px;"><?= htmlspecialchars($session['ip_address'] ?? 'N/A') ?></code></td>
+              </tr>
+              <tr>
+                <td><strong>User:</strong></td>
+                <td><code style="font-size: 11px;"><?= htmlspecialchars($session['username']) ?></code></td>
+              </tr>
+              <tr>
+                <td><strong>Namespace:</strong></td>
+                <td><code style="font-size: 11px;"><?= htmlspecialchars($session['namespace']) ?></code></td>
+              </tr>
+              <tr>
+                <td><strong>SSH Port:</strong></td>
+                <td><?= $session['ssh_port'] ?? 22 ?></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -98,35 +154,54 @@ include 'includes/header.php';
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 
 <script>
-// Render lab guide
-document.getElementById('guide-content').innerHTML = marked.parse(<?= json_encode($session['lab_guide_content'] ?? 'No guide available') ?>);
-
-// Terminal setup
-const term = new Terminal({
-    cursorBlink: true,
-    fontSize: 12,
-    fontFamily: 'Courier New, monospace',
-    theme: { background: '#1e1e1e', foreground: '#fff' }
+$(document).ready(function() {
+    // Render lab guide if available
+    const guideContent = <?= json_encode($session['lab_guide_content'] ?? null) ?>;
+    if (guideContent && document.getElementById('guide-content')) {
+        document.getElementById('guide-content').innerHTML = marked.parse(guideContent);
+    }
+    
+    initializeTerminal();
 });
 
-const fitAddon = new FitAddon.FitAddon();
-term.loadAddon(fitAddon);
-term.open(document.getElementById('terminal'));
+function initializeTerminal() {
+    // Terminal setup
+    const term = new Terminal({
+        cursorBlink: true,
+        fontSize: 12,
+        fontFamily: 'Courier New, monospace',
+        theme: { background: '#000000', foreground: '#ffffff' }
+    });
 
-setTimeout(() => fitAddon.fit(), 100);
-window.addEventListener('resize', () => fitAddon.fit());
+    const fitAddon = new FitAddon.FitAddon();
+    term.loadAddon(fitAddon);
+    term.open(document.getElementById('terminal'));
 
-// Get server and authentication details
-const serverId = <?= $session['server_id'] ?>;
-const username = "<?= htmlspecialchars($session['username']) ?>";
-const sshUser = "<?= htmlspecialchars($session['username']) ?>";
-const sshPassword = "k8s" + username + "@123!";  // Default provisioner password format
-const sshHost = "<?= htmlspecialchars($session['ip_address']) ?>";
-const sshPort = <?= $session['ssh_port'] ?? 22 ?>;
+    // Fit terminal to container
+    setTimeout(() => fitAddon.fit(), 100);
+    
+    // Responsive resize
+    window.addEventListener('resize', () => {
+        try {
+            fitAddon.fit();
+        } catch (e) {
+            console.error('Fit error:', e);
+        }
+    });
 
-if (!serverId || !sshHost) {
-    term.write('\r\n❌ No server assigned to this lab\r\n');
-} else {
+    // Get server and authentication details
+    const serverId = <?= $session['server_id'] ?>;
+    const username = "<?= htmlspecialchars($session['username']) ?>";
+    const sshUser = "<?= htmlspecialchars($session['username']) ?>";
+    const sshPassword = "k8s" + username + "@123!";  // Default provisioner password format
+    const sshHost = "<?= htmlspecialchars($session['ip_address']) ?>";
+    const sshPort = <?= $session['ssh_port'] ?? 22 ?>;
+
+    if (!serverId || !sshHost) {
+        term.write('\r\n❌ No server assigned to this lab\r\n');
+        return;
+    }
+
     // SECURE: server_id and user in URL, password sent in JSON message
     let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in/terminal?server_id=' + serverId + '&user=' + encodeURIComponent(sshUser));
     
@@ -164,13 +239,69 @@ setInterval(() => {
     let elapsed = (Date.now() - startTime) / 1000;
     let remaining = totalRemaining - elapsed;
     let mins = Math.floor(remaining / 60);
-    document.getElementById('countdown').textContent = Math.max(0, mins);
-    if (mins <= 0) {
-        alert('Session expired!');
+    let secs = Math.floor(remaining % 60);
+    
+    const countdownEl = document.getElementById('countdown');
+    if (countdownEl) {
+        countdownEl.textContent = Math.max(0, mins);
+        // Change color to red when less than 10 minutes
+        if (mins < 10) {
+            countdownEl.style.color = '#ff6b6b';
+        }
+    }
+    
+    if (mins <= 0 && secs <= 0) {
+        alert('Session expired! Redirecting to My Labs...');
         location.href = 'my_labs.php';
     }
 }, 5000);
 </script>
 
-</body>
-</html>
+<style>
+.lab-guide-content {
+    color: #333;
+    line-height: 1.8;
+    font-size: 13px;
+}
+
+.lab-guide-content p {
+    margin-bottom: 10px;
+}
+
+.lab-guide-content h1,
+.lab-guide-content h2,
+.lab-guide-content h3,
+.lab-guide-content h4,
+.lab-guide-content h5,
+.lab-guide-content h6 {
+    margin-top: 15px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #222;
+}
+
+.lab-guide-content code {
+    background: #f1f1f1;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+}
+
+.lab-guide-content pre {
+    background: #f1f1f1;
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+    border-left: 3px solid #007bff;
+}
+
+.lab-guide-content ul, .lab-guide-content ol {
+    margin-bottom: 10px;
+    margin-left: 20px;
+}
+
+.lab-guide-content li {
+    margin-bottom: 5px;
+}
+</style>
