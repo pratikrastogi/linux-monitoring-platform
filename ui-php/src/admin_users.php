@@ -32,32 +32,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_lab'])) {
     // Calculate expiry
     $access_expiry = date('Y-m-d H:i:s', time() + ($validity_hours * 3600));
     $session_token = bin2hex(random_bytes(16));
+    $namespace = 'user-' . $user_id . '-' . time();
     
-    // Create lab session
-    $conn->query("INSERT INTO lab_sessions 
-                  (user_id, lab_id, server_id, access_expiry, status, created_at)
-                  VALUES ($user_id, $lab_id, ".$lab_info['server_id'].", '$access_expiry', 'ACTIVE', NOW())");
+    // Create lab session with correct schema (no server_id column)
+    $insert_result = $conn->query("INSERT INTO lab_sessions 
+                  (user_id, username, lab_id, namespace, access_start, access_expiry, status, session_token, provisioned)
+                  VALUES ($user_id, '$username', $lab_id, '$namespace', NOW(), '$access_expiry', 'ACTIVE', '$session_token', 0)");
+    
+    if (!$insert_result) {
+        $_SESSION['error'] = "Database error: " . $conn->error;
+        header("Location: admin_users.php");
+        exit;
+    }
     
     $session_id = $conn->insert_id;
     
-    // Get server details from centralized servers table
-    $server_result = $conn->query("SELECT * FROM servers WHERE id = ".$lab_info['server_id']);
-    $server_info = $server_result->fetch_assoc();
-    
-    $bastion_host = $server_info['ip_address'];
-    $bastion_user = $server_info['ssh_user'];
-    $bastion_password = $server_info['ssh_password'];
-    $provision_script = $lab_info['provision_script_path'];
-    $user_email = $user_info['email'];
-    $duration_hours = $validity_hours;
-    
-    // Trigger auto-provisioning script via sshpass
-    $provision_command = "sshpass -p '$bastion_password' ssh -o StrictHostKeyChecking=no $bastion_user@$bastion_host " .
-                       "'bash $provision_script $user_email $duration_hours $lab_id'";
-    
-    exec($provision_command . " > /dev/null 2>&1 &");
-    
-    $_SESSION['success'] = "Lab assigned successfully! Provisioning initiated on $bastion_host";
+    // Get server details from lab's server_id
+    if ($lab_info['server_id']) {
+        $server_result = $conn->query("SELECT * FROM servers WHERE id = " . $lab_info['server_id']);
+        $server_info = $server_result->fetch_assoc();
+        
+        if ($server_info) {
+            $bastion_host = $server_info['ip_address'];
+            $bastion_user = $server_info['ssh_user'];
+            $bastion_password = $server_info['ssh_password'];
+            $provision_script = $lab_info['provision_script_path'];
+            $user_email = $user_info['email'];
+            $duration_hours = $validity_hours;
+            
+            // Trigger auto-provisioning script via sshpass
+            $provision_command = "sshpass -p '$bastion_password' ssh -o StrictHostKeyChecking=no $bastion_user@$bastion_host " .
+                               "'bash $provision_script $user_email $duration_hours $lab_id'";
+            
+            exec($provision_command . " > /dev/null 2>&1 &");
+            
+            $_SESSION['success'] = "Lab assigned successfully! Provisioning initiated on $bastion_host";
+        } else {
+            $_SESSION['success'] = "Lab assigned successfully! Server not found for auto-provisioning.";
+        }
+    } else {
+        $_SESSION['success'] = "Lab assigned successfully! No server mapped to this lab.";
+    }
     
     header("Location: admin_users.php");
     exit;
@@ -203,7 +218,7 @@ include 'includes/header.php';
                 </td>
                 <td><?= $total_sessions ?></td>
                 <td>
-                  <button class="btn btn-xs btn-primary assign-lab-btn" data-user-id="<?= $user['id'] ?>" data-user-name="<?= htmlspecialchars($user['name'] ?? $user['email']) ?>">
+                  <button class="btn btn-xs btn-primary assign-lab-btn" data-user-id="<?= $user['id'] ?>" data-user-name="<?= htmlspecialchars($user['name'] ?? $user['email'] ?? 'User') ?>">
                     <i class="fas fa-plus"></i> Assign Lab
                   </button>
                   <a href="admin_lab_requests.php?user=<?= $user['id'] ?>" class="btn btn-xs btn-info">
