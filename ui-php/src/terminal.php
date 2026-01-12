@@ -223,135 +223,114 @@ include 'includes/header.php';
 
               <h5 class="mt-3"><i class="fas fa-check-circle text-success"></i> 6. Persistent Volume</h5>
               <p class="lab-note">Persist data beyond container lifecycle.</p>
-      <div class="row">
-        <div class="col-lg-8 offset-lg-2">
-          <div class="card">
-            <div class="card-header bg-warning">
-              <h3 class="card-title"><i class="fas fa-hourglass-end"></i> Lab Session Expired</h3>
-            </div>
-            <div class="card-body">
-              <p class="text-muted">Your lab session has ended. Request an extension to continue learning!</p>
-              
-              <?php if ($msg): ?>
-                <div class="alert alert-info">
-                  <i class="fas fa-info-circle"></i> <?= htmlspecialchars($msg) ?>
-                </div>
-              <?php endif; ?>
+              <div class="cmd-block">docker volume create my-vol</div>
+              <div class="cmd-block">docker run -d -v my-vol:/data nginx</div>
 
-              <form method="post">
-                <div class="form-group">
-                  <label>Your Experience <span class="text-danger">*</span></label>
-                  <textarea name="experience" class="form-control" rows="3" placeholder="Describe what you've learned..." required></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label>Domain/Focus Area <span class="text-danger">*</span></label>
-                  <input name="domain" class="form-control" placeholder="e.g., DevOps, Cloud, Backend..." required>
-                </div>
-      </div>
-
-<?php endif; ?>
-
-    </div>
-  </section>
-</div>
-
-<?php include 'includes/footer.php'     <div class="form-group">
-                  <label>Feedback <span class="text-danger">*</span></label>
-                  <textarea name="feedback" class="form-control" rows="2" placeholder="How was your experience?" required></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label>Suggestions <span class="text-danger">*</span></label>
-                  <textarea name="suggestion" class="form-control" rows="2" placeholder="How can we improve?" required></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label>Extension Duration <span class="text-danger">*</span></label>
-                  <select name="hours" class="form-control">
-                    <option value="1">1 Hour</option>
-                    <option value="2">2 Hours</option>
-                    <option value="4">4 Hours</option>
-                  </select>
-                </div>
-
-                <button class="btn btn-primary btn-block" name="request_extension">
-                  <i class="fas fa-paper-plane"></i> Submit Extension Request
-                </button>
-              </form>
+              <h5 class="mt-3"><i class="fas fa-check-circle text-success"></i> 7. Clean Up</h5>
+              <p class="lab-note">Remove containers and images.</p>
+              <div class="cmd-block">docker stop web</div>
+              <div class="cmd-block">docker rm web</div>
+              <div class="cmd-block">docker rmi nginx</div>
             </div>
           </div>
         </div>
-      </div
-        const username = "<?= $user ?>";
-        const password = "k8s" + username + "@123!";
+      </div>
 
-        if (!term) {
-          term = new Terminal({ cursorBlink: true });
-          term.open(document.getElementById("terminal"));
+      <script>
+        let term, ws;
+
+        function connectTerminal() {
+          const username = "<?= $user ?>";
+          const password = "k8s" + username + "@123!";
+
+          if (!term) {
+            term = new Terminal({ cursorBlink: true });
+            term.open(document.getElementById("terminal"));
+          }
+
+          ws = new WebSocket(
+            "wss://kubearena.pratikrastogi.co.in/terminal?" +
+            "server_id=<?= $server_id ?>&user=<?= $user ?>"
+          );
+
+          ws.onopen = () => {
+            ws.send(JSON.stringify({ password }));
+            term.write("🔐 Auto authenticating...\r\n");
+          };
+
+          ws.onmessage = e => term.write(e.data);
+          ws.onclose = () => { term.write("\r\n❌ Connection closed\r\n"); ws = null; };
+          term.onData(d => ws && ws.send(d));
         }
 
-        ws = new WebSocket(
-          "wss://kubearena.pratikrastogi.co.in/terminal?" +
-          "server_id=<?= $server_id ?>&user=<?= $user ?>"
-        );
+        connectTerminal();
+      </script>
 
-        ws.onopen = () => {
-          ws.send(JSON.stringify({ password }));
-          term.write("🔐 Auto authenticating...\r\n");
-        };
+    <?php endif; ?>
 
-        ws.onmessage = e => term.write(e.data);
-        ws.onclose = () => { term.write("\r\n❌ Connection closed\r\n"); ws = null; };
-        term.onData(d => ws && ws.send(d));
-      }
-      
-  ws = new WebSocket(
-    "wss://kubearena.pratikrastogi.co.in/terminal?" +
-    "server_id=<?= $server_id ?>&user=<?= $user ?>"
-  );
+  <?php elseif ($lab['status'] === 'EXPIRED'): ?>
 
-  ws.onopen = () => {
-    ws.send(JSON.stringify({ password }));
-    term.write("🔐 Auto authenticating...\r\n");
-  };
+    <!-- EXPIRED LAB STATE -->
+    <div class="row">
+      <div class="col-lg-8 offset-lg-2">
+        <div class="card">
+          <div class="card-header bg-warning">
+            <h3 class="card-title"><i class="fas fa-hourglass-end"></i> Lab Session Expired</h3>
+          </div>
+          <div class="card-body">
+            <p class="text-muted">Your lab session has ended. Request an extension to continue learning!</p>
+            
+            <?php if ($msg): ?>
+              <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> <?= htmlspecialchars($msg) ?>
+              </div>
+            <?php endif; ?>
 
-  ws.onmessage = e => term.write(e.data);
-  ws.onclose = () => { term.write("\r\n❌ Connection closed\r\n"); ws = null; };
-  term.onData(d => ws && ws.send(d));
-}
-</script>
+            <form method="post">
+              <div class="form-group">
+                <label>Your Experience <span class="text-danger">*</span></label>
+                <textarea name="experience" class="form-control" rows="3" placeholder="Describe what you've learned..." required></textarea>
+              </div>
 
-<?php elseif ($lab['status'] === 'EXPIRED'): ?>
+              <div class="form-group">
+                <label>Domain/Focus Area <span class="text-danger">*</span></label>
+                <input name="domain" class="form-control" placeholder="e.g., DevOps, Cloud, Backend..." required>
+              </div>
 
-  <p style="padding:10px">⌛ Lab expired.</p>
-  <?php if ($msg): ?><p><?= htmlspecialchars($msg) ?></p><?php endif; ?>
+              <div class="form-group">
+                <label>Feedback <span class="text-danger">*</span></label>
+                <textarea name="feedback" class="form-control" rows="2" placeholder="How was your experience?" required></textarea>
+              </div>
 
-  <form method="post" style="padding:10px">
-    <label>Experience</label>
-    <textarea name="experience" required></textarea>
+              <div class="form-group">
+                <label>Suggestions <span class="text-danger">*</span></label>
+                <textarea name="suggestion" class="form-control" rows="2" placeholder="How can we improve?" required></textarea>
+              </div>
 
-    <label>Domain</label>
-    <input name="domain" required>
+              <div class="form-group">
+                <label>Extension Duration <span class="text-danger">*</span></label>
+                <select name="hours" class="form-control">
+                  <option value="1">1 Hour</option>
+                  <option value="2">2 Hours</option>
+                  <option value="4">4 Hours</option>
+                </select>
+              </div>
 
-    <label>Feedback</label>
-    <textarea name="feedback" required></textarea>
+              <button class="btn btn-primary btn-block" name="request_extension">
+                <i class="fas fa-paper-plane"></i> Submit Extension Request
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <label>Suggestion</label>
-    <textarea name="suggestion" required></textarea>
+  <?php endif; ?>
 
-    <label>Hours</label>
-    <select name="hours">
-      <option value="1">1 Hour</option>
-      <option value="2">2 Hours</option>
-      <option value="4">4 Hours</option>
-    </select>
+  </div>
+</section>
+</div>
 
-    <button class="btn" name="request_extension">📨 Request Access</button>
-  </form>
+<?php include 'includes/footer.php'; ?>
 
-<?php endif; ?>
-
-</body>
-</html>
 
