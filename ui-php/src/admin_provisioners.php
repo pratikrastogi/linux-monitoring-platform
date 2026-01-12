@@ -229,7 +229,7 @@ include 'includes/header.php';
                   <?php endif; ?>
                 </td>
                 <td>
-                  <button class="btn btn-sm btn-success" onclick="openTerminal('<?= htmlspecialchars($server['ip_address']) ?>', '<?= htmlspecialchars($server['ssh_user']) ?>', '<?= htmlspecialchars($server['ssh_password']) ?>', '<?= htmlspecialchars($server['hostname']) ?>')" title="Open terminal access">
+                  <button class="btn btn-sm btn-success" onclick="openTerminal(<?= $server['id'] ?>, '<?= htmlspecialchars($server['hostname']) ?>')" title="Open terminal access">
                     <i class="fas fa-terminal"></i> Connect
                   </button>
                   <a href="?edit=<?= $server['id'] ?>" class="btn btn-sm btn-info">
@@ -267,13 +267,13 @@ include 'includes/header.php';
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 
 <script>
-    // Terminal access function for admin
-    function openTerminal(host, user, password, hostname) {
+    // Terminal access function for admin - SECURE (no passwords in URL)
+    function openTerminal(serverId, hostname) {
         const modal = document.createElement('div');
         modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; flex-direction: column;';
         modal.innerHTML = `
             <div style="background: #2c3e50; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center; flex: 0 0 auto;">
-                <span><i class="fas fa-terminal"></i> Terminal - ${hostname} (${host})</span>
+                <span><i class="fas fa-terminal"></i> Terminal - ${hostname}</span>
                 <button onclick="this.closest('[data-modal]').remove()" style="background: #e74c3c; border: none; color: white; padding: 5px 15px; cursor: pointer; border-radius: 3px;">
                     <i class="fas fa-times"></i> Close
                 </button>
@@ -301,13 +301,11 @@ include 'includes/header.php';
                 setTimeout(() => fitAddon.fit(), 100);
                 window.addEventListener('resize', () => fitAddon.fit());
                 
-                let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in/terminal?' + 
-                    'host=' + encodeURIComponent(host) + 
-                    '&user=' + encodeURIComponent(user) +
-                    '&password=' + encodeURIComponent(password));
+                // SECURE: Only server_id in URL, gateway fetches credentials from database
+                let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in:3000/terminal?server_id=' + serverId);
                 
                 ws.onopen = () => {
-                    term.write('\r\n🔗 Connecting to ' + hostname + ' (' + host + ')...\r\n');
+                    term.write('\r\n🔗 Connecting to ' + hostname + '...\r\n');
                 };
                 ws.onmessage = (e) => term.write(e.data);
                 ws.onerror = (err) => {

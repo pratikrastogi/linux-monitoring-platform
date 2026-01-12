@@ -294,7 +294,7 @@ include 'includes/header.php';
                                         <a href="?edit=<?= $lab['id'] ?>" class="btn btn-sm btn-info" title="Edit lab">
                                             <i class="fas fa-edit"></i> Edit
                                         </a>
-                                        <button class="btn btn-sm btn-success" onclick="openTerminal('<?= htmlspecialchars($lab['ip_address']) ?>', '<?= htmlspecialchars($lab['ssh_user']) ?>', '<?= htmlspecialchars($lab['ssh_password']) ?>')" title="Open terminal access">
+                                        <button class="btn btn-sm btn-success" onclick="openTerminal(<?= $lab['server_id'] ?>, '<?= htmlspecialchars($lab['lab_name']) ?>')" title="Open terminal access">
                                             <i class="fas fa-terminal"></i> Terminal
                                         </button>
                                         <form method="POST" style="display:inline;">
@@ -335,13 +335,13 @@ include 'includes/header.php';
         $('[data-widget="pushmenu"]').PushMenu();
     });
     
-    // Terminal access function for admin
-    function openTerminal(host, user, password) {
+    // Terminal access function for admin - SECURE (no passwords in URL)
+    function openTerminal(serverId, labName) {
         const modal = document.createElement('div');
         modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; flex-direction: column;';
         modal.innerHTML = `
             <div style="background: #2c3e50; color: white; padding: 10px; display: flex; justify-content: space-between; flex: 0 0 auto;">
-                <span><i class="fas fa-terminal"></i> Terminal - ${host}</span>
+                <span><i class="fas fa-terminal"></i> Terminal - Lab: ${labName}</span>
                 <button onclick="this.closest('[data-modal]').remove()" style="background: #e74c3c; border: none; color: white; padding: 5px 15px; cursor: pointer; border-radius: 3px;">
                     <i class="fas fa-times"></i> Close
                 </button>
@@ -369,13 +369,11 @@ include 'includes/header.php';
                 setTimeout(() => fitAddon.fit(), 100);
                 window.addEventListener('resize', () => fitAddon.fit());
                 
-                let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in/terminal?' + 
-                    'host=' + encodeURIComponent(host) + 
-                    '&user=' + encodeURIComponent(user) +
-                    '&password=' + encodeURIComponent(password));
+                // SECURE: Only server_id in URL, gateway fetches credentials from database
+                let ws = new WebSocket('wss://kubearena.pratikrastogi.co.in:3000/terminal?server_id=' + serverId);
                 
                 ws.onopen = () => {
-                    term.write('\r\n🔗 Connecting to ' + host + '...\r\n');
+                    term.write('\r\n🔗 Connecting to lab server...\r\n');
                 };
                 ws.onmessage = (e) => term.write(e.data);
                 ws.onerror = (err) => {
