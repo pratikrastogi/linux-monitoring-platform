@@ -51,15 +51,15 @@ include 'includes/header.php';
                             </div>
                         </div>
 
-                        <!-- Logged In Users -->
+                        <!-- Users with Active Labs -->
                         <div class="col-lg-3 col-6">
                             <div class="small-box bg-success">
                                 <div class="inner">
                                     <?php
-                                    $logged_in = $db->query("SELECT COUNT(*) as cnt FROM users WHERE role='user' AND last_login > DATE_SUB(NOW(), INTERVAL 1 HOUR)")->fetch_assoc()['cnt'];
+                                    $active_users = $db->query("SELECT COUNT(DISTINCT user_id) as cnt FROM lab_sessions WHERE status='ACTIVE' AND access_expiry > NOW()")->fetch_assoc()['cnt'];
                                     ?>
-                                    <h3><?= $logged_in ?></h3>
-                                    <p>Logged In (Last Hour)</p>
+                                    <h3><?= $active_users ?></h3>
+                                    <p>Users in Labs</p>
                                 </div>
                                 <div class="icon"><i class="fas fa-user-check"></i></div>
                                 <a href="admin_users.php" class="small-box-footer">View <i class="fas fa-arrow-circle-right"></i></a>

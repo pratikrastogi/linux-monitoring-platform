@@ -28,11 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             if ($id) {
                 $db->query("UPDATE servers SET hostname='$hostname', ip_address='$ip_address', ssh_user='$ssh_user', 
-                           ssh_password='$ssh_password', enabled=$enabled, purpose='$purpose', updated_at=NOW() WHERE id=$id");
+                           ssh_password='$ssh_password', enabled=$enabled, purpose='$purpose' WHERE id=$id");
                 $message = "Server updated successfully!";
             } else {
-                $db->query("INSERT INTO servers (hostname, ip_address, ssh_user, ssh_password, enabled, purpose, created_at, updated_at) 
-                           VALUES ('$hostname', '$ip_address', '$ssh_user', '$ssh_password', $enabled, '$purpose', NOW(), NOW())");
+                $db->query("INSERT INTO servers (hostname, ip_address, ssh_user, ssh_password, enabled, purpose) 
+                           VALUES ('$hostname', '$ip_address', '$ssh_user', '$ssh_password', $enabled, '$purpose')");
                 $message = "Server added successfully!";
             }
         } elseif ($_POST['action'] === 'delete') {
