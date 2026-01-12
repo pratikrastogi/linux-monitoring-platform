@@ -145,7 +145,7 @@ $total_sessions = $count_q->fetch_assoc()['c'];
 
 <tr>
 <td><?= $u['id'] ?></td>
-<td><b><?= htmlspecialchars($u['email']) ?></b></td>
+<td><b><?= htmlspecialchars($u['email'] ?? '', ENT_QUOTES, 'UTF-8') ?></b></td>
 <td>
 <form method="POST">
 <input type="hidden" name="user_id" value="<?= $u['id'] ?>">
