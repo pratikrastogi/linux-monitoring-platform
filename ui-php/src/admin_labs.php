@@ -58,7 +58,16 @@ if (isset($_GET['edit'])) {
 }
 
 // Get all labs with course names and server details
-$labs = $db->query("SELECT l.*, c.name as course_name, s.ip_address, s.ssh_user, s.ssh_password,
+$labs = $db->query("SELECT 
+    l.id, l.course_id, l.lab_name, l.server_id,
+    l.provision_script_path, l.cleanup_script_path,
+    l.duration_minutes, l.max_concurrent_users, l.active,
+    l.bastion_host, l.bastion_user, l.bastion_password,
+    l.created_at, l.updated_at,
+    c.name as course_name, 
+    COALESCE(s.ip_address, l.bastion_host) as ip_address,
+    COALESCE(s.ssh_user, l.bastion_user) as ssh_user,
+    COALESCE(s.ssh_password, l.bastion_password) as ssh_password,
     (SELECT COUNT(*) FROM lab_sessions WHERE lab_id = l.id AND status='ACTIVE') as active_sessions 
     FROM labs l 
     LEFT JOIN courses c ON l.course_id = c.id 
