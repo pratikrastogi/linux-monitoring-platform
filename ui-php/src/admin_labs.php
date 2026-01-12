@@ -12,6 +12,7 @@ if ($db->connect_error) die("Connection failed");
 
 $message = '';
 $error = '';
+$page_title = "Lab Management";
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -65,50 +66,15 @@ $labs = $db->query("SELECT l.*, c.name as course_name,
     FROM labs l 
     LEFT JOIN courses c ON l.course_id = c.id 
     ORDER BY l.created_at DESC");
+
+include 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab Management | KubeArena</title>
-    
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
-    
-    <!-- AdminLTE CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-    
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-</head>
-<body class="hold-transition sidebar-mini dark-mode">
+
+<body class="hold-transition sidebar-mini">
 <div class="wrapper">
-    
-    <!-- Navbar -->
-    <nav class="main-header navbar navbar-expand navbar-dark navbar-lightblue">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-            </li>
-        </ul>
-        
-        <div class="navbar-nav ml-auto">
-            <div class="nav-item dropdown">
-                <a class="nav-link" data-toggle="dropdown" href="#">
-                    <i class="fas fa-user-circle"></i> <?= htmlspecialchars($_SESSION['user']) ?>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right">
-                    <a href="profile.php" class="dropdown-item"><i class="fas fa-user"></i> Profile</a>
-                    <div class="dropdown-divider"></div>
-                    <a href="logout.php" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-    
-    <!-- Sidebar -->
-    <?php include 'includes/sidebar.php'; ?>
+
+<?php include 'includes/navbar.php'; ?>
+<?php include 'includes/sidebar.php'; ?>
     
     <!-- Content Wrapper -->
     <div class="content-wrapper">
@@ -322,14 +288,17 @@ $labs = $db->query("SELECT l.*, c.name as course_name,
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <a href="?edit=<?= $lab['id'] ?>" class="btn btn-sm btn-info">
+                                        <a href="?edit=<?= $lab['id'] ?>" class="btn btn-sm btn-info" title="Edit lab">
                                             <i class="fas fa-edit"></i> Edit
                                         </a>
+                                        <button class="btn btn-sm btn-success" onclick="openTerminal('<?= htmlspecialchars($lab['bastion_host']) ?>', '<?= htmlspecialchars($lab['bastion_user']) ?>', '<?= htmlspecialchars($lab['bastion_password']) ?>')" title="Open terminal access">
+                                            <i class="fas fa-terminal"></i> Terminal
+                                        </button>
                                         <form method="POST" style="display:inline;">
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="id" value="<?= $lab['id'] ?>">
                                             <button type="submit" class="btn btn-sm btn-danger" 
-                                                    onclick="return confirm('Delete this lab?')">
+                                                    onclick="return confirm('Delete this lab?')" title="Delete lab">
                                                 <i class="fas fa-trash"></i> Delete
                                             </button>
                                         </form>
@@ -367,6 +336,63 @@ $labs = $db->query("SELECT l.*, c.name as course_name,
     $(document).ready(function() {
         $('[data-widget="pushmenu"]').PushMenu();
     });
+    
+    // Terminal access function for admin
+    function openTerminal(host, user, password) {
+        // Create a temporary modal or open terminal in new window
+        const terminalWindow = window.open('', '_blank', 'width=1000,height=600');
+        terminalWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Terminal Access - ${host}</title>
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css">
+                <script src="https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.js"></script>
+                <style>
+                    body { margin: 0; overflow: hidden; background: #000; }
+                    #terminal { height: 100vh; width: 100vw; }
+                </style>
+            </head>
+            <body>
+                <div id="terminal"></div>
+                <script>
+                    const term = new Terminal({cursorBlink: true, fontSize: 14});
+                    const fitAddon = new FitAddon.FitAddon();
+                    term.loadAddon(fitAddon);
+                    term.open(document.getElementById('terminal'));
+                    fitAddon.fit();
+                    
+                    // Connect to terminal WebSocket
+                    const ws = new WebSocket('wss://kubearena.pratikrastogi.co.in/terminal');
+                    ws.onopen = () => {
+                        ws.send(JSON.stringify({
+                            type: 'auth',
+                            host: '${host}',
+                            user: '${user}',
+                            password: '${password}'
+                        }));
+                        term.write('\\r\\n🔗 Connecting to ${host}...\\r\\n');
+                    };
+                    
+                    ws.onmessage = (event) => {
+                        term.write(event.data);
+                    };
+                    
+                    ws.onerror = (error) => {
+                        term.write('\\r\\n❌ Connection error: ' + error.message);
+                    };
+                    
+                    term.onData(data => {
+                        if (ws.readyState === WebSocket.OPEN) {
+                            ws.send(JSON.stringify({type: 'input', data: data}));
+                        }
+                    });
+                </script>
+            </body>
+            </html>
+        `);
+    }
 </script>
 </body>
 </html>

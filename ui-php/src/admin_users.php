@@ -20,6 +20,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_lab'])) {
     $user_info = $conn->query("SELECT email FROM users WHERE id=$user_id")->fetch_assoc();
     $username = $user_info['email'];
     
+    // Get lab info with provisioning scripts
+    $lab_info = $conn->query("SELECT * FROM labs WHERE id=$lab_id")->fetch_assoc();
+    
+    if (!$lab_info) {
+        $_SESSION['error'] = "Lab not found!";
+        header("Location: admin_users.php");
+        exit;
+    }
+    
     // Calculate expiry
     $access_expiry = date('Y-m-d H:i:s', time() + ($validity_hours * 3600));
     $session_token = bin2hex(random_bytes(16));
@@ -31,59 +40,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_lab'])) {
     
     $session_id = $conn->insert_id;
     
-    // Get provision target
-    $provision_q = $conn->query("SELECT * FROM provision_target LIMIT 1");
-    if ($provision_q && $provision_q->num_rows > 0) {
-        $target = $provision_q->fetch_assoc();
-        $target_ip = $target['host_ip'];
-        $target_user = $target['ssh_user'];
-        $target_password = $target['ssh_password'];
-        
-        // Get user details
-        $user_q = $conn->query("SELECT email FROM users WHERE id=$user_id");
-        $user = $user_q->fetch_assoc();
-        $user_email = $user['email'];
-        
-        // Trigger auto-provisioning script
-        $provision_command = "sshpass -p '$target_password' ssh -o StrictHostKeyChecking=no $target_user@$target_ip " .
-                           "'bash /opt/lab/create_lab_user.sh $user_email $validity_hours $lab_type'";
-        
-        exec($provision_command . " > /dev/null 2>&1 &");
-        
-        // Update session status
-        $conn->query("UPDATE lab_sessions SET status='ACTIVE' WHERE id=$session_id");
-        
-        $_SESSION['success'] = "Lab assigned successfully! Auto-provisioning initiated on $target_ip";
-    } else {
-        $_SESSION['warning'] = "Lab assigned but no provision target configured. Please configure provision target.";
-    }
+    // Execute provisioning script on bastion host
+    $bastion_host = $lab_info['bastion_host'];
+    $bastion_user = $lab_info['bastion_user'];
+    $bastion_password = $lab_info['bastion_password'];
+    $provision_script = $lab_info['provision_script_path'];
+    $user_email = $user_info['email'];
+    $duration_hours = $validity_hours;
     
-    header("Location: admin_users.php");
-    exit;
-}
-
-// Handle provision target update
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_provision_target'])) {
-    $target_ip = $conn->real_escape_string($_POST['host_ip'] ?? $_POST['target_ip'] ?? '');
-    $target_user = $conn->real_escape_string($_POST['ssh_user'] ?? $_POST['target_user'] ?? '');
-    $target_password = $conn->real_escape_string($_POST['ssh_password'] ?? $_POST['target_password'] ?? '');
+    // Trigger auto-provisioning script via sshpass
+    $provision_command = "sshpass -p '$bastion_password' ssh -o StrictHostKeyChecking=no $bastion_user@$bastion_host " .
+                       "'bash $provision_script $user_email $duration_hours $lab_id'";
     
-    // Check if provision_target exists
-    $check = $conn->query("SELECT id FROM provision_target LIMIT 1");
-    if ($check && $check->num_rows > 0) {
-        $conn->query("UPDATE provision_target SET 
-                      host_ip='$target_ip', 
-                      ssh_user='$target_user', 
-                      ssh_password='$target_password',
-                      updated_at=NOW()
-                      WHERE id=1");
-    } else {
-        $conn->query("INSERT INTO provision_target 
-                      (host_ip, ssh_user, ssh_password, updated_at)
-                      VALUES ('$target_ip', '$target_user', '$target_password', NOW())");
-    }
+    exec($provision_command . " > /dev/null 2>&1 &");
     
-    $_SESSION['success'] = "Provision target updated successfully!";
+    // Update session status
+    $conn->query("UPDATE lab_sessions SET status='ACTIVE', provisioned=1 WHERE id=$session_id");
+    
+    $_SESSION['success'] = "Lab assigned successfully! Provisioning initiated on $bastion_host";
+    
     header("Location: admin_users.php");
     exit;
 }
@@ -97,13 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user_role'])) 
     $_SESSION['success'] = "User role updated successfully!";
     header("Location: admin_users.php");
     exit;
-}
-
-// Get provision target
-$provision_target = null;
-$provision_q = $conn->query("SELECT * FROM provision_target LIMIT 1");
-if ($provision_q && $provision_q->num_rows > 0) {
-    $provision_target = $provision_q->fetch_assoc();
 }
 
 include 'includes/header.php';
@@ -148,64 +116,6 @@ include 'includes/header.php';
         <?= $_SESSION['warning']; unset($_SESSION['warning']); ?>
       </div>
       <?php endif; ?>
-
-      <!-- Provision Target Configuration -->
-      <div class="card card-warning collapsed-card">
-        <div class="card-header">
-          <h3 class="card-title"><i class="fas fa-server"></i> Provision Target Configuration</h3>
-          <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-card-widget="collapse">
-              <i class="fas fa-plus"></i>
-            </button>
-          </div>
-        </div>
-        <div class="card-body">
-          <form method="POST">
-            <div class="row">
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label>Target Server IP <span class="text-danger">*</span></label>
-                  <input type="text" name="host_ip" class="form-control" 
-                         value="<?= htmlspecialchars($provision_target['host_ip'] ?? '') ?>" 
-                         placeholder="192.168.1.46" required>
-                  <small class="text-muted">Server where labs will be provisioned</small>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label>SSH Username <span class="text-danger">*</span></label>
-                  <input type="text" name="ssh_user" class="form-control" 
-                         value="<?= htmlspecialchars($provision_target['ssh_user'] ?? 'root') ?>" required>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label>SSH Password <span class="text-danger">*</span></label>
-                  <input type="password" name="ssh_password" class="form-control" 
-                         value="<?= htmlspecialchars($provision_target['ssh_password'] ?? '') ?>" 
-                         placeholder="Enter password" required>
-                </div>
-              </div>
-            </div>
-
-            <button type="submit" name="update_provision_target" class="btn btn-warning">
-              <i class="fas fa-save"></i> Update Provision Target
-            </button>
-
-            <?php if ($provision_target && isset($provision_target['host_ip'])): ?>
-            <span class="badge badge-success ml-2">
-              <i class="fas fa-check"></i> Configured: <?= htmlspecialchars($provision_target['host_ip'] ?? 'Not set') ?>
-            </span>
-            <?php else: ?>
-            <span class="badge badge-danger ml-2">
-              <i class="fas fa-exclamation-triangle"></i> Not Configured
-            </span>
-            <?php endif; ?>
-          </form>
-        </div>
-      </div>
 
       <!-- Users List with Lab Mapping -->
       <div class="card">
@@ -343,19 +253,11 @@ include 'includes/header.php';
                                     placeholder="Optional notes about this assignment..."></textarea>
                         </div>
 
-                        <?php if ($provision_target && isset($provision_target['host_ip'])): ?>
                         <div class="alert alert-info mb-0">
                           <i class="fas fa-info-circle"></i> 
                           <strong>Auto-Provisioning Enabled</strong><br>
-                          Lab will be automatically provisioned on: <code><?= htmlspecialchars($provision_target['host_ip'] ?? '') ?></code>
+                          Lab will be automatically provisioned on the configured bastion server.
                         </div>
-                        <?php else: ?>
-                        <div class="alert alert-warning mb-0">
-                          <i class="fas fa-exclamation-triangle"></i> 
-                          <strong>No Provision Target Configured</strong><br>
-                          Please configure provision target above for auto-provisioning.
-                        </div>
-                        <?php endif; ?>
                       </div>
 
                       <div class="modal-footer">

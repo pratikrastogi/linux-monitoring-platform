@@ -6,12 +6,12 @@ $conn = new mysqli("mysql","monitor","monitor123","monitoring");
 
 /*
  Logic:
- - Always show servers
+ - Only show servers that are configured as bastion hosts in labs
  - LEFT JOIN latest metrics (if exist)
 */
 
 $sql = "
-SELECT
+SELECT DISTINCT
  s.id AS server_id,
  s.hostname,
  s.ip_address,
@@ -28,7 +28,9 @@ LEFT JOIN server_metrics m
     ORDER BY collected_at DESC
     LIMIT 1
   )
-WHERE s.enabled = 1
+WHERE s.enabled = 1 
+  AND (s.hostname IN (SELECT bastion_host FROM labs WHERE active=1) 
+       OR s.ip_address IN (SELECT bastion_host FROM labs WHERE active=1))
 ORDER BY s.hostname
 ";
 
@@ -41,4 +43,3 @@ while ($row = $res->fetch_assoc()) {
 
 header("Content-Type: application/json");
 echo json_encode($data);
-
