@@ -10,6 +10,8 @@ if ($conn->connect_error) die("DB error");
 
 $user = $_SESSION['user'];
 $uid  = (int)$_SESSION['uid'];
+$role = $_SESSION['role'];
+$page_title = "Lab Terminal";
 
 /* ===============================
    FETCH LATEST LAB SESSION
@@ -67,125 +69,243 @@ function toIST($utc) {
     $dt->setTimezone(new DateTimeZone('Asia/Kolkata'));
     return $dt->format('d M Y, h:i A') . " IST";
 }
+
+include 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Lab Terminal</title>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css">
-  <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
 
-  <style>
-    body { margin:0; background:#111; color:#eee; font-family: monospace; }
-    .layout { display:flex; height:100vh; }
-    .left { flex:2; padding:10px; border-right:1px solid #333; }
-    .right { flex:1; padding:15px; overflow-y:auto; background:#0f0f0f; }
-    #terminal { background:#000; height:520px; border:1px solid #333; margin-top:10px; }
-    h3,h4 { color:#4caf50; }
-    .btn { padding:8px 14px; background:#4caf50; color:#fff; border:none; cursor:pointer; margin-top:10px; }
-    .cmd { background:#000; border:1px solid #444; padding:8px; margin:6px 0; color:#0f0; font-size:13px; }
-    .note { color:#ccc; font-size:13px; }
-  </style>
-</head>
+<?php include 'includes/navbar.php'; ?>
+<?php include 'includes/sidebar.php'; ?>
 
-<body>
+<!-- Content Wrapper -->
+<div class="content-wrapper">
+  <!-- Content Header -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0"><i class="fas fa-terminal"></i> Kubernetes Lab Terminal</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+            <li class="breadcrumb-item active">Lab Terminal</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<h3 style="padding:10px">🧪 Kubernetes Lab – User: <?= htmlspecialchars($user) ?></h3>
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
 
 <?php if (!$lab): ?>
 
-  <p style="padding:10px">You have not used your free lab yet.</p>
-  <a class="btn" href="generate_free_access.php" style="margin-left:10px">
-    🚀 Request Free Lab Access (60 min)
-  </a>
+      <div class="row">
+        <div class="col-md-6 offset-md-3">
+          <div class="card">
+            <div class="card-body text-center">
+              <i class="fas fa-flask fa-4x mb-3" style="color: #667eea;"></i>
+              <h4>Welcome to Kubernetes Lab</h4>
+              <p class="text-muted">You haven't used your free lab access yet. Start your learning journey now!</p>
+              <a class="btn btn-primary btn-lg" href="generate_free_access.php">
+                <i class="fas fa-rocket"></i> Request Free Lab Access (60 min)
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
 
 <?php elseif ($lab['status'] === 'REQUESTED'): ?>
 
-  <p style="padding:10px">⏳ Lab provisioning in progress…</p>
-  <script>setTimeout(() => location.reload(), 5000);</script>
+      <div class="row">
+        <div class="col-md-6 offset-md-3">
+          <div class="card">
+            <div class="card-body text-center">
+              <i class="fas fa-cog fa-spin fa-4x mb-3" style="color: #667eea;"></i>
+      <style>
+        #terminal { 
+          background: #000; 
+          height: 500px; 
+          border-radius: 10px; 
+          padding: 10px;
+        }
+        .cmd-block { 
+          background: #1e1e1e; 
+          border-left: 3px solid #667eea;
+          padding: 12px; 
+          margin: 10px 0; 
+          color: #00ff00; 
+          font-family: 'Courier New', monospace;
+          font-size: 13px;
+          border-radius: 5px;
+        }
+        .lab-note { 
+          color: #666; 
+          font-size: 14px; 
+          margin: 8px 0;
+        }
+      </style>
 
-<?php elseif ($lab['status'] === 'ACTIVE'): ?>
+      <div class="row">
+        <!-- Lab Info Card -->
+        <div class="col-12 mb-3">
+          <div class="card">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+              <h3 class="card-title"><i class="fas fa-check-circle"></i> Lab Active</h3>
+              <div class="card-tools">
+                <span class="badge badge-light">
+                  <i class="far fa-clock"></i> Expires: <?= toIST($lab['access_expiry']) ?>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-<div class="layout">
+      <div class="row">
+        <!-- TERMINAL PANEL -->
+        <div class="col-lg-7">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title"><i class="fas fa-terminal"></i> Interactive Terminal</h3>
+              <div class="card-tools">
+                <button class="btn btn-sm btn-primary" onclick="connect()">
+                  <i class="fas fa-plug"></i> Connect
+                </button>
+              </div>
+            </div>
+            <div class="card-body" style="background: #000;">
+              <div id="terminal"></div>
+            </div>
+          </div>
+        </div>
 
-  <!-- TERMINAL -->
-  <div class="left">
-    <p>✅ Lab Active</p>
-    <p>Expires at: <b><?= toIST($lab['access_expiry']) ?></b></p>
+        <!-- GUIDED LAB PANEL -->
+        <div class="col-lg-5">
+          <div class="card">
+            <div class="card-header" style="background: rgba(102, 126, 234, 0.1);">
+              <h3 class="card-title"><i class="fas fa-book"></i> LAB-1: Docker & Container Basics</h3>
+            </div>
+            <div class="card-body" style="max-height: 550px; overflow-y: auto;">
+              <p class="lab-note">
+                <i class="fas fa-info-circle text-info"></i> 
+                Containers are the foundation of Kubernetes. This lab ensures you understand containers before moving to Pods.
+              </p>
 
-    <button class="btn" onclick="connect()">🔌 Connect Terminal</button>
-    <div id="terminal"></div>
-  </div>
+              <h5 class="mt-3"><i class="fas fa-check-circle text-success"></i> 1. Check Runtime</h5>
+              <p class="lab-note">Verify Docker or Podman installation.</p>
+              <div class="cmd-block">docker --version</div>
+              <div class="cmd-block">podman --version</div>
 
-  <!-- GUIDED LAB -->
-  <div class="right">
-    <h3>📘 LAB-1: Docker & Container Basics</h3>
+              <h5 class="mt-3"><i class="fas fa-check-circle text-success"></i> 2. Images</h5>
+              <p class="lab-note">Images are templates used to create containers.</p>
+              <div class="cmd-block">docker images</div>
+              <div class="cmd-block">docker pull nginx</div>
 
-    <p class="note">
-      Containers are the foundation of Kubernetes.  
-      This lab ensures you understand containers before moving to Pods.
-    </p>
+              <h5 class="mt-3"><i class="fas fa-check-circle text-success"></i> 3. Run Container</h5>
+              <p class="lab-note">Run nginx in background.</p>
+              <div class="cmd-block">docker run -d --name web nginx</div>
+              <div class="cmd-block">docker ps</div>
+              <div class="cmd-block">docker ps -a</div>
 
-    <h4>1️⃣ Check Runtime</h4>
-    <p class="note">Verify Docker or Podman installation.</p>
-    <div class="cmd">docker --version</div>
-    <div class="cmd">podman --version</div>
+              <h5 class="mt-3"><i class="fas fa-check-circle text-success"></i> 4. Port Mapping</h5>
+              <p class="lab-note">Expose container port to host.</p>
+              <div class="cmd-block">docker run -d -p 8080:80 nginx</div>
 
-    <h4>2️⃣ Images</h4>
-    <p class="note">Images are templates used to create containers.</p>
-    <div class="cmd">docker images</div>
-    <div class="cmd">docker pull nginx</div>
+              <h5 class="mt-3"><i class="fas fa-check-circle text-success"></i> 5. Logs & Inspect</h5>
+              <p class="lab-note">Inspect container details and logs.</p>
+              <div class="cmd-block">docker logs web</div>
+              <div class="cmd-block">docker inspect web</div>
 
-    <h4>3️⃣ Run Container</h4>
-    <p class="note">Run nginx in background.</p>
-    <div class="cmd">docker run -d --name web nginx</div>
-    <div class="cmd">docker ps</div>
-    <div class="cmd">docker ps -a</div>
+              <h5 class="mt-3"><i class="fas fa-check-circle text-success"></i> 6. Persistent Volume</h5>
+              <p class="lab-note">Persist data beyond container lifecycle.</p>
+      <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+          <div class="card">
+            <div class="card-header bg-warning">
+              <h3 class="card-title"><i class="fas fa-hourglass-end"></i> Lab Session Expired</h3>
+            </div>
+            <div class="card-body">
+              <p class="text-muted">Your lab session has ended. Request an extension to continue learning!</p>
+              
+              <?php if ($msg): ?>
+                <div class="alert alert-info">
+                  <i class="fas fa-info-circle"></i> <?= htmlspecialchars($msg) ?>
+                </div>
+              <?php endif; ?>
 
-    <h4>4️⃣ Port Mapping</h4>
-    <p class="note">Expose container port to host.</p>
-    <div class="cmd">docker run -d -p 8080:80 nginx</div>
+              <form method="post">
+                <div class="form-group">
+                  <label>Your Experience <span class="text-danger">*</span></label>
+                  <textarea name="experience" class="form-control" rows="3" placeholder="Describe what you've learned..." required></textarea>
+                </div>
 
-    <h4>5️⃣ Logs & Inspect</h4>
-    <p class="note">Inspect container details and logs.</p>
-    <div class="cmd">docker logs web</div>
-    <div class="cmd">docker inspect web</div>
+                <div class="form-group">
+                  <label>Domain/Focus Area <span class="text-danger">*</span></label>
+                  <input name="domain" class="form-control" placeholder="e.g., DevOps, Cloud, Backend..." required>
+                </div>
+      </div>
 
-    <h4>6️⃣ Persistent Volume</h4>
-    <p class="note">Persist data beyond container lifecycle.</p>
-    <div class="cmd">
-docker run -d \
--v /data:/usr/share/nginx/html \
--p 8081:80 nginx
+<?php endif; ?>
+
     </div>
-
-    <h4>7️⃣ Push / Pull (Concept)</h4>
-    <p class="note">Share images using registries.</p>
-    <div class="cmd">docker login</div>
-    <div class="cmd">docker tag nginx myrepo/nginx:v1</div>
-    <div class="cmd">docker push myrepo/nginx:v1</div>
-
-    <p class="note">✅ After this, Kubernetes Pods will be easy.</p>
-  </div>
-
+  </section>
 </div>
 
-<script>
-let term = null;
-let ws   = null;
+<?php include 'includes/footer.php'     <div class="form-group">
+                  <label>Feedback <span class="text-danger">*</span></label>
+                  <textarea name="feedback" class="form-control" rows="2" placeholder="How was your experience?" required></textarea>
+                </div>
 
-function connect() {
-  if (ws && ws.readyState === WebSocket.OPEN) return;
+                <div class="form-group">
+                  <label>Suggestions <span class="text-danger">*</span></label>
+                  <textarea name="suggestion" class="form-control" rows="2" placeholder="How can we improve?" required></textarea>
+                </div>
 
-  const username = "<?= $user ?>";
-  const password = "k8s" + username + "@123!";
+                <div class="form-group">
+                  <label>Extension Duration <span class="text-danger">*</span></label>
+                  <select name="hours" class="form-control">
+                    <option value="1">1 Hour</option>
+                    <option value="2">2 Hours</option>
+                    <option value="4">4 Hours</option>
+                  </select>
+                </div>
 
-  if (!term) {
-    term = new Terminal({ cursorBlink: true });
-    term.open(document.getElementById("terminal"));
-  }
+                <button class="btn btn-primary btn-block" name="request_extension">
+                  <i class="fas fa-paper-plane"></i> Submit Extension Request
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div
+        const username = "<?= $user ?>";
+        const password = "k8s" + username + "@123!";
 
+        if (!term) {
+          term = new Terminal({ cursorBlink: true });
+          term.open(document.getElementById("terminal"));
+        }
+
+        ws = new WebSocket(
+          "wss://kubearena.pratikrastogi.co.in/terminal?" +
+          "server_id=<?= $server_id ?>&user=<?= $user ?>"
+        );
+
+        ws.onopen = () => {
+          ws.send(JSON.stringify({ password }));
+          term.write("🔐 Auto authenticating...\r\n");
+        };
+
+        ws.onmessage = e => term.write(e.data);
+        ws.onclose = () => { term.write("\r\n❌ Connection closed\r\n"); ws = null; };
+        term.onData(d => ws && ws.send(d));
+      }
+      
   ws = new WebSocket(
     "wss://kubearena.pratikrastogi.co.in/terminal?" +
     "server_id=<?= $server_id ?>&user=<?= $user ?>"
