@@ -12,14 +12,13 @@ if ($conn->connect_error) die("DB Error");
 // Handle CRUD operations
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['create_course'])) {
-        $title = $conn->real_escape_string($_POST['title']);
+        $name = $conn->real_escape_string($_POST['name']);
         $description = $conn->real_escape_string($_POST['description']);
-        $category = $conn->real_escape_string($_POST['category']);
-        $level = $conn->real_escape_string($_POST['level']);
-        $duration_hours = (int)$_POST['duration_hours'];
+        $lab_guide_content = $conn->real_escape_string($_POST['lab_guide_content']);
+        $duration_minutes = (int)$_POST['duration_minutes'];
         
-        $conn->query("INSERT INTO courses (title, description, category, level, duration_hours, active, created_at, updated_at) 
-                      VALUES ('$title', '$description', '$category', '$level', $duration_hours, 1, NOW(), NOW())");
+        $conn->query("INSERT INTO courses (name, description, lab_guide_content, duration_minutes, active, created_at, updated_at) 
+                      VALUES ('$name', '$description', '$lab_guide_content', $duration_minutes, 1, NOW(), NOW())");
         $_SESSION['success'] = "Course created successfully!";
         header("Location: courses.php");
         exit;
@@ -27,16 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (isset($_POST['update_course'])) {
         $id = (int)$_POST['id'];
-        $title = $conn->real_escape_string($_POST['title']);
+        $name = $conn->real_escape_string($_POST['name']);
         $description = $conn->real_escape_string($_POST['description']);
-        $category = $conn->real_escape_string($_POST['category']);
-        $level = $conn->real_escape_string($_POST['level']);
-        $duration_hours = (int)$_POST['duration_hours'];
+        $lab_guide_content = $conn->real_escape_string($_POST['lab_guide_content']);
+        $duration_minutes = (int)$_POST['duration_minutes'];
         $active = isset($_POST['active']) ? 1 : 0;
         
         $conn->query("UPDATE courses SET 
-                      title='$title', description='$description', category='$category', 
-                      level='$level', duration_hours=$duration_hours, active=$active, updated_at=NOW()
+                      name='$name', description='$description', lab_guide_content='$lab_guide_content',
+                      duration_minutes=$duration_minutes, active=$active, updated_at=NOW()
                       WHERE id=$id");
         $_SESSION['success'] = "Course updated successfully!";
         header("Location: courses.php");
@@ -116,9 +114,9 @@ include 'includes/header.php';
             <?php endif; ?>
 
             <div class="form-group">
-              <label>Course Title <span class="text-danger">*</span></label>
-              <input type="text" name="title" class="form-control" 
-                     value="<?= htmlspecialchars($edit_course['title'] ?? '') ?>" 
+              <label>Course Name <span class="text-danger">*</span></label>
+              <input type="text" name="name" class="form-control" 
+                     value="<?= htmlspecialchars($edit_course['name'] ?? '') ?>" 
                      placeholder="e.g., Kubernetes Fundamentals" required>
             </div>
 
@@ -128,41 +126,22 @@ include 'includes/header.php';
                         placeholder="Describe what students will learn..."><?= htmlspecialchars($edit_course['description'] ?? '') ?></textarea>
             </div>
 
-            <div class="row">
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label>Category <span class="text-danger">*</span></label>
-                  <select name="category" class="form-control" required>
-                    <option value="">-- Select Category --</option>
-                    <option value="Kubernetes" <?= ($edit_course['category'] ?? '') === 'Kubernetes' ? 'selected' : '' ?>>Kubernetes</option>
-                    <option value="Docker" <?= ($edit_course['category'] ?? '') === 'Docker' ? 'selected' : '' ?>>Docker</option>
-                    <option value="CI/CD" <?= ($edit_course['category'] ?? '') === 'CI/CD' ? 'selected' : '' ?>>CI/CD</option>
-                    <option value="DevOps" <?= ($edit_course['category'] ?? '') === 'DevOps' ? 'selected' : '' ?>>DevOps</option>
-                    <option value="Cloud" <?= ($edit_course['category'] ?? '') === 'Cloud' ? 'selected' : '' ?>>Cloud</option>
-                    <option value="Security" <?= ($edit_course['category'] ?? '') === 'Security' ? 'selected' : '' ?>>Security</option>
-                  </select>
-                </div>
-              </div>
+            <div class="form-group">
+              <label>Duration (Minutes) <span class="text-danger">*</span></label>
+              <input type="number" name="duration_minutes" class="form-control" 
+                     value="<?= $edit_course['duration_minutes'] ?? 60 ?>" min="1" max="10000" required>
+            </div>
 
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label>Level <span class="text-danger">*</span></label>
-                  <select name="level" class="form-control" required>
-                    <option value="">-- Select Level --</option>
-                    <option value="Beginner" <?= ($edit_course['level'] ?? '') === 'Beginner' ? 'selected' : '' ?>>Beginner</option>
-                    <option value="Intermediate" <?= ($edit_course['level'] ?? '') === 'Intermediate' ? 'selected' : '' ?>>Intermediate</option>
-                    <option value="Advanced" <?= ($edit_course['level'] ?? '') === 'Advanced' ? 'selected' : '' ?>>Advanced</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label>Duration (Hours) <span class="text-danger">*</span></label>
-                  <input type="number" name="duration_hours" class="form-control" 
-                         value="<?= $edit_course['duration_hours'] ?? 8 ?>" min="1" max="200" required>
-                </div>
-              </div>
+            <div class="form-group">
+              <label>Lab Guide Content <span class="text-muted">(Optional - supports code blocks with ```command``` or single-line commands)</span></label>
+              <textarea name="lab_guide_content" class="form-control" rows="6" 
+                        placeholder="Add lab guide content here. Wrap commands in backticks: `docker run ...` or code blocks &#10;```&#10;docker run -it ubuntu&#10;```"><?= htmlspecialchars($edit_course['lab_guide_content'] ?? '') ?></textarea>
+              <small class="form-text text-muted mt-2">
+                <strong>Command Format Examples:</strong><br>
+                • Inline: `docker ps`<br>
+                • Code block: ```docker run -it ubuntu```<br>
+                • Multi-line: Commands starting with docker, kubectl, npm, git, etc. will be auto-detected
+              </small>
             </div>
 
             <?php if ($action === 'edit'): ?>
@@ -204,9 +183,7 @@ include 'includes/header.php';
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Level</th>
+                <th>Name</th>
                 <th>Duration</th>
                 <th>Labs</th>
                 <th>Enrollments</th>
@@ -234,12 +211,10 @@ include 'includes/header.php';
               <tr>
                 <td><?= $course['id'] ?></td>
                 <td>
-                  <strong><?= htmlspecialchars($course['title']) ?></strong><br>
-                  <small class="text-muted"><?= htmlspecialchars(substr($course['description'], 0, 60)) ?>...</small>
+                  <strong><?= htmlspecialchars($course['name']) ?></strong><br>
+                  <small class="text-muted"><?= htmlspecialchars(substr($course['description'] ?? '', 0, 60)) ?>...</small>
                 </td>
-                <td><span class="badge badge-info"><?= htmlspecialchars($course['category']) ?></span></td>
-                <td><?= htmlspecialchars($course['level']) ?></td>
-                <td><?= $course['duration_hours'] ?>h</td>
+                <td><?= intval($course['duration_minutes'] ?? 60) ?> min</td>
                 <td><?= $labs_count ?></td>
                 <td><?= $enrollments ?></td>
                 <td>
@@ -250,15 +225,18 @@ include 'includes/header.php';
                   <?php endif; ?>
                 </td>
                 <td>
-                  <a href="courses.php?action=edit&id=<?= $course['id'] ?>" class="btn btn-xs btn-info">
+                  <a href="course_view.php?id=<?= $course['id'] ?>" class="btn btn-xs btn-primary" title="View Course">
+                    <i class="fas fa-eye"></i> View
+                  </a>
+                  <a href="courses.php?action=edit&id=<?= $course['id'] ?>" class="btn btn-xs btn-info" title="Edit Course">
                     <i class="fas fa-edit"></i> Edit
                   </a>
-                  <a href="labs.php?course=<?= $course['id'] ?>" class="btn btn-xs btn-success">
+                  <a href="labs.php?course=<?= $course['id'] ?>" class="btn btn-xs btn-success" title="View Labs">
                     <i class="fas fa-flask"></i> Labs
                   </a>
                   <form method="POST" style="display:inline;" onsubmit="return confirm('Archive this course?');">
                     <input type="hidden" name="id" value="<?= $course['id'] ?>">
-                    <button type="submit" name="delete_course" class="btn btn-xs btn-danger">
+                    <button type="submit" name="delete_course" class="btn btn-xs btn-danger" title="Archive Course">
                       <i class="fas fa-archive"></i> Archive
                     </button>
                   </form>
