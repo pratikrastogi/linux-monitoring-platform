@@ -15,9 +15,9 @@ if (!$lab_id) {
     exit;
 }
 
-// Get lab details
+// Get lab details with course lab guide content
 $lab = $db->query("SELECT l.id, l.lab_name, l.course_id, l.server_id, l.duration_minutes, l.max_concurrent_users, l.active, l.provision_script_path, l.cleanup_script_path,
-    s.hostname, s.ip_address, s.ssh_user, s.ssh_password, s.ssh_port, c.name as course_name
+    s.hostname, s.ip_address, s.ssh_user, s.ssh_password, s.ssh_port, c.name as course_name, c.lab_guide_content
     FROM labs l
     LEFT JOIN servers s ON l.server_id = s.id
     LEFT JOIN courses c ON l.course_id = c.id
@@ -83,22 +83,20 @@ include 'includes/header.php';
                 </div>
                 
                 <!-- Guide Content -->
-                <div style="flex: 1; overflow-y: auto; padding: 20px;">
-                    <?php if (!empty($lab['guide_url'])): ?>
-                        <!-- Embedded Guide from URL -->
+                <div style="flex: 1; overflow-y: auto; padding: 20px;" id="labGuidePanel">
+                    <?php if (!empty($lab['lab_guide_content'])): ?>
+                        <!-- Lab Guide Content from Course -->
                         <div class="alert alert-info mb-3">
-                            <strong>Lab Guide (External):</strong>
+                            <h5><i class="fas fa-book"></i> Lab Guide</h5>
                         </div>
-                        <iframe src="<?= htmlspecialchars($lab['guide_url']) ?>" style="width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 4px;"></iframe>
-                    <?php elseif (!empty($lab['lab_guide'])): ?>
-                        <!-- Lab Guide Content -->
                         <div class="lab-guide-content">
-                            <?= nl2br(htmlspecialchars($lab['lab_guide'])) ?>
+                            <?= renderCourseContent($lab['lab_guide_content']) ?>
                         </div>
                     <?php else: ?>
                         <!-- Default Lab Information -->
                         <div class="alert alert-info">
                             <h5><i class="fas fa-info-circle"></i> Lab Information</h5>
+                            <p>No lab guide available for this course.</p>
                         </div>
                     <?php endif; ?>
                     
@@ -257,6 +255,26 @@ function initializeTerminal() {
         }
     });
 }
+
+// Copy to clipboard functionality for command blocks
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('#labGuidePanel .cmd-block').forEach(block => {
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'btn btn-sm btn-outline-light cmd-copy';
+        copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+        copyBtn.style.color = '#fff';
+        copyBtn.onclick = (e) => {
+            e.preventDefault();
+            const code = block.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => copyBtn.innerHTML = originalText, 2000);
+            });
+        };
+        block.appendChild(copyBtn);
+    });
+});
 </script>
 
 <style>
@@ -264,6 +282,39 @@ function initializeTerminal() {
         color: #333;
         line-height: 1.6;
         font-size: 14px;
+    }
+    
+    .cmd-block {
+        position: relative;
+        background: #1e1e1e;
+        border: 1px solid #444;
+        border-radius: 4px;
+        padding: 15px;
+        margin: 10px 0;
+        font-family: 'Courier New', monospace;
+        overflow-x: auto;
+    }
+
+    .cmd-block code {
+        color: #00ff00;
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 13px;
+    }
+
+    .cmd-copy {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+        padding: 4px 10px;
+        font-size: 11px;
+    }
+
+    .cmd-copy:hover {
+        opacity: 1;
     }
     
     .lab-guide-content h1,
@@ -308,3 +359,55 @@ function initializeTerminal() {
 
 </body>
 </html>
+<?php
+
+/**
+ * Parse course content and convert commands to copyable command blocks
+ */
+function renderCourseContent($content) {
+    if (!$content) return '<p class="text-muted">No content available.</p>';
+    
+    // Escape HTML but preserve line breaks
+    $content = htmlspecialchars($content, ENT_QUOTES);
+    
+    // Convert markdown-style code blocks (```command```) to copyable blocks
+    $content = preg_replace_callback('/```(.+?)```/s', function($matches) {
+        $cmd = trim($matches[1]);
+        $cmdKeywords = ['docker', 'kubectl', 'npm', 'git', 'curl', 'wget', 'ssh', 'scp', 'helm', 'make', 'python', 'node', 'java', 'grep', 'sed', 'awk', 'find', 'cat', 'echo', 'apt', 'yum', 'brew', 'systemctl', 'service'];
+        $isCommand = false;
+        foreach ($cmdKeywords as $kw) {
+            if (stripos($cmd, $kw) === 0) {
+                $isCommand = true;
+                break;
+            }
+        }
+        
+        if ($isCommand) {
+            return '<div class="cmd-block"><code>' . $cmd . '</code></div>';
+        }
+        return '<pre><code>' . $cmd . '</code></pre>';
+    }, $content);
+    
+    // Convert inline backtick commands
+    $content = preg_replace_callback('/`([^`]+)`/', function($matches) {
+        $text = $matches[1];
+        if (strpos($text, ';') !== false || 
+            preg_match('/^[a-z\-]+\s+/', $text) || 
+            strpos($text, '|') !== false ||
+            strpos($text, '>') !== false) {
+            return '<div class="cmd-block" style="display:inline-block; width:100%; margin: 8px 0;"><code>' . $text . '</code></div>';
+        }
+        return '<code class="bg-light" style="padding: 2px 6px; border-radius: 3px;">' . $text . '</code>';
+    }, $content);
+    
+    $html = nl2br($content);
+    $html = str_replace("<br />\n<br />", "</p>\n<p>", $html);
+    
+    if (strpos($html, '<p>') === false && strpos($html, '<div') === false) {
+        $html = '<p>' . $html . '</p>';
+    }
+    
+    return $html;
+}
+
+?>
