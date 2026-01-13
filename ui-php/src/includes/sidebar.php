@@ -98,6 +98,16 @@
           </a>
         </li>
         
+        <li class="nav-item">
+          <a href="admin_live_sessions.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_live_sessions.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-users-circle"></i>
+            <p>
+              Live Sessions
+              <span class="badge badge-success right" id="liveSessions">0</span>
+            </p>
+          </a>
+        </li>
+        
         <?php endif; ?>
         
         <?php if ($_SESSION['role'] === 'user'): ?>

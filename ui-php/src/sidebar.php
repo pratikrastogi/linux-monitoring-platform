@@ -50,48 +50,6 @@
           </a>
         </li>
         
-        <?php if ($_SESSION['role'] === 'admin') { ?>
-        
-        <!-- Admin Section -->
-        <li class="nav-header">ADMINISTRATION</li>
-        
-        <!-- Server Management -->
-        <li class="nav-item">
-          <a href="add_server.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'add_server.php' ? 'active' : ''; ?>">
-            <i class="nav-icon fas fa-server"></i>
-            <p>Manage Servers</p>
-          </a>
-        </li>
-        
-        <!-- User Management -->
-        <li class="nav-item">
-          <a href="users.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'users.php' ? 'active' : ''; ?>">
-            <i class="nav-icon fas fa-users"></i>
-            <p>User Management</p>
-          </a>
-        </li>
-        
-        <!-- Lab Requests -->
-        <li class="nav-item">
-          <a href="#lab-requests" class="nav-link">
-            <i class="nav-icon fas fa-flask"></i>
-            <p>
-              Lab Requests
-              <span class="badge badge-info right" id="labRequestCount">0</span>
-            </p>
-          </a>
-        </li>
-        
-        <!-- Free Access Generator -->
-        <li class="nav-item">
-          <a href="generate_free_access.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'generate_free_access.php' ? 'active' : ''; ?>">
-            <i class="nav-icon fas fa-gift"></i>
-            <p>Generate Access</p>
-          </a>
-        </li>
-        
-        <?php } ?>
-        
         <!-- =============================================
              LABS PLATFORM SECTION (Phase 2 - ADDITIVE)
              Purpose: Add Labs platform navigation
@@ -137,6 +95,16 @@
           <a href="admin_users.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_users.php' ? 'active' : ''; ?>">
             <i class="nav-icon fas fa-users-cog"></i>
             <p>User Management</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="admin_live_sessions.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_live_sessions.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-users-circle"></i>
+            <p>
+              Live Sessions
+              <span class="badge badge-success right" id="liveSessions">0</span>
+            </p>
           </a>
         </li>
         
