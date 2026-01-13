@@ -189,7 +189,7 @@ while True:
                     SET status=%s, provisioned=0
                     WHERE id=%s
                 """, (final_status, session_id))
-                print(f"[DB] Session {session_id} marked as {final_status} with provisioned=0 (cleanup complete)
+                print(f"[DB] Session {session_id} marked as {final_status} with provisioned=0 (cleanup complete)")
                 """, (final_status, session_id))
                 print(f"[DB] Session {session_id} marked as {final_status}")
             else:
