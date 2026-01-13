@@ -46,13 +46,24 @@ def provision_new_lab(session):
     ssh_pass = session["ssh_password"]
 
     namespace = session["namespace"]
+    username = session["username"]
     script = session["provision_script_path"]
 
     if not script:
         raise RuntimeError("Provision script path missing")
 
-    safe_ns = shlex.quote(namespace)
-    cmd = f"sudo {script} {safe_ns}"
+    # Calculate duration in minutes
+    now = datetime.utcnow()
+    expiry = session["access_expiry"]
+    duration_minutes = int((expiry - now).total_seconds() / 60)
+    if duration_minutes < 1:
+        duration_minutes = 1
+
+    safe_user = shlex.quote(username)
+
+    # Pass username and duration to the provision script
+    # The script creates its own namespace based on username
+    cmd = f"sudo {script} {safe_user} {duration_minutes}"
 
     return ssh_exec(host, ssh_user, ssh_pass, cmd)
 
@@ -184,4 +195,3 @@ while True:
         print("[FATAL] Worker crashed:", fatal)
 
     time.sleep(POLL_INTERVAL)
-
