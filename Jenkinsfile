@@ -145,6 +145,9 @@ pipeline {
           kubectl set image deployment/provision-worker \
           provision-worker=${PROVISION_IMAGE}:${BUILD_TAG} \
           -n ${NAMESPACE}
+          kubectl set image deployment/cleanup-worker \
+          cleanup-worker=${PROVISION_IMAGE}:${BUILD_TAG} \
+          -n ${NAMESPACE}
         """
       }
     }

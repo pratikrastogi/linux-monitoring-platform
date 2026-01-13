@@ -14,6 +14,7 @@ db = mysql.connector.connect(
     autocommit=True
 )
 
+# this is very important 
 # ----------------------------------------------------------
 # SSH EXECUTION HELPER
 # ----------------------------------------------------------
