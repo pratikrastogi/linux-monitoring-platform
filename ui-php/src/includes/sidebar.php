@@ -139,13 +139,6 @@
         </li>
         
         <li class="nav-item">
-          <a href="terminal.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'terminal.php' ? 'active' : ''; ?>">
-            <i class="nav-icon fas fa-terminal"></i>
-            <p>Lab Terminal</p>
-          </a>
-        </li>
-        
-        <li class="nav-item">
           <a href="profile.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
             <i class="nav-icon fas fa-user"></i>
             <p>My Profile</p>
@@ -163,6 +156,14 @@
         
         <!-- General Section -->
         <li class="nav-header">ACCOUNT</li>
+        
+        <!-- Profile -->
+        <li class="nav-item">
+          <a href="profile.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-user-circle"></i>
+            <p>My Profile</p>
+          </a>
+        </li>
         
         <!-- Logout -->
         <li class="nav-item">

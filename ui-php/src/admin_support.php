@@ -94,7 +94,7 @@ include 'includes/header.php';
         
         if (!$case) {
             echo '<div class="alert alert-danger">Case not found.</div>';
-        } else:
+        } else {
             $category_class = $case['category'] === 'PAYMENT' ? 'success' : ($case['category'] === 'REFUND' ? 'danger' : 'info');
             $status_class = $case['status'] === 'OPEN' ? 'warning' : ($case['status'] === 'IN_PROGRESS' ? 'info' : ($case['status'] === 'RESOLVED' ? 'success' : 'secondary'));
             
@@ -245,7 +245,7 @@ include 'includes/header.php';
           </div>
         </div>
         
-        <?php endif; ?>
+        <?php } // end else case found ?>
         
       <?php else: ?>
         <!-- Case List View -->
