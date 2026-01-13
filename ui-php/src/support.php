@@ -337,7 +337,6 @@ include 'includes/header.php';
           }
         </script>
         
-      <?php endif; ?>
         <!-- Case List View -->
         <div class="row">
           <div class="col-md-12">

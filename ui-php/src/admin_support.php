@@ -346,7 +346,8 @@ include 'includes/header.php';
           }
         </script>
         
-      <?php endif; ?>
+      <!-- Case List View -->
+      <!-- Stats Cards -->
       <div class="row mb-4">
         <div class="col-lg-3 col-6">
           <div class="info-box bg-warning">
