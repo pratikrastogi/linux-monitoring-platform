@@ -6,11 +6,11 @@ $db = new mysqli("mysql", "monitor", "monitor123", "monitoring");
 
 // Get search/filter
 $course_filter = $_GET['course'] ?? '';
-$where = $course_filter ? "WHERE c.id = $course_filter" : '';
+$where = $course_filter ? "AND c.id = $course_filter" : '';
 
 $labs = $db->query("SELECT c.*, 
     (SELECT COUNT(*) FROM labs WHERE course_id = c.id AND active=1) as lab_count
-    FROM courses c $where AND c.status='published' ORDER BY c.name");
+    FROM courses c WHERE c.status='published' $where ORDER BY c.name");
 
 $page_title = "Browse Labs";
 include 'includes/header.php';

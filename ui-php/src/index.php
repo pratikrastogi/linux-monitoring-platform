@@ -284,8 +284,8 @@ include 'includes/header.php';
                                                 <h5><?= htmlspecialchars($course['name']) ?></h5>
                                                 <p class="text-muted"><?= htmlspecialchars(substr($course['description'] ?? '', 0, 80)) ?>...</p>
                                                 <p><i class="fas fa-flask"></i> <?= $course['lab_count'] ?> labs available</p>
-                                                <a href="browse_labs.php?course=<?= $course['id'] ?>" class="btn btn-primary btn-sm">
-                                                    <i class="fas fa-search"></i> Browse Labs
+                                                <a href="request_lab.php?course=<?= $course['id'] ?>" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-check-circle"></i> Request Access
                                                 </a>
                                             </div>
                                         </div>
