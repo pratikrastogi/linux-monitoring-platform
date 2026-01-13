@@ -5,7 +5,7 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-$page_title = "Lab Requests Management";
+$page_title = "Lab Requests & Assignments";
 $conn = new mysqli("mysql","monitor","monitor123","monitoring");
 if ($conn->connect_error) die("DB Error");
 
@@ -40,7 +40,7 @@ if (isset($_GET['deny'])) {
 include 'includes/header.php';
 ?>
 
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
 
 <?php include 'includes/navbar.php'; ?>
@@ -51,7 +51,7 @@ include 'includes/header.php';
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1 class="m-0"><i class="fas fa-clipboard-check"></i> Lab Requests Management</h1>
+          <h1 class="m-0"><i class="fas fa-clipboard-check"></i> Lab Requests & Assignments</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
@@ -69,228 +69,290 @@ include 'includes/header.php';
       <?php if (isset($_SESSION['success'])): ?>
       <div class="alert alert-success alert-dismissible">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <?= $_SESSION['success']; unset($_SESSION['success']); ?>
+        <i class="fas fa-check"></i> <?= $_SESSION['success']; unset($_SESSION['success']); ?>
       </div>
       <?php endif; ?>
 
-      <!-- Filters -->
-      <div class="card">
-        <div class="card-body">
-          <form method="GET" class="form-inline">
-            <div class="form-group mr-3">
-              <label class="mr-2">Filter by User:</label>
-              <select name="user" class="form-control" onchange="this.form.submit()">
-                <option value="">All Users</option>
-                <?php
-                $users_q = $conn->query("SELECT DISTINCT u.id, u.email, u.name 
-                                         FROM users u 
-                                         JOIN lab_requests lr ON u.id = lr.user_id 
-                                         ORDER BY u.email");
-                while($u = $users_q->fetch_assoc()):
-                  $selected = (isset($_GET['user']) && $_GET['user'] == $u['id']) ? 'selected' : '';
-                ?>
-                <option value="<?= $u['id'] ?>" <?= $selected ?>>
-                  <?= htmlspecialchars($u['name'] ?? $u['email']) ?>
-                </option>
-                <?php endwhile; ?>
-              </select>
-            </div>
-
-            <div class="form-group mr-3">
-              <label class="mr-2">Status:</label>
-              <select name="status" class="form-control" onchange="this.form.submit()">
-                <option value="">All Status</option>
-                <option value="pending" <?= (isset($_GET['status']) && $_GET['status'] === 'pending') ? 'selected' : '' ?>>Pending</option>
-                <option value="approved" <?= (isset($_GET['status']) && $_GET['status'] === 'approved') ? 'selected' : '' ?>>Approved</option>
-                <option value="denied" <?= (isset($_GET['status']) && $_GET['status'] === 'denied') ? 'selected' : '' ?>>Denied</option>
-              </select>
-            </div>
-
-            <?php if (isset($_GET['user']) || isset($_GET['status'])): ?>
-            <a href="admin_lab_requests.php" class="btn btn-default">
-              <i class="fas fa-times"></i> Clear Filters
-            </a>
-            <?php endif; ?>
-          </form>
-        </div>
-      </div>
-
       <!-- Stats Cards -->
-      <div class="row">
+      <div class="row mb-4">
         <div class="col-lg-3 col-6">
-          <div class="small-box bg-warning">
-            <div class="inner">
+          <div class="info-box bg-warning">
+            <span class="info-box-icon"><i class="fas fa-hourglass-half"></i></span>
+            <div class="info-box-content">
+              <span class="info-box-text">Pending Requests</span>
               <?php
-              $pending = $conn->query("SELECT COUNT(*) as cnt FROM lab_requests WHERE status='pending'")->fetch_assoc()['cnt'];
+              $pending_count = $conn->query("SELECT COUNT(*) as cnt FROM lab_requests WHERE status='pending'")->fetch_assoc()['cnt'];
               ?>
-              <h3><?= $pending ?></h3>
-              <p>Pending</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-clock"></i>
+              <span class="info-box-number"><?= $pending_count ?></span>
             </div>
           </div>
         </div>
+
         <div class="col-lg-3 col-6">
-          <div class="small-box bg-success">
-            <div class="inner">
+          <div class="info-box bg-success">
+            <span class="info-box-icon"><i class="fas fa-check-circle"></i></span>
+            <div class="info-box-content">
+              <span class="info-box-text">Approved Requests</span>
               <?php
-              $approved = $conn->query("SELECT COUNT(*) as cnt FROM lab_requests WHERE status='approved'")->fetch_assoc()['cnt'];
+              $approved_count = $conn->query("SELECT COUNT(*) as cnt FROM lab_requests WHERE status='approved'")->fetch_assoc()['cnt'];
               ?>
-              <h3><?= $approved ?></h3>
-              <p>Approved</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-check"></i>
+              <span class="info-box-number"><?= $approved_count ?></span>
             </div>
           </div>
         </div>
+
         <div class="col-lg-3 col-6">
-          <div class="small-box bg-danger">
-            <div class="inner">
+          <div class="info-box bg-danger">
+            <span class="info-box-icon"><i class="fas fa-times-circle"></i></span>
+            <div class="info-box-content">
+              <span class="info-box-text">Denied Requests</span>
               <?php
-              $denied = $conn->query("SELECT COUNT(*) as cnt FROM lab_requests WHERE status='denied'")->fetch_assoc()['cnt'];
+              $denied_count = $conn->query("SELECT COUNT(*) as cnt FROM lab_requests WHERE status='denied'")->fetch_assoc()['cnt'];
               ?>
-              <h3><?= $denied ?></h3>
-              <p>Denied</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-times"></i>
+              <span class="info-box-number"><?= $denied_count ?></span>
             </div>
           </div>
         </div>
+
         <div class="col-lg-3 col-6">
-          <div class="small-box bg-info">
-            <div class="inner">
+          <div class="info-box bg-info">
+            <span class="info-box-icon"><i class="fas fa-list"></i></span>
+            <div class="info-box-content">
+              <span class="info-box-text">Total Requests</span>
               <?php
-              $total = $conn->query("SELECT COUNT(*) as cnt FROM lab_requests")->fetch_assoc()['cnt'];
+              $total_count = $conn->query("SELECT COUNT(*) as cnt FROM lab_requests")->fetch_assoc()['cnt'];
               ?>
-              <h3><?= $total ?></h3>
-              <p>Total Requests</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-list"></i>
+              <span class="info-box-number"><?= $total_count ?></span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Pending Requests -->
-      <div class="card card-warning">
+      <div class="card card-warning card-outline">
         <div class="card-header">
-          <h3 class="card-title"><i class="fas fa-clock"></i> Pending Requests</h3>
+          <h3 class="card-title"><i class="fas fa-hourglass-half"></i> Pending Lab Requests</h3>
         </div>
         <div class="card-body table-responsive p-0">
-          <table class="table table-hover">
-            <thead>
+          <table class="table table-hover table-striped">
+            <thead class="bg-warning text-white">
               <tr>
-                <th>ID</th>
-                <th>User</th>
-                <th>Lab</th>
-                <th>Course</th>
-                <th>Justification</th>
-                <th>Requested</th>
-                <th>Actions</th>
+                <th style="width: 5%">ID</th>
+                <th style="width: 15%">User</th>
+                <th style="width: 20%">Lab</th>
+                <th style="width: 15%">Course</th>
+                <th style="width: 25%">Justification</th>
+                <th style="width: 12%">Requested</th>
+                <th style="width: 8%">Actions</th>
               </tr>
             </thead>
             <tbody>
               <?php
               $pending_q = $conn->query("
-                SELECT lr.*, u.email, u.name, l.lab_name, c.name as course_name
+                SELECT lr.id, lr.justification, lr.created_at, u.email, u.name, l.lab_name, c.title as course_name
                 FROM lab_requests lr
-                JOIN users u ON lr.user_id = u.id
-                JOIN labs l ON lr.lab_id = l.id
-                JOIN courses c ON l.course_id = c.id
+                LEFT JOIN users u ON lr.user_id = u.id
+                LEFT JOIN labs l ON lr.lab_id = l.id
+                LEFT JOIN courses c ON l.course_id = c.id
                 WHERE lr.status = 'pending'
                 ORDER BY lr.created_at ASC
               ");
-              while($r = $pending_q->fetch_assoc()):
+
+              if ($pending_q && $pending_q->num_rows > 0) {
+                while($r = $pending_q->fetch_assoc()):
               ?>
               <tr>
-                <td><?= $r['id'] ?></td>
+                <td><strong>#<?= $r['id'] ?></strong></td>
                 <td>
                   <strong><?= htmlspecialchars($r['name'] ?? $r['email']) ?></strong><br>
                   <small class="text-muted"><?= htmlspecialchars($r['email']) ?></small>
                 </td>
-                <td><?= htmlspecialchars($r['lab_name']) ?></td>
-                <td><?= htmlspecialchars($r['course_name']) ?></td>
-                <td><?= htmlspecialchars($r['justification'] ?? 'N/A') ?></td>
-                <td><?= date('M j, Y g:i A', strtotime($r['created_at'])) ?></td>
+                <td><?= htmlspecialchars($r['lab_name'] ?? 'N/A') ?></td>
+                <td><?= htmlspecialchars($r['course_name'] ?? 'N/A') ?></td>
                 <td>
-                  <a href="?approve=<?= $r['id'] ?>" class="btn btn-sm btn-success" 
-                     onclick="return confirm('Approve this request and create lab session?')">
-                    <i class="fas fa-check"></i> Approve
+                  <small><?= htmlspecialchars(substr($r['justification'] ?? 'N/A', 0, 50)) ?></small>
+                </td>
+                <td><?= date('M d, H:i', strtotime($r['created_at'])) ?></td>
+                <td>
+                  <a href="?approve=<?= $r['id'] ?>" class="btn btn-xs btn-success" title="Approve">
+                    <i class="fas fa-check"></i>
                   </a>
-                  <a href="?deny=<?= $r['id'] ?>" class="btn btn-sm btn-danger"
-                     onclick="return confirm('Deny this request?')">
-                    <i class="fas fa-times"></i> Deny
+                  <a href="?deny=<?= $r['id'] ?>" class="btn btn-xs btn-danger" title="Deny">
+                    <i class="fas fa-times"></i>
                   </a>
                 </td>
               </tr>
-              <?php endwhile; ?>
+              <?php 
+                endwhile;
+              } else {
+              ?>
+              <tr>
+                <td colspan="7" class="text-center text-muted p-4">
+                  <i class="fas fa-inbox fa-2x mb-2"></i><br>
+                  No pending requests
+                </td>
+              </tr>
+              <?php } ?>
             </tbody>
           </table>
         </div>
       </div>
 
       <!-- All Requests History -->
-      <div class="card">
+      <div class="card card-primary mt-4">
         <div class="card-header">
-          <h3 class="card-title"><i class="fas fa-history"></i> Request History</h3>
+          <h3 class="card-title"><i class="fas fa-history"></i> All Requests & Assignment History</h3>
         </div>
-        <div class="card-body table-responsive p-0" style="max-height: 400px;">
+        <div class="card-body">
+          <!-- Filters & Search -->
+          <form method="GET" class="form-horizontal mb-3">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label>Filter by User:</label>
+                  <select name="user_filter" class="form-control">
+                    <option value="">All Users</option>
+                    <?php
+                    $users_q = $conn->query("SELECT DISTINCT u.id, u.email, u.name 
+                                             FROM users u 
+                                             JOIN lab_requests lr ON u.id = lr.user_id 
+                                             ORDER BY u.email");
+                    while($u = $users_q->fetch_assoc()):
+                      $selected = (isset($_GET['user_filter']) && $_GET['user_filter'] == $u['id']) ? 'selected' : '';
+                    ?>
+                    <option value="<?= $u['id'] ?>" <?= $selected ?>>
+                      <?= htmlspecialchars($u['name'] ?? $u['email']) ?>
+                    </option>
+                    <?php endwhile; ?>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label>Filter by Status:</label>
+                  <select name="status_filter" class="form-control">
+                    <option value="">All Status</option>
+                    <option value="pending" <?= (isset($_GET['status_filter']) && $_GET['status_filter'] === 'pending') ? 'selected' : '' ?>>Pending</option>
+                    <option value="approved" <?= (isset($_GET['status_filter']) && $_GET['status_filter'] === 'approved') ? 'selected' : '' ?>>Approved</option>
+                    <option value="denied" <?= (isset($_GET['status_filter']) && $_GET['status_filter'] === 'denied') ? 'selected' : '' ?>>Denied</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label>Lab Name Search:</label>
+                  <input type="text" name="lab_search" class="form-control" placeholder="Search lab name..." 
+                         value="<?= htmlspecialchars($_GET['lab_search'] ?? '') ?>">
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label>&nbsp;</label>
+                  <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-search"></i> Search
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <?php if (isset($_GET['user_filter']) || isset($_GET['status_filter']) || isset($_GET['lab_search'])): ?>
+            <div class="row">
+              <div class="col-md-12">
+                <a href="admin_lab_requests.php" class="btn btn-default">
+                  <i class="fas fa-times"></i> Clear All Filters
+                </a>
+              </div>
+            </div>
+            <?php endif; ?>
+          </form>
+        </div>
+      </div>
+
+      <!-- Requests Table -->
+      <div class="card card-info">
+        <div class="card-body table-responsive p-0">
           <table class="table table-hover table-striped">
-            <thead>
+            <thead class="bg-info text-white">
               <tr>
-                <th>ID</th>
-                <th>User</th>
-                <th>Lab</th>
-                <th>Status</th>
-                <th>Requested</th>
-                <th>Reviewed</th>
+                <th style="width: 5%">ID</th>
+                <th style="width: 15%">User</th>
+                <th style="width: 20%">Lab</th>
+                <th style="width: 15%">Course</th>
+                <th style="width: 12%">Status</th>
+                <th style="width: 14%">Requested Date</th>
+                <th style="width: 14%">Reviewed Date</th>
+                <th style="width: 9%">Reviewed By</th>
               </tr>
             </thead>
             <tbody>
               <?php
-              // Build query with filters
-              $where_clauses = [];
-              if (isset($_GET['user']) && !empty($_GET['user'])) {
-                $filter_user = (int)$_GET['user'];
+              // Build dynamic query with filters
+              $where_clauses = ["1=1"];
+              
+              if (isset($_GET['user_filter']) && !empty($_GET['user_filter'])) {
+                $filter_user = (int)$_GET['user_filter'];
                 $where_clauses[] = "lr.user_id = $filter_user";
               }
-              if (isset($_GET['status']) && !empty($_GET['status'])) {
-                $filter_status = $conn->real_escape_string($_GET['status']);
+              
+              if (isset($_GET['status_filter']) && !empty($_GET['status_filter'])) {
+                $filter_status = $conn->real_escape_string($_GET['status_filter']);
                 $where_clauses[] = "lr.status = '$filter_status'";
               }
               
-              $where_sql = !empty($where_clauses) ? 'WHERE ' . implode(' AND ', $where_clauses) : '';
+              if (isset($_GET['lab_search']) && !empty($_GET['lab_search'])) {
+                $lab_search = $conn->real_escape_string($_GET['lab_search']);
+                $where_clauses[] = "l.lab_name LIKE '%$lab_search%'";
+              }
+              
+              $where_sql = implode(' AND ', $where_clauses);
               
               $query = "
-                SELECT lr.*, u.email, u.name, l.lab_name
+                SELECT lr.id, lr.justification, lr.status, lr.created_at, lr.reviewed_at, lr.reviewed_by,
+                       u.email, u.name, l.lab_name, c.title as course_name, ru.email as reviewer_email
                 FROM lab_requests lr
-                JOIN users u ON lr.user_id = u.id
-                JOIN labs l ON lr.lab_id = l.id
-                $where_sql
+                LEFT JOIN users u ON lr.user_id = u.id
+                LEFT JOIN labs l ON lr.lab_id = l.id
+                LEFT JOIN courses c ON l.course_id = c.id
+                LEFT JOIN users ru ON lr.reviewed_by = ru.id
+                WHERE $where_sql
                 ORDER BY lr.created_at DESC
-                LIMIT 100
+                LIMIT 200
               ";
+              
               $all_q = $conn->query($query);
+              
               if (!$all_q) {
-                  echo "<tr><td colspan='6' class='text-danger'>Query error: " . $conn->error . "</td></tr>";
+                  echo "<tr><td colspan='8' class='text-danger'><i class='fas fa-exclamation-triangle'></i> Query error: " . $conn->error . "</td></tr>";
+              } else if ($all_q->num_rows === 0) {
+                echo "<tr><td colspan='8' class='text-center text-muted p-4'><i class='fas fa-inbox fa-2x mb-2'></i><br>No requests found</td></tr>";
               } else {
                 while($r = $all_q->fetch_assoc()):
-                $badge = $r['status'] === 'approved' ? 'success' : ($r['status'] === 'denied' ? 'danger' : 'warning');
+                  $badge_class = $r['status'] === 'approved' ? 'success' : ($r['status'] === 'denied' ? 'danger' : 'warning');
               ?>
               <tr>
-                <td><?= $r['id'] ?></td>
-                <td><?= htmlspecialchars($r['email']) ?></td>
-                <td><?= htmlspecialchars($r['lab_name']) ?></td>
-                <td><span class="badge badge-<?= $badge ?>"><?= ucfirst($r['status']) ?></span></td>
-                <td><?= date('M j, g:i A', strtotime($r['created_at'])) ?></td>
-                <td><?= $r['reviewed_at'] ? date('M j, g:i A', strtotime($r['reviewed_at'])) : '-' ?></td>
+                <td><strong>#<?= $r['id'] ?></strong></td>
+                <td>
+                  <strong><?= htmlspecialchars($r['name'] ?? $r['email']) ?></strong><br>
+                  <small class="text-muted"><?= htmlspecialchars($r['email']) ?></small>
+                </td>
+                <td><?= htmlspecialchars($r['lab_name'] ?? 'N/A') ?></td>
+                <td><?= htmlspecialchars($r['course_name'] ?? 'N/A') ?></td>
+                <td>
+                  <span class="badge badge-<?= $badge_class ?>">
+                    <i class="fas fa-<?= $r['status'] === 'approved' ? 'check-circle' : ($r['status'] === 'denied' ? 'times-circle' : 'hourglass-half') ?>"></i>
+                    <?= ucfirst($r['status']) ?>
+                  </span>
+                </td>
+                <td><?= date('M d, Y H:i', strtotime($r['created_at'])) ?></td>
+                <td><?= $r['reviewed_at'] ? date('M d, Y H:i', strtotime($r['reviewed_at'])) : '<span class="text-muted">-</span>' ?></td>
+                <td><small><?= htmlspecialchars($r['reviewer_email'] ?? '-') ?></small></td>
               </tr>
-              <?php endwhile; ?>
-              <?php } ?>
+              <?php 
+                endwhile;
+              } ?>
             </tbody>
           </table>
         </div>

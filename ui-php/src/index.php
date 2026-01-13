@@ -161,18 +161,18 @@ include 'includes/header.php';
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $requests = $db->query("SELECT lr.*, u.email, c.name as course_name, l.lab_name 
+                                    $requests = $db->query("SELECT lr.*, u.email, c.title as course_name, l.lab_name 
                                         FROM lab_requests lr 
-                                        JOIN users u ON lr.user_id = u.id 
-                                        JOIN labs l ON lr.lab_id = l.id 
-                                        JOIN courses c ON l.course_id = c.id 
+                                        LEFT JOIN users u ON lr.user_id = u.id 
+                                        LEFT JOIN labs l ON lr.lab_id = l.id 
+                                        LEFT JOIN courses c ON l.course_id = c.id 
                                         ORDER BY lr.created_at DESC LIMIT 10");
                                     while ($r = $requests->fetch_assoc()):
                                     ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($r['email']) ?></td>
-                                            <td><?= htmlspecialchars($r['course_name']) ?></td>
-                                            <td><?= htmlspecialchars($r['lab_name']) ?></td>
+                                            <td><?= htmlspecialchars($r['email'] ?? 'N/A') ?></td>
+                                            <td><?= htmlspecialchars($r['course_name'] ?? 'N/A') ?></td>
+                                            <td><?= htmlspecialchars($r['lab_name'] ?? 'N/A') ?></td>
                                             <td>
                                                 <?php if ($r['status'] === 'pending'): ?>
                                                     <span class="badge badge-warning">Pending</span>

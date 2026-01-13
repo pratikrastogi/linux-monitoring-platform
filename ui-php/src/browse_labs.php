@@ -10,7 +10,7 @@ $where = $course_filter ? "WHERE c.id = $course_filter" : '';
 
 $labs = $db->query("SELECT c.*, 
     (SELECT COUNT(*) FROM labs WHERE course_id = c.id AND active=1) as lab_count
-    FROM courses c $where AND c.active=1 ORDER BY c.name");
+    FROM courses c $where AND c.status='published' ORDER BY c.title");
 
 $page_title = "Browse Labs";
 include 'includes/header.php';
@@ -44,10 +44,10 @@ include 'includes/header.php';
       <?php while ($course = $labs->fetch_assoc()): ?>
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-book"></i> <?= htmlspecialchars($course['name']) ?></h3>
+            <h3 class="card-title"><i class="fas fa-book"></i> <?= htmlspecialchars($course['title'] ?? 'N/A') ?></h3>
           </div>
           <div class="card-body">
-            <p class="text-muted"><?= htmlspecialchars($course['description']) ?></p>
+            <p class="text-muted"><?= htmlspecialchars($course['description'] ?? 'No description available') ?></p>
             <div class="row">
               <?php
               $course_labs = $db->query("SELECT * FROM labs WHERE course_id={$course['id']} AND active=1");

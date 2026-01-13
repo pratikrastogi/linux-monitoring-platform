@@ -5,8 +5,8 @@ require_once 'auth.php';
 $db = new mysqli("mysql", "monitor", "monitor123", "monitoring");
 $uid = $_SESSION['uid'];
 
-$result = $db->query("SELECT l.*, c.name as course_name FROM labs l JOIN courses c ON l.course_id = c.id");
-$labs = $result->fetch_all(MYSQLI_ASSOC);
+$result = $db->query("SELECT l.*, c.title as course_name FROM labs l LEFT JOIN courses c ON l.course_id = c.id WHERE l.active = 1");
+$labs = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lab_id'])) {
     $lab_id = (int)$_POST['lab_id'];
@@ -57,7 +57,7 @@ include 'includes/header.php';
                       <h6 class="card-subtitle"><i class="fas fa-flask"></i> <?= htmlspecialchars($lab['lab_name']) ?></h6>
                     </div>
                     <div class="card-body">
-                      <p><?= htmlspecialchars(substr($lab['description'], 0, 150)) ?>...</p>
+                      <p><?= htmlspecialchars(substr($lab['lab_guide'] ?? $lab['guide_url'] ?? 'No description available', 0, 150)) ?>...</p>
                       <form method="POST">
                         <input type="hidden" name="lab_id" value="<?= $lab['id'] ?>">
                         <button type="submit" class="btn btn-primary btn-sm">
