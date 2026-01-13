@@ -43,18 +43,18 @@
     
     <!-- User Menu -->
     <li class="nav-item dropdown">
-      <a class="nav-link" data-toggle="dropdown" href="#">
+      <a class="nav-link" data-toggle="dropdown" href="#" role="button">
         <i class="far fa-user"></i>
         <span class="d-none d-md-inline ml-1"><?php echo htmlspecialchars($_SESSION['user']); ?></span>
       </a>
       <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-        <a href="#" class="dropdown-item">
+        <span class="dropdown-item dropdown-header">
           <i class="fas fa-user mr-2"></i> <?php echo htmlspecialchars($_SESSION['user']); ?>
-        </a>
+        </span>
         <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item">
+        <span class="dropdown-item">
           <i class="fas fa-shield-alt mr-2"></i> Role: <strong><?php echo ucfirst($_SESSION['role']); ?></strong>
-        </a>
+        </span>
         <div class="dropdown-divider"></div>
         <a href="logout.php" class="dropdown-item dropdown-footer bg-danger text-white">
           <i class="fas fa-sign-out-alt mr-2"></i> Logout
