@@ -14,7 +14,6 @@ db = mysql.connector.connect(
     autocommit=True
 )
 
-# this is very important 
 # ----------------------------------------------------------
 # SSH EXECUTION HELPER
 # ----------------------------------------------------------
@@ -139,6 +138,7 @@ while True:
         # ==================================================
         # Case 1: Sessions that are ACTIVE but have expired (access_expiry < NOW)
         # Case 2: Sessions that have been manually REVOKED
+        # Only cleanup sessions where provisioned=1 (means they were provisioned and need cleanup)
         cur.execute("""
             SELECT 
                 ls.id,
@@ -154,7 +154,8 @@ while True:
             FROM lab_sessions ls
             JOIN labs l ON ls.lab_id = l.id
             JOIN servers s ON l.server_id = s.id
-            WHERE (
+            WHERE ls.provisioned = 1
+            AND (
                 (ls.status = 'ACTIVE' AND ls.access_expiry < NOW())
                 OR ls.status = 'REVOKED'
             )
@@ -177,9 +178,7 @@ while True:
             
             # Attempt cleanup
             cleanup_success = cleanup_lab_session(session)
-            
-            if cleanup_success:
-                # Mark session as EXPIRED or keep as REVOKED
+            status and set provisioned=0 to indicate cleanup is done
                 if status == 'REVOKED':
                     final_status = 'REVOKED'
                 else:
@@ -187,8 +186,10 @@ while True:
                 
                 cur.execute("""
                     UPDATE lab_sessions
-                    SET status=%s
+                    SET status=%s, provisioned=0
                     WHERE id=%s
+                """, (final_status, session_id))
+                print(f"[DB] Session {session_id} marked as {final_status} with provisioned=0 (cleanup complete)
                 """, (final_status, session_id))
                 print(f"[DB] Session {session_id} marked as {final_status}")
             else:
