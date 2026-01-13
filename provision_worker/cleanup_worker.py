@@ -52,22 +52,23 @@ def ssh_exec(host, ssh_user, ssh_pass, command, timeout=15):
 
 
 # ----------------------------------------------------------
-# LAB CLEANUP (EXPIRED LABS)
+# LAB CLEANUP (EXPIRED or REVOKED LABS)
 # ----------------------------------------------------------
-def cleanup_expired_lab(session):
+def cleanup_lab_session(session):
     """
-    Cleanup an expired lab:
+    Cleanup a lab session (expired or revoked):
     1. Lock Linux user
-    2. Kill active sessions
+    2. Kill active SSH sessions
     3. Delete Kubernetes namespace
     """
     session_id = session["id"]
     username = session["username"]
-    namespace = session["namespace"]
+    status = session["status"]
     
     host = session["ip_address"]
     ssh_user = session["ssh_user"]
     ssh_pass = session["ssh_password"]
+    script = session["cleanup_script_path"]
     
     # Skip if no username (can't cleanup)
     if not username or username == '':
@@ -79,16 +80,20 @@ def cleanup_expired_lab(session):
         return False
     
     try:
-        print(f"[INFO] Cleanup starting for session {session_id} (user: {username})")
+        print(f"[INFO] Cleanup starting for session {session_id} ({status}): user={username}")
         
-        # Build cleanup command
-        # This locks the user, kills sessions, and deletes namespace
-        cleanup_cmd = f"""
-#!/bin/bash
+        safe_user = shlex.quote(username)
+        
+        # If cleanup script is defined, use it; otherwise use inline cleanup
+        if script:
+            cmd = f"sudo {script} {safe_user}"
+        else:
+            # Inline cleanup: lock user, kill sessions, delete namespace
+            cmd = f"""#!/bin/bash
 set -e
 
-USERNAME="{username}"
-NAMESPACE="{namespace}"
+USERNAME={safe_user}
+NAMESPACE="lab-$USERNAME"
 
 echo "▶ Locking Linux user..."
 usermod -L "$USERNAME" || true
@@ -103,7 +108,7 @@ kubectl delete namespace "$NAMESPACE" --ignore-not-found=true
 echo "SUCCESS|CLEANED=$USERNAME"
 """
         
-        result = ssh_exec(host, ssh_user, ssh_pass, cleanup_cmd)
+        result = ssh_exec(host, ssh_user, ssh_pass, cmd)
         
         if not result['success']:
             print(f"[ERROR] Session {session_id} cleanup failed (exit {result['exit_code']})")
@@ -129,15 +134,18 @@ while True:
         cur = db.cursor(dictionary=True)
         
         # ==================================================
-        # FIND EXPIRED ACTIVE LABS
+        # FIND EXPIRED or REVOKED ACTIVE LABS
         # ==================================================
+        # Case 1: Sessions that are ACTIVE but have expired (access_expiry < NOW)
+        # Case 2: Sessions that have been manually REVOKED
         cur.execute("""
             SELECT 
                 ls.id,
                 ls.username,
-                ls.namespace,
                 ls.access_expiry,
+                ls.status,
                 l.server_id,
+                l.cleanup_script_path,
                 s.ip_address,
                 s.ssh_user,
                 s.ssh_password,
@@ -145,43 +153,51 @@ while True:
             FROM lab_sessions ls
             JOIN labs l ON ls.lab_id = l.id
             JOIN servers s ON l.server_id = s.id
-            WHERE ls.status = 'ACTIVE'
-              AND ls.access_expiry < NOW()
+            WHERE (
+                (ls.status = 'ACTIVE' AND ls.access_expiry < NOW())
+                OR ls.status = 'REVOKED'
+            )
             ORDER BY ls.access_expiry ASC
             LIMIT 5
         """)
         
-        expired_labs = cur.fetchall()
+        sessions_to_cleanup = cur.fetchall()
         
-        if expired_labs:
-            print(f"\n[INFO] Found {len(expired_labs)} expired lab(s) to cleanup")
+        if sessions_to_cleanup:
+            print(f"\n[INFO] Found {len(sessions_to_cleanup)} session(s) to cleanup")
         
-        for session in expired_labs:
+        for session in sessions_to_cleanup:
             session_id = session["id"]
             username = session["username"]
+            status = session["status"]
             expiry_time = session["access_expiry"]
             
-            print(f"\n[PROCESS] Session {session_id}: {username} (expired at {expiry_time})")
+            print(f"\n[PROCESS] Session {session_id}: {username} (status={status}, expired={expiry_time})")
             
             # Attempt cleanup
-            cleanup_success = cleanup_expired_lab(session)
+            cleanup_success = cleanup_lab_session(session)
             
             if cleanup_success:
-                # Mark session as EXPIRED
+                # Mark session as EXPIRED or keep as REVOKED
+                if status == 'REVOKED':
+                    final_status = 'REVOKED'
+                else:
+                    final_status = 'EXPIRED'
+                
                 cur.execute("""
                     UPDATE lab_sessions
-                    SET status='EXPIRED'
+                    SET status=%s
                     WHERE id=%s
-                """, (session_id,))
-                print(f"[DB] Session {session_id} marked as EXPIRED")
+                """, (final_status, session_id))
+                print(f"[DB] Session {session_id} marked as {final_status}")
             else:
-                # Don't mark as EXPIRED yet, retry next time
+                # Don't mark, retry next time
                 print(f"[SKIP] Session {session_id} cleanup failed, will retry")
         
         cur.close()
         
-        if not expired_labs:
-            print(f"[IDLE] No expired labs to cleanup, sleeping...")
+        if not sessions_to_cleanup:
+            print(f"[IDLE] No expired/revoked labs to cleanup, sleeping...")
         
     except Exception as fatal_err:
         print(f"[FATAL] Cleanup worker error: {fatal_err}")
