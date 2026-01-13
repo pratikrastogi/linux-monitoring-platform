@@ -57,9 +57,7 @@ def ssh_exec(host, ssh_user, ssh_pass, command, timeout=15):
 def cleanup_lab_session(session):
     """
     Cleanup a lab session (expired or revoked):
-    1. Lock Linux user
-    2. Kill active SSH sessions
-    3. Delete Kubernetes namespace
+    Executes the lab's cleanup script with the provisioned username
     """
     session_id = session["id"]
     username = session["username"]
@@ -79,34 +77,19 @@ def cleanup_lab_session(session):
         print(f"[WARN] Session {session_id}: No server host, skipping cleanup")
         return False
     
+    # Script path is required
+    if not script:
+        print(f"[WARN] Session {session_id}: No cleanup script defined, skipping cleanup")
+        return False
+    
     try:
         print(f"[INFO] Cleanup starting for session {session_id} ({status}): user={username}")
+        print(f"[INFO] Using cleanup script: {script}")
         
         safe_user = shlex.quote(username)
         
-        # If cleanup script is defined, use it; otherwise use inline cleanup
-        if script:
-            cmd = f"sudo {script} {safe_user}"
-        else:
-            # Inline cleanup: lock user, kill sessions, delete namespace
-            cmd = f"""#!/bin/bash
-set -e
-
-USERNAME={safe_user}
-NAMESPACE="lab-$USERNAME"
-
-echo "▶ Locking Linux user..."
-usermod -L "$USERNAME" || true
-passwd -l "$USERNAME" || true
-
-echo "▶ Killing active SSH sessions..."
-pkill -u "$USERNAME" || true
-
-echo "▶ Removing Kubernetes namespace..."
-kubectl delete namespace "$NAMESPACE" --ignore-not-found=true
-
-echo "SUCCESS|CLEANED=$USERNAME"
-"""
+        # Execute the lab-specific cleanup script with username as parameter
+        cmd = f"sudo {script} {safe_user}"
         
         result = ssh_exec(host, ssh_user, ssh_pass, cmd)
         
