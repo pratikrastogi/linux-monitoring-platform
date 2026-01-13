@@ -55,9 +55,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_message'])) {
 // Handle case closure (user can close own cases)
 if (isset($_GET['close'])) {
     $case_id = (int)$_GET['close'];
-    $conn->query("UPDATE support_cases SET status='RESOLVED' WHERE id=$case_id AND user_id=$uid");
+    $conn->query("UPDATE support_cases SET status='RESOLVED', updated_at=NOW() WHERE id=$case_id AND user_id=$uid");
     $_SESSION['success'] = "Support case closed.";
     header("Location: support.php");
+    exit;
+}
+
+// Handle case reopening (within 5 days of resolution)
+if (isset($_GET['reopen'])) {
+    $case_id = (int)$_GET['reopen'];
+    
+    // Verify case exists, belongs to user, and was resolved within 5 days
+    $case = $conn->query("SELECT status, updated_at FROM support_cases WHERE id=$case_id AND user_id=$uid")->fetch_assoc();
+    
+    if ($case && $case['status'] === 'RESOLVED') {
+        $updated_time = strtotime($case['updated_at']);
+        $days_since = floor((time() - $updated_time) / 86400);
+        
+        if ($days_since <= 5) {
+            $conn->query("UPDATE support_cases 
+                          SET status='OPEN', last_response_by='USER', last_response_at=NOW(), updated_at=NOW() 
+                          WHERE id=$case_id");
+            $_SESSION['success'] = "Support case reopened successfully!";
+        } else {
+            $_SESSION['error'] = "Cases can only be reopened within 5 days of resolution.";
+        }
+    }
+    header("Location: support.php?view=$case_id");
     exit;
 }
 
@@ -96,6 +120,13 @@ include 'includes/header.php';
       <div class="alert alert-success alert-dismissible">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         <?= $_SESSION['success']; unset($_SESSION['success']); ?>
+      </div>
+      <?php endif; ?>
+      
+      <?php if (isset($_SESSION['error'])): ?>
+      <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <?= $_SESSION['error']; unset($_SESSION['error']); ?>
       </div>
       <?php endif; ?>
 
@@ -162,8 +193,31 @@ include 'includes/header.php';
                 
                 <hr>
                 
+                <!-- Initial Case Description -->
+                <div class="card card-outline card-info">
+                  <div class="card-header">
+                    <h5 class="card-title"><i class="fas fa-file-alt"></i> Initial Description</h5>
+                  </div>
+                  <div class="card-body" style="background: #f9f9f9;">
+                    <p><?= nl2br(htmlspecialchars($case['description'] ?? 'No description provided')) ?></p>
+                  </div>
+                </div>
+                
+                <?php if (!empty($case['resolution'])): ?>
+                <div class="card card-outline card-success">
+                  <div class="card-header">
+                    <h5 class="card-title"><i class="fas fa-check-circle"></i> Resolution Summary</h5>
+                  </div>
+                  <div class="card-body" style="background: #f0f8f4;">
+                    <p><?= nl2br(htmlspecialchars($case['resolution'])) ?></p>
+                  </div>
+                </div>
+                <?php endif; ?>
+                
+                <h5 class="mt-4"><i class="fas fa-comments"></i> Conversation Thread</h5>
+                
                 <!-- Message History -->
-                <div class="direct-chat-messages" style="height: 400px; overflow-y: auto;">
+                <div class="direct-chat-messages" id="messages-container" style="height: 400px; overflow-y: auto; border: 1px solid #dee2e6; padding: 15px; border-radius: 5px; background: #f8f9fa;">
                   <?php
                   $messages_q = $conn->query("SELECT scm.*, 
                                               CASE 
@@ -188,16 +242,16 @@ include 'includes/header.php';
                     $align = $is_user ? 'right' : 'left';
                     $bg_class = $is_user ? 'bg-primary' : 'bg-secondary';
                   ?>
-                  <div class="direct-chat-msg <?= $align ?>">
-                    <div class="direct-chat-infos clearfix">
-                      <span class="direct-chat-name float-<?= $align ?>">
-                        <?= $is_user ? 'You' : 'Support Team' ?> (<?= htmlspecialchars($msg['sender_name'] ?? $msg['sender_email'] ?? 'Unknown') ?>)
+                  <div class="direct-chat-msg <?= $align ?>" style="margin-bottom: 15px;">
+                    <div class="direct-chat-infos clearfix" style="margin-bottom: 5px;">
+                      <span class="direct-chat-name float-<?= $align ?>" style="font-weight: bold;">
+                        <?= $is_user ? 'You' : 'Support Team' ?>
                       </span>
-                      <span class="direct-chat-timestamp float-<?= $align === 'right' ? 'left' : 'right' ?>">
+                      <span class="direct-chat-timestamp float-<?= $align === 'right' ? 'left' : 'right' ?>" style="font-size: 12px; color: #999;">
                         <?= date('M d, Y H:i', strtotime($msg['created_at'])) ?>
                       </span>
                     </div>
-                    <div class="direct-chat-text <?= $bg_class ?>" style="<?= $is_user ? 'margin-left: 50px;' : 'margin-right: 50px;' ?>">
+                    <div class="direct-chat-text <?= $bg_class ?>" style="<?= $is_user ? 'margin-left: 50px; border-radius: 8px;' : 'margin-right: 50px; border-radius: 8px;' ?> color: white; padding: 10px 15px;">
                       <?= nl2br(htmlspecialchars($msg['message'] ?? '')) ?>
                     </div>
                   </div>
@@ -227,9 +281,31 @@ include 'includes/header.php';
                   <?php endif; ?>
                 </form>
                 <?php else: ?>
+                <!-- Case is resolved or rejected -->
+                <?php 
+                $updated_time = strtotime($case['updated_at'] ?? $case['created_at']);
+                $days_since = floor((time() - $updated_time) / 86400);
+                $can_reopen = $case['status'] === 'RESOLVED' && $days_since <= 5;
+                ?>
                 <div class="alert alert-info">
-                  <i class="fas fa-info-circle"></i> This case is closed. No further messages can be added.
+                  <i class="fas fa-info-circle"></i> This case has been <?= $case['status'] === 'RESOLVED' ? 'closed' : strtolower($case['status']) ?>. 
+                  <?php if ($case['status'] === 'RESOLVED'): ?>
+                  Resolved on <?= date('M d, Y H:i', $updated_time) ?>.
+                  <?php endif; ?>
                 </div>
+                
+                <?php if ($can_reopen): ?>
+                <div class="alert alert-warning">
+                  <i class="fas fa-clock"></i> <strong>Time Remaining to Reopen:</strong> <?= (5 - $days_since) ?> day<?= (5 - $days_since) === 1 ? '' : 's' ?>
+                </div>
+                <a href="support.php?reopen=<?= $case['id'] ?>" class="btn btn-warning" onclick="return confirm('Reopen this case?')">
+                  <i class="fas fa-redo"></i> Reopen Case
+                </a>
+                <?php elseif ($case['status'] === 'RESOLVED' && $days_since > 5): ?>
+                <div class="alert alert-danger">
+                  <i class="fas fa-times-circle"></i> This case can no longer be reopened (<?= $days_since ?> days since resolution).
+                </div>
+                <?php endif; ?>
                 <?php endif; ?>
               </div>
             </div>
@@ -239,6 +315,29 @@ include 'includes/header.php';
         <?php } // end else case found ?>
         
       <?php else: ?>
+        <!-- API endpoint for real-time message fetching -->
+        <script>
+          function loadMessages(caseId) {
+              fetch('api/support_messages.php?case_id=' + caseId)
+                  .then(r => r.json())
+                  .then(data => {
+                      const container = document.getElementById('messages-container');
+                      if (container && data.messages) {
+                          container.innerHTML = data.messages;
+                          container.scrollTop = container.scrollHeight;
+                      }
+                  })
+                  .catch(e => console.log('Real-time fetch error:', e));
+          }
+          
+          // Poll for new messages every 3 seconds if viewing a case
+          const caseIdParam = new URLSearchParams(window.location.search).get('view');
+          if (caseIdParam) {
+              setInterval(() => loadMessages(caseIdParam), 3000);
+          }
+        </script>
+        
+      <?php endif; ?>
         <!-- Case List View -->
         <div class="row">
           <div class="col-md-12">
