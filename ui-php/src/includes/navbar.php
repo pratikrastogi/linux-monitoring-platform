@@ -24,7 +24,7 @@
     
     <!-- Notifications Dropdown Menu -->
     <li class="nav-item dropdown">
-      <a class="nav-link" data-toggle="dropdown" href="#">
+      <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
         <i class="far fa-bell"></i>
         <span class="badge badge-warning navbar-badge" id="alertCount">0</span>
       </a>
@@ -43,7 +43,7 @@
     
     <!-- User Menu -->
     <li class="nav-item dropdown">
-      <a class="nav-link" data-toggle="dropdown" href="#" role="button">
+      <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
         <i class="far fa-user"></i>
         <span class="d-none d-md-inline ml-1"><?php echo htmlspecialchars($_SESSION['user']); ?></span>
       </a>
@@ -56,7 +56,11 @@
           <i class="fas fa-shield-alt mr-2"></i> Role: <strong><?php echo ucfirst($_SESSION['role']); ?></strong>
         </span>
         <div class="dropdown-divider"></div>
-        <a href="logout.php" class="dropdown-item dropdown-footer bg-danger text-white">
+        <a href="profile.php" class="dropdown-item">
+          <i class="fas fa-user-circle mr-2"></i> My Profile
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="logout.php" class="dropdown-item bg-danger text-white">
           <i class="fas fa-sign-out-alt mr-2"></i> Logout
         </a>
       </div>

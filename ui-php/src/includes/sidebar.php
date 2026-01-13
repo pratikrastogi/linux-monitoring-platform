@@ -164,16 +164,6 @@
         <!-- General Section -->
         <li class="nav-header">ACCOUNT</li>
         
-        <!-- Request Access (for non-admin users) -->
-        <?php if ($_SESSION['role'] !== 'admin') { ?>
-        <li class="nav-item">
-          <a href="request_access.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'request_access.php' ? 'active' : ''; ?>">
-            <i class="nav-icon fas fa-clock"></i>
-            <p>Request Lab Time</p>
-          </a>
-        </li>
-        <?php } ?>
-        
         <!-- Logout -->
         <li class="nav-item">
           <a href="logout.php" class="nav-link text-danger">

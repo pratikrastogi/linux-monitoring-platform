@@ -10,7 +10,7 @@ $where = $course_filter ? "AND c.id = $course_filter" : '';
 
 $labs = $db->query("SELECT c.*, 
     (SELECT COUNT(*) FROM labs WHERE course_id = c.id AND active=1) as lab_count
-    FROM courses c WHERE c.status='published' $where ORDER BY c.name");
+    FROM courses c WHERE c.active=1 $where ORDER BY c.name");
 
 $page_title = "Browse Labs";
 include 'includes/header.php';

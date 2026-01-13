@@ -190,11 +190,14 @@
       background: #fff;
       border-bottom: 1px solid rgba(102, 126, 234, 0.1);
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      z-index: 1030;
+      position: relative;
     }
     
     .navbar-light .navbar-nav .nav-link {
       color: var(--text-primary);
       transition: all 0.3s ease;
+      cursor: pointer;
     }
     
     .navbar-light .navbar-nav .nav-link:hover {
@@ -312,7 +315,22 @@
         margin-bottom: 15px;
       }
     }
+    
+    /* Dropdown Menu Fix */
+    .dropdown-menu {
+      z-index: 1050;
+      pointer-events: auto;
+    }
+    
+    .nav-link {
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    
+    .dropdown-menu.show {
+      display: block;
+    }
   </style>
 </head>
-<body class="hold-transition sidebar-mini layout-fixed sidebar-collapse">
+<body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
