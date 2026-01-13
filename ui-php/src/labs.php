@@ -279,13 +279,13 @@ include 'includes/header.php';
             </thead>
             <tbody>
               <?php
-              $sql = "SELECT lt.*, c.title as course_title 
+              $sql = "SELECT lt.*, c.name as course_title 
                       FROM lab_templates lt
                       JOIN courses c ON lt.course_id = c.id";
               if ($filter_course) {
                 $sql .= " WHERE lt.course_id = $filter_course";
               }
-              $sql .= " ORDER BY c.title, lt.created_at DESC";
+              $sql .= " ORDER BY c.name, lt.created_at DESC";
               
               $result = $conn->query($sql);
               while($lab = $result->fetch_assoc()):

@@ -5,7 +5,7 @@ require_once 'auth.php';
 $db = new mysqli("mysql", "monitor", "monitor123", "monitoring");
 $uid = $_SESSION['uid'];
 
-$result = $db->query("SELECT l.*, c.title as course_name FROM labs l LEFT JOIN courses c ON l.course_id = c.id WHERE l.active = 1");
+$result = $db->query("SELECT l.*, c.name as course_name FROM labs l LEFT JOIN courses c ON l.course_id = c.id WHERE l.active = 1");
 $labs = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lab_id'])) {

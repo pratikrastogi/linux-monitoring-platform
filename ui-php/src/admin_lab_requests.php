@@ -149,7 +149,7 @@ include 'includes/header.php';
             <tbody>
               <?php
               $pending_q = $conn->query("
-                SELECT lr.id, lr.justification, lr.created_at, u.email, u.name, l.lab_name, c.title as course_name
+                SELECT lr.id, lr.justification, lr.created_at, u.email, u.username as name, l.lab_name, c.name as course_name
                 FROM lab_requests lr
                 LEFT JOIN users u ON lr.user_id = u.id
                 LEFT JOIN labs l ON lr.lab_id = l.id
@@ -213,7 +213,7 @@ include 'includes/header.php';
                   <select name="user_filter" class="form-control">
                     <option value="">All Users</option>
                     <?php
-                    $users_q = $conn->query("SELECT DISTINCT u.id, u.email, u.name 
+                    $users_q = $conn->query("SELECT DISTINCT u.id, u.email, u.username as name 
                                              FROM users u 
                                              JOIN lab_requests lr ON u.id = lr.user_id 
                                              ORDER BY u.email");
@@ -311,7 +311,7 @@ include 'includes/header.php';
               
               $query = "
                 SELECT lr.id, lr.justification, lr.status, lr.created_at, lr.reviewed_at, lr.reviewed_by,
-                       u.email, u.name, l.lab_name, c.title as course_name, ru.email as reviewer_email
+                       u.email, u.username as name, l.lab_name, c.name as course_name, ru.email as reviewer_email
                 FROM lab_requests lr
                 LEFT JOIN users u ON lr.user_id = u.id
                 LEFT JOIN labs l ON lr.lab_id = l.id

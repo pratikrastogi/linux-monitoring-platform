@@ -15,10 +15,10 @@ if ($conn->connect_error) die("DB Error");
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_case'])) {
     $subject = $conn->real_escape_string($_POST['subject']);
     $description = $conn->real_escape_string($_POST['description']);
-    $priority = $conn->real_escape_string($_POST['priority']);
+    $category = $conn->real_escape_string($_POST['category']);
     
-    $conn->query("INSERT INTO support_cases (user_id, subject, description, priority, status, created_at, updated_at)
-                  VALUES ($uid, '$subject', '$description', '$priority', 'open', NOW(), NOW())");
+    $conn->query("INSERT INTO support_cases (user_id, subject, description, category, status, created_at)
+                  VALUES ($uid, '$subject', '$description', '$category', 'OPEN', NOW())");
     $_SESSION['success'] = "Support case created successfully!";
     header("Location: support.php");
     exit;
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_case'])) {
 // Handle case closure (user can close own cases)
 if (isset($_GET['close'])) {
     $case_id = (int)$_GET['close'];
-    $conn->query("UPDATE support_cases SET status='closed', updated_at=NOW() WHERE id=$case_id AND user_id=$uid");
+    $conn->query("UPDATE support_cases SET status='RESOLVED' WHERE id=$case_id AND user_id=$uid");
     $_SESSION['success'] = "Support case closed.";
     header("Location: support.php");
     exit;
@@ -87,7 +87,7 @@ include 'includes/header.php';
                   <tr>
                     <th>ID</th>
                     <th>Subject</th>
-                    <th>Priority</th>
+                    <th>Category</th>
                     <th>Status</th>
                     <th>Created</th>
                     <th>Actions</th>
@@ -97,23 +97,23 @@ include 'includes/header.php';
                   <?php
                   $cases_q = $conn->query("SELECT * FROM support_cases WHERE user_id=$uid ORDER BY created_at DESC");
                   while($case = $cases_q->fetch_assoc()):
-                    $priority_class = $case['priority'] === 'high' ? 'danger' : ($case['priority'] === 'medium' ? 'warning' : 'info');
-                    $status_class = $case['status'] === 'open' ? 'warning' : ($case['status'] === 'in_progress' ? 'info' : 'success');
+                    $category_class = $case['category'] === 'PAYMENT' ? 'success' : ($case['category'] === 'REFUND' ? 'danger' : 'info');
+                    $status_class = $case['status'] === 'OPEN' ? 'warning' : ($case['status'] === 'IN_PROGRESS' ? 'info' : ($case['status'] === 'RESOLVED' ? 'success' : 'secondary'));
                   ?>
                   <tr>
                     <td>#<?= $case['id'] ?></td>
                     <td>
-                      <strong><?= htmlspecialchars($case['subject']) ?></strong><br>
-                      <small class="text-muted"><?= htmlspecialchars(substr($case['description'], 0, 60)) ?>...</small>
+                      <strong><?= htmlspecialchars($case['subject'] ?? 'N/A') ?></strong><br>
+                      <small class="text-muted"><?= htmlspecialchars(substr($case['description'] ?? '', 0, 60)) ?>...</small>
                     </td>
-                    <td><span class="badge badge-<?= $priority_class ?>"><?= ucfirst($case['priority']) ?></span></td>
-                    <td><span class="badge badge-<?= $status_class ?>"><?= ucfirst(str_replace('_', ' ', $case['status'])) ?></span></td>
+                    <td><span class="badge badge-<?= $category_class ?>"><?= ucfirst($case['category'] ?? 'OTHER') ?></span></td>
+                    <td><span class="badge badge-<?= $status_class ?>"><?= ucfirst(str_replace('_', ' ', $case['status'] ?? 'OPEN')) ?></span></td>
                     <td><?= date('M j, Y', strtotime($case['created_at'])) ?></td>
                     <td>
                       <button class="btn btn-xs btn-info" data-toggle="modal" data-target="#viewCase<?= $case['id'] ?>">
                         <i class="fas fa-eye"></i> View
                       </button>
-                      <?php if ($case['status'] !== 'closed'): ?>
+                      <?php if ($case['status'] !== 'RESOLVED' && $case['status'] !== 'REJECTED'): ?>
                       <a href="?close=<?= $case['id'] ?>" class="btn btn-xs btn-secondary"
                          onclick="return confirm('Close this support case?')">
                         <i class="fas fa-times"></i> Close
@@ -127,17 +127,23 @@ include 'includes/header.php';
                     <div class="modal-dialog modal-lg">
                       <div class="modal-content">
                         <div class="modal-header">
-                          <h4 class="modal-title">Case #<?= $case['id'] ?>: <?= htmlspecialchars($case['subject']) ?></h4>
+                          <h4 class="modal-title">Case #<?= $case['id'] ?>: <?= htmlspecialchars($case['subject'] ?? 'N/A') ?></h4>
                           <button type="button" class="close" data-dismiss="modal">&times;</button>
                         </div>
                         <div class="modal-body">
-                          <p><strong>Priority:</strong> <span class="badge badge-<?= $priority_class ?>"><?= ucfirst($case['priority']) ?></span></p>
-                          <p><strong>Status:</strong> <span class="badge badge-<?= $status_class ?>"><?= ucfirst(str_replace('_', ' ', $case['status'])) ?></span></p>
+                          <p><strong>Category:</strong> <span class="badge badge-<?= $category_class ?>"><?= ucfirst($case['category'] ?? 'OTHER') ?></span></p>
+                          <p><strong>Status:</strong> <span class="badge badge-<?= $status_class ?>"><?= ucfirst(str_replace('_', ' ', $case['status'] ?? 'OPEN')) ?></span></p>
                           <p><strong>Created:</strong> <?= date('M j, Y g:i A', strtotime($case['created_at'])) ?></p>
-                          <p><strong>Last Updated:</strong> <?= date('M j, Y g:i A', strtotime($case['updated_at'])) ?></p>
                           <hr>
                           <p><strong>Description:</strong></p>
-                          <p><?= nl2br(htmlspecialchars($case['description'])) ?></p>
+                          <p><?= nl2br(htmlspecialchars($case['description'] ?? 'No description')) ?></p>
+                          <?php if ($case['resolution']): ?>
+                          <hr>
+                          <p><strong>Resolution:</strong></p>
+                          <div class="alert alert-success">
+                            <?= nl2br(htmlspecialchars($case['resolution'])) ?>
+                          </div>
+                          <?php endif; ?>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -215,11 +221,13 @@ include 'includes/header.php';
           </div>
 
           <div class="form-group">
-            <label>Priority <span class="text-danger">*</span></label>
-            <select name="priority" class="form-control" required>
-              <option value="low">Low - General inquiry</option>
-              <option value="medium" selected>Medium - Issue affecting work</option>
-              <option value="high">High - Critical issue blocking progress</option>
+            <label>Category <span class="text-danger">*</span></label>
+            <select name="category" class="form-control" required>
+              <option value="ACCESS">Access Issue</option>
+              <option value="LAB">Lab Technical Issue</option>
+              <option value="PAYMENT">Payment / Billing</option>
+              <option value="REFUND">Refund Request</option>
+              <option value="OTHER">Other</option>
             </select>
           </div>
 

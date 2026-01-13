@@ -108,6 +108,16 @@
           </a>
         </li>
         
+        <li class="nav-item">
+          <a href="admin_support.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_support.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-headset"></i>
+            <p>
+              Support Cases
+              <span class="badge badge-warning right" id="supportCases">0</span>
+            </p>
+          </a>
+        </li>
+        
         <?php endif; ?>
         
         <?php if ($_SESSION['role'] === 'user'): ?>

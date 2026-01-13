@@ -35,7 +35,7 @@ exit;
       <!-- Active Sessions -->
       <?php
       $active_q = $conn->query("
-        SELECT ls.*, lt.title as lab_title, lt.description, c.title as course_title
+        SELECT ls.*, lt.title as lab_title, lt.description, c.name as course_title
         FROM lab_sessions ls
         JOIN lab_templates lt ON ls.lab_template_id = lt.id
         JOIN courses c ON lt.course_id = c.id
@@ -108,7 +108,7 @@ exit;
             <tbody>
               <?php
               $requests_q = $conn->query("
-                SELECT lr.*, lt.title as lab_title, c.title as course_title
+                SELECT lr.*, lt.title as lab_title, c.name as course_title
                 FROM lab_requests lr
                 JOIN lab_templates lt ON lr.lab_template_id = lt.id
                 JOIN courses c ON lt.course_id = c.id
@@ -153,7 +153,7 @@ exit;
             <tbody>
               <?php
               $history_q = $conn->query("
-                SELECT lp.*, lt.title as lab_title, c.title as course_title
+                SELECT lp.*, lt.title as lab_title, c.name as course_title
                 FROM lab_progress lp
                 JOIN lab_templates lt ON lp.lab_template_id = lt.id
                 JOIN courses c ON lt.course_id = c.id

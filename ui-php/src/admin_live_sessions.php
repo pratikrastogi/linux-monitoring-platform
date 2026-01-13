@@ -119,11 +119,11 @@ include 'includes/header.php';
                     ls.status,
                     ls.namespace,
                     ls.access_expiry,
-                    lt.title as lab_name,
+                    l.lab_name,
                     u.email,
                     u.id as user_id
                   FROM lab_sessions ls
-                  LEFT JOIN lab_templates lt ON ls.lab_template_id = lt.id
+                  LEFT JOIN labs l ON ls.lab_id = l.id
                   LEFT JOIN users u ON ls.user_id = u.id
                   WHERE ls.status IN ('ACTIVE', 'REQUESTED')
                   ORDER BY ls.access_expiry ASC
@@ -212,9 +212,9 @@ include 'includes/header.php';
                     ls.status,
                     ls.access_start,
                     ls.access_expiry,
-                    lt.title as lab_name
+                    l.lab_name
                   FROM lab_sessions ls
-                  LEFT JOIN lab_templates lt ON ls.lab_template_id = lt.id
+                  LEFT JOIN labs l ON ls.lab_id = l.id
                   WHERE ls.status IN ('EXPIRED', 'REVOKED') 
                     AND ls.access_start >= DATE_SUB(NOW(), INTERVAL 7 DAY)
                   ORDER BY ls.access_expiry DESC

@@ -161,7 +161,7 @@ include 'includes/header.php';
                                 </thead>
                                 <tbody>
                                     <?php
-                                    $requests = $db->query("SELECT lr.*, u.email, c.title as course_name, l.lab_name 
+                                    $requests = $db->query("SELECT lr.*, u.email, c.name as course_name, l.lab_name 
                                         FROM lab_requests lr 
                                         LEFT JOIN users u ON lr.user_id = u.id 
                                         LEFT JOIN labs l ON lr.lab_id = l.id 
