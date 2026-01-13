@@ -196,8 +196,8 @@ include 'includes/header.php';
               <tr>
                 <td><strong>#<?= $r['id'] ?></strong></td>
                 <td>
-                  <strong><?= htmlspecialchars($r['name'] ?? $r['email']) ?></strong><br>
-                  <small class="text-muted"><?= htmlspecialchars($r['email']) ?></small>
+                  <strong><?= htmlspecialchars($r['name'] ?? $r['email'] ?? '') ?></strong><br>
+                  <small class="text-muted"><?= htmlspecialchars($r['email'] ?? '') ?></small>
                 </td>
                 <td><?= htmlspecialchars($r['lab_name'] ?? 'N/A') ?></td>
                 <td><?= htmlspecialchars($r['course_name'] ?? 'N/A') ?></td>
@@ -380,7 +380,7 @@ include 'includes/header.php';
                 </td>
                 <td><?= date('M d, Y H:i', strtotime($r['created_at'])) ?></td>
                 <td><?= $r['reviewed_at'] ? date('M d, Y H:i', strtotime($r['reviewed_at'])) : '<span class="text-muted">-</span>' ?></td>
-                <td><small><?= htmlspecialchars($r['reviewer_email'] ?? '-') ?></small></td>
+                <td><small><?= htmlspecialchars($r['reviewer_email'] ?? '') ?></small></td>
               </tr>
               <?php 
                 endwhile;

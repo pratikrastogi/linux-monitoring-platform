@@ -44,7 +44,7 @@ include 'includes/header.php';
       <?php while ($course = $labs->fetch_assoc()): ?>
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-book"></i> <?= htmlspecialchars($course['title'] ?? 'N/A') ?></h3>
+            <h3 class="card-title"><i class="fas fa-book"></i> <?= htmlspecialchars($course['name'] ?? 'N/A') ?></h3>
           </div>
           <div class="card-body">
             <p class="text-muted"><?= htmlspecialchars($course['description'] ?? 'No description available') ?></p>

@@ -142,59 +142,6 @@ include 'includes/header.php';
                         </div>
                     </div>
                     
-                    <!-- Recent Requests Table -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Recent Lab Requests</h3>
-                        </div>
-                        <div class="card-body table-responsive p-0">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>User</th>
-                                        <th>Course</th>
-                                        <th>Lab</th>
-                                        <th>Status</th>
-                                        <th>Requested</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    $requests = $db->query("SELECT lr.*, u.email, c.name as course_name, l.lab_name 
-                                        FROM lab_requests lr 
-                                        LEFT JOIN users u ON lr.user_id = u.id 
-                                        LEFT JOIN labs l ON lr.lab_id = l.id 
-                                        LEFT JOIN courses c ON l.course_id = c.id 
-                                        ORDER BY lr.created_at DESC LIMIT 10");
-                                    while ($r = $requests->fetch_assoc()):
-                                    ?>
-                                        <tr>
-                                            <td><?= htmlspecialchars($r['email'] ?? 'N/A') ?></td>
-                                            <td><?= htmlspecialchars($r['course_name'] ?? 'N/A') ?></td>
-                                            <td><?= htmlspecialchars($r['lab_name'] ?? 'N/A') ?></td>
-                                            <td>
-                                                <?php if ($r['status'] === 'pending'): ?>
-                                                    <span class="badge badge-warning">Pending</span>
-                                                <?php elseif ($r['status'] === 'approved'): ?>
-                                                    <span class="badge badge-success">Approved</span>
-                                                <?php else: ?>
-                                                    <span class="badge badge-danger">Denied</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td><?= date('M d, H:i', strtotime($r['created_at'])) ?></td>
-                                            <td>
-                                                <?php if ($r['status'] === 'pending'): ?>
-                                                    <a href="admin_lab_requests.php" class="btn btn-sm btn-primary">Review</a>
-                                                <?php endif; ?>
-                                            </td>
-                                        </tr>
-                                    <?php endwhile; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    
                 <?php else: ?>
                     <!-- USER DASHBOARD -->
                     <div class="row">

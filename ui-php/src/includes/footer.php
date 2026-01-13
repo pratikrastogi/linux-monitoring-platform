@@ -72,32 +72,9 @@ if (typeof checkAlerts === 'function') {
   setInterval(checkAlerts, 30000);
 }
 
-// Ensure Bootstrap dropdowns are properly initialized
-$(document).ready(function() {
-  // Initialize dropdowns
-  $('.dropdown-toggle').dropdown();
-  
-  // Handle dropdown clicks explicitly
-  $('.dropdown a[data-toggle="dropdown"]').on('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    $(this).parent().toggleClass('show');
-    $(this).next('.dropdown-menu').toggleClass('show');
-  });
-  
-  // Close dropdowns when clicking outside
-  $(document).on('click', function(e) {
-    if (!$(e.target).closest('.dropdown').length) {
-      $('.dropdown-menu').removeClass('show');
-      $('.dropdown').removeClass('show');
-    }
-  });
-  
-  // Ensure sidebar toggle works
-  $('[data-widget="pushmenu"]').on('click', function(e) {
-    e.preventDefault();
-    $('body').toggleClass('sidebar-open sidebar-collapse');
-  });
+// Ensure Bootstrap dropdowns initialize (use native Bootstrap/ AdminLTE handlers)
+$(function() {
+  $('[data-toggle="dropdown"]').dropdown();
 });
 </script>
 
