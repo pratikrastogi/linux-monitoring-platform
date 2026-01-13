@@ -79,13 +79,21 @@ let chart = null;
 ------------------------------*/
 function loadServers() {
   fetch('api/metrics.php')
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) {
+        throw new Error('API returned ' + res.status);
+      }
+      return res.json();
+    })
     .then(data => {
       const sel = document.getElementById('serverSelect');
       sel.innerHTML = '';
 
+      console.log('Servers loaded:', data);
+
       if (!data || data.length === 0) {
         sel.innerHTML = '<option>No servers available</option>';
+        console.warn('No servers returned from API');
         return;
       }
 
