@@ -22,7 +22,7 @@ if (isset($_GET['approve'])) {
     $session_token = bin2hex(random_bytes(16));
     
     $conn->query("INSERT INTO lab_sessions (user_id, username, lab_id, namespace, access_start, access_expiry, status, session_token, plan, provisioned, created_at, updated_at)
-                  VALUES ({$req['user_id']}, '{$_SESSION['user']}', {$req['lab_id']}, 'pending', NOW(), '$access_expiry', 'ACTIVE', '$session_token', 'standard', 0, NOW(), NOW())");
+                  VALUES ({$req['user_id']}, '{$_SESSION['user']}', {$req['lab_id']}, 'pending', NOW(), '$access_expiry', 'REQUESTED', '$session_token', 'FREE', 0, NOW(), NOW())");
     
     $_SESSION['success'] = "Lab request approved! Session created.";
     header("Location: admin_lab_requests.php");

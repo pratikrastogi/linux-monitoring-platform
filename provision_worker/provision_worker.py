@@ -18,23 +18,46 @@ db = mysql.connector.connect(
 # SSH EXECUTION HELPER
 # ----------------------------------------------------------
 def ssh_exec(host, ssh_user, ssh_pass, command):
+    print(f"[DEBUG] SSH connecting to {host} as {ssh_user}")
+    print(f"[DEBUG] Command: {command}")
+    
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(
-        hostname=host,
-        username=ssh_user,
-        password=ssh_pass,
-        timeout=15,
-        allow_agent=False,
-        look_for_keys=False
-    )
-    stdin, stdout, stderr = ssh.exec_command(command)
-    out = stdout.read().decode().strip()
-    err = stderr.read().decode().strip()
-    ssh.close()
-    if err:
-        raise RuntimeError(err)
-    return out
+    
+    try:
+        ssh.connect(
+            hostname=host,
+            username=ssh_user,
+            password=ssh_pass,
+            timeout=15,
+            allow_agent=False,
+            look_for_keys=False
+        )
+        print(f"[DEBUG] SSH connected successfully")
+    except Exception as e:
+        raise RuntimeError(f"SSH connection failed: {e}")
+    
+    try:
+        stdin, stdout, stderr = ssh.exec_command(command)
+        out = stdout.read().decode().strip()
+        err = stderr.read().decode().strip()
+        exit_code = stdout.channel.recv_exit_status()
+        
+        print(f"[DEBUG] Exit code: {exit_code}")
+        if out:
+            print(f"[DEBUG] STDOUT: {out[:500]}")
+        if err:
+            print(f"[DEBUG] STDERR: {err[:500]}")
+        
+        ssh.close()
+        
+        if exit_code != 0:
+            raise RuntimeError(f"Script failed with exit code {exit_code}: {err}")
+        
+        return out
+    except Exception as e:
+        ssh.close()
+        raise RuntimeError(f"SSH execution failed: {e}")
 
 
 # ----------------------------------------------------------
@@ -51,13 +74,28 @@ def provision_new_lab(session):
 
     if not script:
         raise RuntimeError("Provision script path missing")
+    
+    print(f"[DEBUG] Session details: id={session.get('id')}, user={username}, namespace={namespace}")
+    print(f"[DEBUG] Server: {host}, script={script}")
 
     # Calculate duration in minutes
+    # Handle both string timestamps and datetime objects
     now = datetime.utcnow()
     expiry = session["access_expiry"]
-    duration_minutes = int((expiry - now).total_seconds() / 60)
+    
+    if isinstance(expiry, str):
+        try:
+            expiry_dt = datetime.fromisoformat(expiry.replace('Z', '+00:00'))
+        except:
+            expiry_dt = datetime.strptime(expiry, "%Y-%m-%d %H:%M:%S")
+    else:
+        expiry_dt = expiry
+    
+    duration_minutes = int((expiry_dt - now).total_seconds() / 60)
     if duration_minutes < 1:
         duration_minutes = 1
+    
+    print(f"[DEBUG] Now: {now}, Expiry: {expiry_dt}, Duration: {duration_minutes} minutes")
 
     safe_user = shlex.quote(username)
 
@@ -123,7 +161,8 @@ while True:
         if session:
             session_id = session["id"]
             try:
-                print(f"[INFO] Provisioning lab session {session_id}")
+                print(f"\n[INFO] ========== Provisioning lab session {session_id} ==========")
+                print(f"[INFO] Lab ID: {session.get('lab_id')}, User ID: {session.get('user_id')}")
                 provision_new_lab(session)
 
                 cur.execute("""
@@ -132,16 +171,15 @@ while True:
                     WHERE id=%s
                 """, (session_id,))
 
-                print(f"[SUCCESS] Lab session {session_id} is ACTIVE")
+                print(f"[SUCCESS] Lab session {session_id} is now ACTIVE\n")
 
             except Exception as e:
+                print(f"[ERROR] Provision failed for session {session_id}: {type(e).__name__}: {e}\n")
                 cur.execute("""
                     UPDATE lab_sessions
                     SET status='FAILED'
                     WHERE id=%s
                 """, (session_id,))
-
-                print(f"[ERROR] Provision failed for session {session_id}: {e}")
 
             cur.close()
             time.sleep(POLL_INTERVAL)

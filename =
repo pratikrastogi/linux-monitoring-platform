@@ -330,4 +330,610 @@ vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
 user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
 user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
 user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
-user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bi
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# [7mssh ip172-18-0-46-d5j2g40l2o9000fkktdg@[27m[7md[27m[7mirect.labs.play-with-docker.com[27m[A[C[C[C[C[C[C[C[C[Cssh ip172-18-0-46-d5j2g40l2o9000fkktdg@direct.labs.play-with-docker.com
+[?2004lThe authenticity of host 'direct.labs.play-with-docker.com (40.121.45.0)' can't be established.
+RSA key fingerprint is SHA256:vCbhEjmYQhtNzuuuh7TmGAPfe9T+JdGnGaVquQJUphY.
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added 'direct.labs.play-with-docker.com' (RSA) to the list of known hosts.
+ip172-18-0-46-d5j2g40l2o9000fkktdg@direct.labs.play-with-docker.com: Permission denied (publickey).
+[?2004h[root@master linux-monitoring-platform]# git push[K[K[K[Klab[K[K[Kadd .
+[?2004l[?2004h[root@master linux-monitoring-platform]# git push [K[K[K[K[Kcommit -m ""F"i"x"e"d"[C "t"h"e" "b"r"o"w"s"e" "p"a"g"e" "a" [A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cn"d" "l"a"b" "r"e"q"u"e"s"t" "p"a"g"e"s"
+[?2004l[main e38f58b] Fixed the browse page and lab request pages
+ Committer: root <root@master.pratik.com>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly:
+
+    git config --global user.name "Your Name"
+    git config --global user.email you@example.com
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 5 files changed, 547 insertions(+), 152 deletions(-)
+[?2004h[root@master linux-monitoring-platform]# git push
+[?2004lEnumerating objects: 17, done.
+Counting objects:   5% (1/17)Counting objects:  11% (2/17)Counting objects:  17% (3/17)Counting objects:  23% (4/17)Counting objects:  29% (5/17)Counting objects:  35% (6/17)Counting objects:  41% (7/17)Counting objects:  47% (8/17)Counting objects:  52% (9/17)Counting objects:  58% (10/17)Counting objects:  64% (11/17)Counting objects:  70% (12/17)Counting objects:  76% (13/17)Counting objects:  82% (14/17)Counting objects:  88% (15/17)Counting objects:  94% (16/17)Counting objects: 100% (17/17)Counting objects: 100% (17/17), done.
+Delta compression using up to 16 threads
+Compressing objects:  11% (1/9)Compressing objects:  22% (2/9)Compressing objects:  33% (3/9)Compressing objects:  44% (4/9)Compressing objects:  55% (5/9)Compressing objects:  66% (6/9)Compressing objects:  77% (7/9)Compressing objects:  88% (8/9)Compressing objects: 100% (9/9)Compressing objects: 100% (9/9), done.
+Writing objects:  11% (1/9)Writing objects:  22% (2/9)Writing objects:  33% (3/9)Writing objects:  44% (4/9)Writing objects:  55% (5/9)Writing objects:  66% (6/9)Writing objects:  77% (7/9)Writing objects:  88% (8/9)Writing objects: 100% (9/9)Writing objects: 100% (9/9), 5.91 KiB | 5.91 MiB/s, done.
+Total 9 (delta 7), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas:   0% (0/7)[Kremote: Resolving deltas:  14% (1/7)[Kremote: Resolving deltas:  28% (2/7)[Kremote: Resolving deltas:  42% (3/7)[Kremote: Resolving deltas:  57% (4/7)[Kremote: Resolving deltas:  71% (5/7)[Kremote: Resolving deltas:  85% (6/7)[Kremote: Resolving deltas: 100% (7/7)[Kremote: Resolving deltas: 100% (7/7), completed with 7 local objects.[K
+To https://github.com/pratikrastogi/linux-monitoring-platform.git
+   af3de63..e38f58b  main -> main
+[?2004h[root@master linux-monitoring-platform]# gir add[K[K[K[K[Kt add.[K /[K.
+[?2004l[?2004h[root@master linux-monitoring-platform]# git push -m ""f"i"c"[1P"x"e"d" "m"u"l"t"i"p"e"l"[1P"[1P"l"e" "i"s"s"u"e" "o"n" "s" [A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Co"ur"[1P"p"p"o"r"t" "c"a"e" ","[1P"[1P"[1P"s"e"," "l"a"b" "r"e"q"u"e"s"t" "," "a"n"d" "[1P"[1P"[1P"[1P"t"a"b" "[1P"[1P"[1P"[1P"t"al"[1P"[1P"[1P"l"a"b" "s"e"s"s"i"o"n"s"
+[?2004lerror: unknown switch `m'
+usage: git push [<options>] [<repository> [<refspec>...]]
+
+    -v, --[no-]verbose    be more verbose
+    -q, --[no-]quiet      be more quiet
+    --[no-]repo <repository>
+                          repository
+    --[no-]all            push all branches
+    --[no-]branches       alias of --all
+    --[no-]mirror         mirror all refs
+    -d, --[no-]delete     delete refs
+    --[no-]tags           push tags (can't be used with --all or --branches or --mirror)
+    -n, --[no-]dry-run    dry run
+    --[no-]porcelain      machine-readable output
+    -f, --[no-]force      force updates
+    --[no-]force-with-lease[=<refname>:<expect>]
+                          require old value of ref to be at this value
+    --[no-]force-if-includes
+                          require remote updates to be integrated locally
+    --[no-]recurse-submodules (check|on-demand|no)
+                          control recursive pushing of submodules
+    --[no-]thin           use thin pack
+    --[no-]receive-pack <receive-pack>
+                          receive pack program
+    --[no-]exec <receive-pack>
+                          receive pack program
+    -u, --[no-]set-upstream
+                          set upstream for git pull/status
+    --[no-]progress       force progress reporting
+    --[no-]prune          prune locally removed refs
+    --no-verify           bypass pre-push hook
+    --verify              opposite of --no-verify
+    --[no-]follow-tags    push missing but relevant tags
+    --[no-]signed[=(yes|no|if-asked)]
+                          GPG sign the push
+    --[no-]atomic         request atomic transaction on remote side
+    -o, --[no-]push-option <server-specific>
+                          option to transmit
+    -4, --ipv4            use IPv4 addresses only
+    -6, --ipv6            use IPv6 addresses only
+
+[?2004h[root@master linux-monitoring-platform]# git push -m "fixed multiple issue on soupport case, lab request , lab sessions"[C[C[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ch -m "fixed multiple issue on soup[C[1P[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ch -m "fixed multiple issue on soupp[1P[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C -m "fixed multiple issue on souppo[1P[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C -m "fixed multiple issue on souppor[1P[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cc -m "fixed multiple issue on souppo[1@r[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Co -m "fixed multiple issue on soupp[1@o[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cm -m "fixed multiple issue on soup[1@p[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cm -m "fixed multiple issue on sou[C[1@p[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ci -m "fixed multiple issue on so[1@u[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ct -m "fixed multiple issue on s[1@o[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+
+[?2004l[main 77e2f79] fixed multiple issue on soupport case, lab request , lab sessions
+ Committer: root <root@master.pratik.com>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly:
+
+    git config --global user.name "Your Name"
+    git config --global user.email you@example.com
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 10 files changed, 357 insertions(+), 37 deletions(-)
+ create mode 100644 ui-php/src/admin_support.php
+[?2004h[root@master linux-monitoring-platform]# git push
+[?2004lEnumerating objects: 28, done.
+Counting objects:   3% (1/28)Counting objects:   7% (2/28)Counting objects:  10% (3/28)Counting objects:  14% (4/28)Counting objects:  17% (5/28)Counting objects:  21% (6/28)Counting objects:  25% (7/28)Counting objects:  28% (8/28)Counting objects:  32% (9/28)Counting objects:  35% (10/28)Counting objects:  39% (11/28)Counting objects:  42% (12/28)Counting objects:  46% (13/28)Counting objects:  50% (14/28)Counting objects:  53% (15/28)Counting objects:  57% (16/28)Counting objects:  60% (17/28)Counting objects:  64% (18/28)Counting objects:  67% (19/28)Counting objects:  71% (20/28)Counting objects:  75% (21/28)Counting objects:  78% (22/28)Counting objects:  82% (23/28)Counting objects:  85% (24/28)Counting objects:  89% (25/28)Counting objects:  92% (26/28)Counting objects:  96% (27/28)Counting objects: 100% (28/28)Counting objects: 100% (28/28), done.
+Delta compression using up to 16 threads
+Compressing objects:   6% (1/15)Compressing objects:  13% (2/15)Compressing objects:  20% (3/15)Compressing objects:  26% (4/15)Compressing objects:  33% (5/15)Compressing objects:  40% (6/15)Compressing objects:  46% (7/15)Compressing objects:  53% (8/15)Compressing objects:  60% (9/15)Compressing objects:  66% (10/15)Compressing objects:  73% (11/15)Compressing objects:  80% (12/15)Compressing objects:  86% (13/15)Compressing objects:  93% (14/15)Compressing objects: 100% (15/15)Compressing objects: 100% (15/15), done.
+Writing objects:   6% (1/15)Writing objects:  13% (2/15)Writing objects:  20% (3/15)Writing objects:  26% (4/15)Writing objects:  33% (5/15)Writing objects:  40% (6/15)Writing objects:  46% (7/15)Writing objects:  53% (8/15)Writing objects:  60% (9/15)Writing objects:  66% (10/15)Writing objects:  73% (11/15)Writing objects:  80% (12/15)Writing objects:  86% (13/15)Writing objects:  93% (14/15)Writing objects: 100% (15/15)Writing objects: 100% (15/15), 4.93 KiB | 4.93 MiB/s, done.
+Total 15 (delta 13), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas:   0% (0/13)[Kremote: Resolving deltas:   7% (1/13)[Kremote: Resolving deltas:  15% (2/13)[Kremote: Resolving deltas:  23% (3/13)[Kremote: Resolving deltas:  30% (4/13)[Kremote: Resolving deltas:  38% (5/13)[Kremote: Resolving deltas:  46% (6/13)[Kremote: Resolving deltas:  53% (7/13)[Kremote: Resolving deltas:  61% (8/13)[Kremote: Resolving deltas:  69% (9/13)[Kremote: Resolving deltas:  76% (10/13)[Kremote: Resolving deltas:  84% (11/13)[Kremote: Resolving deltas:  92% (12/13)[Kremote: Resolving deltas: 100% (13/13)[Kremote: Resolving deltas: 100% (13/13), completed with 13 local objects.[K
+To https://github.com/pratikrastogi/linux-monitoring-platform.git
+   e38f58b..77e2f79  main -> main
+[?2004h[root@master linux-monitoring-platform]# 
+[?2004l[?2004h[root@master linux-monitoring-platform]# 
+[?2004l[?2004h[root@master linux-monitoring-platform]# 
+[?2004l[?2004h[root@master linux-monitoring-platform]# cat /etc/us[K[Kpasswd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cd [7muser-13-1768304825[27muser-13-1768304825
+[?2004lbash: cd: user-13-1768304825: No such file or directory
+[?2004h[root@master linux-monitoring-platform]# su [7muser-13-1768304825[27muser-13-1768304825
+[?2004lsu: user user-13-1768304825 does not exist or the user entry does not contain all the required fields
+[?2004h[root@master linux-monitoring-platform]# kubectl get 
+apiservices.apiregistration.k8s.io
+bgpconfigurations.crd.projectcalico.org
+bgpfilters.crd.projectcalico.org
+bgppeers.crd.projectcalico.org
+blockaffinities.crd.projectcalico.org
+caliconodestatuses.crd.projectcalico.org
+cephblockpoolradosnamespaces.ceph.rook.io
+cephblockpools.ceph.rook.io
+cephbucketnotifications.ceph.rook.io
+cephbuckettopics.ceph.rook.io
+cephclients.ceph.rook.io
+cephclusters.ceph.rook.io
+cephcosidrivers.ceph.rook.io
+cephfilesystemmirrors.ceph.rook.io
+cephfilesystems.ceph.rook.io
+cephfilesystemsubvolumegroups.ceph.rook.io
+cephnfses.ceph.rook.io
+cephobjectrealms.ceph.rook.io
+cephobjectstores.ceph.rook.io
+cephobjectstoreusers.ceph.rook.io
+cephobjectzonegroups.ceph.rook.io
+cephobjectzones.ceph.rook.io
+cephrbdmirrors.ceph.rook.io
+--More--[K[root@master linux-monitoring-platform]# kubectl get q[Kstatus[K[K[K[K[K[Kpods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              5h44m
+collector-6964c8966c-z4wb6          1/1     Running   22 (45h ago)   8d
+mysql-0                             1/1     Running   3 (45h ago)    3d23h
+php-ui-6fd5bdc64d-9j7ml             1/1     Running   0              24m
+provision-worker-867f96577d-m57vz   1/1     Running   0              56m
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (18h ago)   4d18h
+[?2004h[root@master linux-monitoring-platform]# kubectl lof[Kfs[K[Kgs provision-worker-867f96577d-m57vz provision-worker [K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K
+[?2004l[?2004h[root@master linux-monitoring-platform]# ku[K[Kkubectl logs provision-worker-867f96577d-m57vz [A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ckubectl logs provision-worker-867f96577d-m57vz [C-f
+[?2004l^C
+[?2004h[root@master linux-monitoring-platform]# su - [7muser-3-1768305911[27muser-3-1768305911
+[?2004lsu: user user-3-1768305911 does not exist or the user entry does not contain all the required fields
+[?2004h[root@master linux-monitoring-platform]# cat /et[K[K[K[K[K[K[Kcat /etc/provis[K[Kisi[Kner-[K[K[K[K[K[K[K[K[K[K[K[K[K[Kproc/[K[K[K[K[K[Kprovision_worker/
+cleanup_lab_user.sh  create_lab_user.sh   provision_worker.py
+cleanup_worker.py    Dockerfile           
+[root@master linux-monitoring-platform]# cat provision_worker/provision_worker.py 
+[?2004limport time
+import mysql.connector
+import paramiko
+import shlex
+from datetime import datetime
+
+POLL_INTERVAL = 5
+
+db = mysql.connector.connect(
+    host="mysql",
+    user="monitor",
+    password="monitor123",
+    database="monitoring",
+    autocommit=True
+)
+
+# ----------------------------------------------------------
+# SSH EXECUTION HELPER
+# ----------------------------------------------------------
+def ssh_exec(host, ssh_user, ssh_pass, command):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(
+        hostname=host,
+        username=ssh_user,
+        password=ssh_pass,
+        timeout=15,
+        allow_agent=False,
+        look_for_keys=False
+    )
+    stdin, stdout, stderr = ssh.exec_command(command)
+    out = stdout.read().decode().strip()
+    err = stderr.read().decode().strip()
+    ssh.close()
+    if err:
+        raise RuntimeError(err)
+    return out
+
+
+# ----------------------------------------------------------
+# NEW LAB PROVISIONING (REQUESTED → ACTIVE)
+# ----------------------------------------------------------
+def provision_new_lab(session):
+    host = session["ip_address"]
+    ssh_user = session["ssh_user"]
+    ssh_pass = session["ssh_password"]
+
+    namespace = session["namespace"]
+    username = session["username"]
+    script = session["provision_script_path"]
+
+    if not script:
+        raise RuntimeError("Provision script path missing")
+
+    # Calculate duration in minutes
+    now = datetime.utcnow()
+    expiry = session["access_expiry"]
+    duration_minutes = int((expiry - now).total_seconds() / 60)
+    if duration_minutes < 1:
+        duration_minutes = 1
+
+    safe_user = shlex.quote(username)
+
+    # Pass username and duration to the provision script
+    # The script creates its own namespace based on username
+    cmd = f"sudo {script} {safe_user} {duration_minutes}"
+
+    return ssh_exec(host, ssh_user, ssh_pass, cmd)
+
+
+# ----------------------------------------------------------
+# EXTENSION HANDLING (PAID EXTENSIONS – FUTURE USE)
+# ----------------------------------------------------------
+def provision_extension(session):
+    host = session["ip_address"]
+    ssh_user = session["ssh_user"]
+    ssh_pass = session["ssh_password"]
+
+    namespace = session["namespace"]
+
+    now = datetime.utcnow()
+    expiry = session["access_expiry"]
+    minutes = int((expiry - now).total_seconds() / 60)
+    if minutes < 1:
+        minutes = 1
+
+    safe_ns = shlex.quote(namespace)
+
+    # example extension script (optional future use)
+    cmd = f"sudo /opt/lab/extend_lab.sh {safe_ns} {minutes}"
+
+    return ssh_exec(host, ssh_user, ssh_pass, cmd)
+
+
+# ----------------------------------------------------------
+# MAIN WORKER LOOP
+# ----------------------------------------------------------
+while True:
+    try:
+        cur = db.cursor(dictionary=True)
+
+        # ==================================================
+        # CASE 1: NEW LAB SESSION (REQUESTED)
+        # ==================================================
+        cur.execute("""
+            SELECT 
+                ls.*,
+                l.provision_script_path,
+                s.ip_address,
+                s.ssh_user,
+                s.ssh_password,
+                s.ssh_port
+            FROM lab_sessions ls
+            JOIN labs l ON ls.lab_id = l.id
+            JOIN servers s ON l.server_id = s.id
+            WHERE ls.status = 'REQUESTED'
+            ORDER BY ls.id
+            LIMIT 1
+            FOR UPDATE
+        """)
+        session = cur.fetchone()
+
+        if session:
+            session_id = session["id"]
+            try:
+                print(f"[INFO] Provisioning lab session {session_id}")
+                provision_new_lab(session)
+
+                cur.execute("""
+                    UPDATE lab_sessions
+                    SET status='ACTIVE', provisioned=1
+                    WHERE id=%s
+                """, (session_id,))
+
+                print(f"[SUCCESS] Lab session {session_id} is ACTIVE")
+
+            except Exception as e:
+                cur.execute("""
+                    UPDATE lab_sessions
+                    SET status='FAILED'
+                    WHERE id=%s
+                """, (session_id,))
+
+                print(f"[ERROR] Provision failed for session {session_id}: {e}")
+
+            cur.close()
+            time.sleep(POLL_INTERVAL)
+            continue
+
+        # ==================================================
+        # CASE 2: EXTENSION (OPTIONAL / FUTURE)
+        # ==================================================
+        cur.execute("""
+            SELECT 
+                ls.*,
+                s.ip_address,
+                s.ssh_user,
+                s.ssh_password
+            FROM lab_sessions ls
+            JOIN labs l ON ls.lab_id = l.id
+            JOIN servers s ON l.server_id = s.id
+            WHERE ls.status='ACTIVE'
+              AND ls.plan='PAID'
+              AND ls.provisioned = 0
+            ORDER BY ls.id
+            LIMIT 1
+            FOR UPDATE
+        """)
+        session = cur.fetchone()
+
+        if session:
+            session_id = session["id"]
+            try:
+                print(f"[INFO] Processing extension for session {session_id}")
+                provision_extension(session)
+
+                cur.execute("""
+                    UPDATE lab_sessions
+                    SET provisioned=1
+                    WHERE id=%s
+                """, (session_id,))
+
+                print(f"[SUCCESS] Extension applied for session {session_id}")
+
+            except Exception as e:
+                print(f"[ERROR] Extension failed for session {session_id}: {e}")
+
+            cur.close()
+            time.sleep(POLL_INTERVAL)
+            continue
+
+        cur.close()
+
+    except Exception as fatal:
+        print("[FATAL] Worker crashed:", fatal)
+
+    time.sleep(POLL_INTERVAL)
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwdprovision_worker/provision_worker.py [A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[17Psu - user-3-1768305911
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ckubectl logs provision-worker-867f96577d-m57vz -f[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cget pods[K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Csu user-13-1768304825[5Pkubectl get pods
+[?2004lNAME                                READY   STATUS        RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running       0              5h53m
+collector-6964c8966c-z4wb6          1/1     Running       22 (45h ago)   8d
+mysql-0                             1/1     Running       3 (45h ago)    3d23h
+php-ui-6fd5bdc64d-9j7ml             1/1     Running       0              33m
+provision-worker-59767bbc7-j8tzt    1/1     Running       0              31s
+provision-worker-867f96577d-m57vz   1/1     Terminating   0              65m
+terminal-gateway-567875984d-xqd42   1/1     Running       14 (19h ago)   4d19h
+[?2004h[root@master linux-monitoring-platform]# kubectl get pods
+[?2004lNAME                                READY   STATUS        RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running       0              5h53m
+collector-6964c8966c-z4wb6          1/1     Running       22 (45h ago)   8d
+mysql-0                             1/1     Running       3 (45h ago)    3d23h
+php-ui-6fd5bdc64d-9j7ml             1/1     Running       0              33m
+provision-worker-59767bbc7-j8tzt    1/1     Running       0              34s
+provision-worker-867f96577d-m57vz   1/1     Terminating   0              65m
+terminal-gateway-567875984d-xqd42   1/1     Running       14 (19h ago)   4d19h
+[?2004h[root@master linux-monitoring-platform]# kubectl get pods
+[?2004lNAME                                READY   STATUS        RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running       0              5h53m
+collector-6964c8966c-z4wb6          1/1     Running       22 (45h ago)   8d
+mysql-0                             1/1     Running       3 (45h ago)    3d23h
+php-ui-6fd5bdc64d-9j7ml             1/1     Running       0              33m
+provision-worker-59767bbc7-j8tzt    1/1     Running       0              35s
+provision-worker-867f96577d-m57vz   0/1     Terminating   0              65m
+terminal-gateway-567875984d-xqd42   1/1     Running       14 (19h ago)   4d19h
+[?2004h[root@master linux-monitoring-platform]# kubectl get pods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              5h53m
+collector-6964c8966c-z4wb6          1/1     Running   22 (45h ago)   8d
+mysql-0                             1/1     Running   3 (45h ago)    3d23h
+php-ui-6fd5bdc64d-9j7ml             1/1     Running   0              33m
+provision-worker-59767bbc7-j8tzt    1/1     Running   0              36s
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (19h ago)   4d19h
+[?2004h[root@master linux-monitoring-platform]# kubectl get pods[1Pcat /etc/passwdprovision_worker/provision_worker.py [A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C/etc/passwd[K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# git add ,
+[?2004lfatal: pathspec ',' did not match any files
+[?2004h[
