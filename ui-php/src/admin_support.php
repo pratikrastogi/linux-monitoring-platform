@@ -9,17 +9,37 @@ $page_title = "Support Cases Management";
 $conn = new mysqli("mysql","monitor","monitor123","monitoring");
 if ($conn->connect_error) die("DB Error");
 
+// Handle adding message to case (admin reply)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_message'])) {
+    $case_id = (int)$_POST['case_id'];
+    $message = $conn->real_escape_string($_POST['message']);
+    $admin_id = $_SESSION['uid'];
+    
+    $conn->query("INSERT INTO support_case_messages (case_id, sender_type, sender_id, message, created_at)
+                  VALUES ($case_id, 'ADMIN', $admin_id, '$message', NOW())");
+    
+    $conn->query("UPDATE support_cases 
+                  SET last_response_by='ADMIN', last_response_at=NOW()
+                  WHERE id=$case_id");
+    
+    $_SESSION['success'] = "Reply sent to user!";
+    header("Location: admin_support.php?view=$case_id");
+    exit;
+}
+
 // Handle status update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_case'])) {
     $case_id = (int)$_POST['case_id'];
     $status = $conn->real_escape_string($_POST['status']);
-    $resolution = $conn->real_escape_string($_POST['resolution']);
+    $resolution = $conn->real_escape_string($_POST['resolution'] ?? '');
     
     $conn->query("UPDATE support_cases SET status='$status', resolution='$resolution' WHERE id=$case_id");
     $_SESSION['success'] = "Support case updated successfully!";
-    header("Location: admin_support.php");
+    header("Location: admin_support.php?view=$case_id");
     exit;
 }
+
+$view_case_id = isset($_GET['view']) ? (int)$_GET['view'] : null;
 
 include 'includes/header.php';
 ?>
@@ -56,6 +76,179 @@ include 'includes/header.php';
         <i class="fas fa-check"></i> <?= $_SESSION['success']; unset($_SESSION['success']); ?>
       </div>
       <?php endif; ?>
+
+      <?php if ($view_case_id): ?>
+        <!-- Case Detail View with Chat -->
+        <?php
+        $case_q = $conn->query("SELECT sc.*, u.username, u.email 
+                                FROM support_cases sc 
+                                LEFT JOIN users u ON sc.user_id = u.id 
+                                WHERE sc.id=$view_case_id");
+        
+        if (!$case_q) {
+            echo '<div class="alert alert-danger">Database error: ' . htmlspecialchars($conn->error) . '</div>';
+            $case = null;
+        } else {
+            $case = $case_q->fetch_assoc();
+        }
+        
+        if (!$case) {
+            echo '<div class="alert alert-danger">Case not found.</div>';
+        } else:
+            $category_class = $case['category'] === 'PAYMENT' ? 'success' : ($case['category'] === 'REFUND' ? 'danger' : 'info');
+            $status_class = $case['status'] === 'OPEN' ? 'warning' : ($case['status'] === 'IN_PROGRESS' ? 'info' : ($case['status'] === 'RESOLVED' ? 'success' : 'secondary'));
+            
+            $pending_on = isset($case['last_response_by']) && $case['last_response_by'] === 'ADMIN' ? 'User' : 'Support Team';
+            $pending_class = isset($case['last_response_by']) && $case['last_response_by'] === 'ADMIN' ? 'info' : 'warning';
+        ?>
+        
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header bg-primary">
+                <h3 class="card-title">
+                  <i class="fas fa-ticket-alt"></i> Case #<?= $case['id'] ?> - <?= htmlspecialchars($case['subject'] ?? '') ?>
+                </h3>
+                <div class="card-tools">
+                  <a href="admin_support.php" class="btn btn-sm btn-light">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                  </a>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="row mb-3">
+                  <div class="col-md-3">
+                    <strong>User:</strong> 
+                    <?= htmlspecialchars($case['username'] ?? $case['email'] ?? 'Unknown') ?>
+                  </div>
+                  <div class="col-md-2">
+                    <strong>Status:</strong> 
+                    <span class="badge badge-<?= $status_class ?>">
+                      <?= ucfirst(str_replace('_', ' ', $case['status'] ?? 'OPEN')) ?>
+                    </span>
+                  </div>
+                  <div class="col-md-2">
+                    <strong>Category:</strong> 
+                    <span class="badge badge-<?= $category_class ?>"><?= $case['category'] ?></span>
+                  </div>
+                  <div class="col-md-2">
+                    <strong>Created:</strong> <?= date('M d, Y H:i', strtotime($case['created_at'])) ?>
+                  </div>
+                  <div class="col-md-3">
+                    <strong>Pending On:</strong> 
+                    <span class="badge badge-<?= $pending_class ?>">
+                      <i class="fas fa-<?= isset($case['last_response_by']) && $case['last_response_by'] === 'ADMIN' ? 'user' : 'headset' ?>"></i> <?= $pending_on ?>
+                    </span>
+                  </div>
+                </div>
+                
+                <hr>
+                
+                <!-- Message History -->
+                <h5><i class="fas fa-comments"></i> Conversation History</h5>
+                <div class="direct-chat-messages" style="height: 400px; overflow-y: auto; border: 1px solid #dee2e6; padding: 10px; border-radius: 5px; background: #f8f9fa;">
+                  <?php
+                  $messages_q = $conn->query("SELECT scm.*, 
+                                              CASE 
+                                                WHEN scm.sender_type='USER' THEN u.username
+                                                ELSE a.username
+                                              END as sender_name,
+                                              CASE 
+                                                WHEN scm.sender_type='USER' THEN u.email
+                                                ELSE a.email
+                                              END as sender_email
+                                              FROM support_case_messages scm
+                                              LEFT JOIN users u ON scm.sender_type='USER' AND scm.sender_id = u.id
+                                              LEFT JOIN users a ON scm.sender_type='ADMIN' AND scm.sender_id = a.id
+                                              WHERE scm.case_id = $view_case_id
+                                              ORDER BY scm.created_at ASC");
+                  
+                  if (!$messages_q) {
+                      echo '<div class="alert alert-warning">Could not load messages: ' . htmlspecialchars($conn->error) . '</div>';
+                  } else {
+                      while($msg = $messages_q->fetch_assoc()):
+                        $is_admin = $msg['sender_type'] === 'ADMIN';
+                        $align = $is_admin ? 'right' : 'left';
+                        $bg_class = $is_admin ? 'bg-success' : 'bg-primary';
+                  ?>
+                  <div class="direct-chat-msg <?= $align ?>">
+                    <div class="direct-chat-infos clearfix">
+                      <span class="direct-chat-name float-<?= $align ?>">
+                        <?= $is_admin ? 'Support Team' : 'User' ?> (<?= htmlspecialchars($msg['sender_name'] ?? $msg['sender_email'] ?? 'Unknown') ?>)
+                      </span>
+                      <span class="direct-chat-timestamp float-<?= $align === 'right' ? 'left' : 'right' ?>">
+                        <?= date('M d, Y H:i', strtotime($msg['created_at'])) ?>
+                      </span>
+                    </div>
+                    <div class="direct-chat-text <?= $bg_class ?>" style="<?= $is_admin ? 'margin-left: 50px;' : 'margin-right: 50px;' ?>">
+                      <?= nl2br(htmlspecialchars($msg['message'] ?? '')) ?>
+                    </div>
+                  </div>
+                  <?php 
+                      endwhile;
+                  } // end if messages_q
+                  ?>
+                </div>
+                
+                <hr>
+                
+                <!-- Admin Reply Form -->
+                <?php if ($case['status'] !== 'RESOLVED' && $case['status'] !== 'REJECTED'): ?>
+                <form method="POST" action="admin_support.php">
+                  <input type="hidden" name="case_id" value="<?= $case['id'] ?>">
+                  <input type="hidden" name="add_message" value="1">
+                  <div class="form-group">
+                    <label><i class="fas fa-reply"></i> Reply to User</label>
+                    <textarea name="message" class="form-control" rows="4" placeholder="Type your response here..." required></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Reply
+                  </button>
+                </form>
+                
+                <hr>
+                
+                <!-- Update Case Status -->
+                <form method="POST" action="admin_support.php">
+                  <input type="hidden" name="case_id" value="<?= $case['id'] ?>">
+                  <input type="hidden" name="update_case" value="1">
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label>Status</label>
+                        <select name="status" class="form-control">
+                          <option value="OPEN" <?= $case['status'] === 'OPEN' ? 'selected' : '' ?>>Open</option>
+                          <option value="IN_PROGRESS" <?= $case['status'] === 'IN_PROGRESS' ? 'selected' : '' ?>>In Progress</option>
+                          <option value="RESOLVED" <?= $case['status'] === 'RESOLVED' ? 'selected' : '' ?>>Resolved</option>
+                          <option value="REJECTED" <?= $case['status'] === 'REJECTED' ? 'selected' : '' ?>>Rejected</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      <div class="form-group">
+                        <label>Resolution Notes (Optional)</label>
+                        <textarea name="resolution" class="form-control" rows="2" placeholder="Final resolution notes..."><?= htmlspecialchars($case['resolution'] ?? '') ?></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Update Status
+                  </button>
+                </form>
+                <?php else: ?>
+                <div class="alert alert-info">
+                  <i class="fas fa-info-circle"></i> This case is closed.
+                </div>
+                <?php endif; ?>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <?php endif; ?>
+        
+      <?php else: ?>
+        <!-- Case List View -->
 
       <!-- Stats Cards -->
       <div class="row mb-4">
@@ -184,7 +377,7 @@ include 'includes/header.php';
               $where_sql = implode(' AND ', $where_clauses);
               
               $query = "
-                SELECT sc.*, u.email, u.name
+                SELECT sc.*, u.email, u.username AS name
                 FROM support_cases sc
                 LEFT JOIN users u ON sc.user_id = u.id
                 WHERE $where_sql
@@ -213,8 +406,8 @@ include 'includes/header.php';
               <tr>
                 <td><strong>#<?= $case['id'] ?></strong></td>
                 <td>
-                  <strong><?= htmlspecialchars($case['name'] ?? $case['email']) ?></strong><br>
-                  <small class="text-muted"><?= htmlspecialchars($case['email']) ?></small>
+                  <strong><?= htmlspecialchars($case['name'] ?? $case['email'] ?? '') ?></strong><br>
+                  <small class="text-muted"><?= htmlspecialchars($case['email'] ?? '') ?></small>
                 </td>
                 <td><span class="badge badge-<?= $category_class ?>"><?= htmlspecialchars($case['category'] ?? 'OTHER') ?></span></td>
                 <td>
@@ -224,64 +417,11 @@ include 'includes/header.php';
                 <td><span class="badge badge-<?= $status_class ?>"><?= ucfirst(str_replace('_', ' ', $case['status'] ?? 'OPEN')) ?></span></td>
                 <td><?= date('M d, Y H:i', strtotime($case['created_at'])) ?></td>
                 <td>
-                  <button class="btn btn-xs btn-primary" data-toggle="modal" data-target="#manageCase<?= $case['id'] ?>">
-                    <i class="fas fa-edit"></i> Manage
-                  </button>
+                  <a href="admin_support.php?view=<?= $case['id'] ?>" class="btn btn-xs btn-primary">
+                    <i class="fas fa-eye"></i> View & Reply
+                  </a>
                 </td>
               </tr>
-
-              <!-- Manage Case Modal -->
-              <div class="modal fade" id="manageCase<?= $case['id'] ?>">
-                <div class="modal-dialog modal-lg">
-                  <div class="modal-content">
-                    <div class="modal-header bg-primary">
-                      <h4 class="modal-title">Manage Case #<?= $case['id'] ?>: <?= htmlspecialchars($case['subject'] ?? 'N/A') ?></h4>
-                      <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
-                    </div>
-                    <form method="POST">
-                      <input type="hidden" name="case_id" value="<?= $case['id'] ?>">
-                      <div class="modal-body">
-                        <div class="row">
-                          <div class="col-md-6">
-                            <p><strong>User:</strong> <?= htmlspecialchars($case['name'] ?? $case['email']) ?></p>
-                            <p><strong>Email:</strong> <?= htmlspecialchars($case['email']) ?></p>
-                          </div>
-                          <div class="col-md-6">
-                            <p><strong>Category:</strong> <span class="badge badge-<?= $category_class ?>"><?= htmlspecialchars($case['category'] ?? 'OTHER') ?></span></p>
-                            <p><strong>Created:</strong> <?= date('M d, Y H:i', strtotime($case['created_at'])) ?></p>
-                          </div>
-                        </div>
-                        <hr>
-                        <p><strong>Description:</strong></p>
-                        <div class="alert alert-light">
-                          <?= nl2br(htmlspecialchars($case['description'] ?? 'No description')) ?>
-                        </div>
-
-                        <div class="form-group">
-                          <label><strong>Status:</strong></label>
-                          <select name="status" class="form-control">
-                            <option value="OPEN" <?= $case['status'] === 'OPEN' ? 'selected' : '' ?>>Open</option>
-                            <option value="IN_PROGRESS" <?= $case['status'] === 'IN_PROGRESS' ? 'selected' : '' ?>>In Progress</option>
-                            <option value="RESOLVED" <?= $case['status'] === 'RESOLVED' ? 'selected' : '' ?>>Resolved</option>
-                            <option value="REJECTED" <?= $case['status'] === 'REJECTED' ? 'selected' : '' ?>>Rejected</option>
-                          </select>
-                        </div>
-
-                        <div class="form-group">
-                          <label><strong>Resolution / Response:</strong></label>
-                          <textarea name="resolution" class="form-control" rows="6" placeholder="Enter your response or resolution..."><?= htmlspecialchars($case['resolution'] ?? '') ?></textarea>
-                        </div>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="submit" name="update_case" class="btn btn-primary">
-                          <i class="fas fa-save"></i> Update Case
-                        </button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
 
               <?php 
                 endwhile;
@@ -290,6 +430,8 @@ include 'includes/header.php';
           </table>
         </div>
       </div>
+      
+      <?php endif; // end case list view ?>
 
     </div>
   </section>

@@ -75,6 +75,32 @@ if (typeof checkAlerts === 'function') {
 // Ensure Bootstrap dropdowns initialize (use native Bootstrap/ AdminLTE handlers)
 $(function() {
   $('[data-toggle="dropdown"]').dropdown();
+
+  // Sidebar behavior: collapsed by default on desktop, expand on hover, click to toggle; mobile opens on click
+  const $body = $('body');
+  const $toggle = $('[data-widget="pushmenu"]');
+
+  // initialize pushmenu
+  $toggle.PushMenu();
+
+  // enforce collapsed state on load (desktop)
+  if (window.innerWidth >= 992) {
+    $toggle.PushMenu('collapse');
+  }
+
+  // hover to expand on desktop, collapse on mouse leave
+  $('.main-sidebar').hover(
+    function() {
+      if (window.innerWidth >= 992) {
+        $toggle.PushMenu('expand');
+      }
+    },
+    function() {
+      if (window.innerWidth >= 992) {
+        $toggle.PushMenu('collapse');
+      }
+    }
+  );
 });
 </script>
 
