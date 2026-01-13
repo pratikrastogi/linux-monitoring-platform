@@ -936,4 +936,1151 @@ user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
 user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
 [?2004h[root@master linux-monitoring-platform]# git add ,
 [?2004lfatal: pathspec ',' did not match any files
-[?2004h[
+[?2004h[root@master linux-monitoring-platform]# git p[Kcimmiuy [K[K[K[K[K[K[Kommit -m ""c"h"a"n"g"e" "k"i"y"a"[1P"e" "f"i"c" "[1P"[1P"c" "[1P"[1P"x" "k"i"y"a"
+[?2004lOn branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	[31mmodified:   =[m
+	[31mmodified:   provision_worker/provision_worker.py[m
+	[31mmodified:   ui-php/src/admin_lab_requests.php[m
+
+no changes added to commit (use "git add" and/or "git commit -a")
+[?2004h[root@master linux-monitoring-platform]# git commit -m "change kiye fix kiya"[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cadd ,[K[K.
+[?2004l[?2004h[root@master linux-monitoring-platform]# git add .commit -m "change kiye fix kiya"
+[?2004l[main b1ef261] change kiye fix kiya
+ Committer: root <root@master.pratik.com>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly:
+
+    git config --global user.name "Your Name"
+    git config --global user.email you@example.com
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 3 files changed, 666 insertions(+), 22 deletions(-)
+[?2004h[root@master linux-monitoring-platform]# git push
+[?2004lEnumerating objects: 15, done.
+Counting objects:   6% (1/15)Counting objects:  13% (2/15)Counting objects:  20% (3/15)Counting objects:  26% (4/15)Counting objects:  33% (5/15)Counting objects:  40% (6/15)Counting objects:  46% (7/15)Counting objects:  53% (8/15)Counting objects:  60% (9/15)Counting objects:  66% (10/15)Counting objects:  73% (11/15)Counting objects:  80% (12/15)Counting objects:  86% (13/15)Counting objects:  93% (14/15)Counting objects: 100% (15/15)Counting objects: 100% (15/15), done.
+Delta compression using up to 16 threads
+Compressing objects:  12% (1/8)Compressing objects:  25% (2/8)Compressing objects:  37% (3/8)Compressing objects:  50% (4/8)Compressing objects:  62% (5/8)Compressing objects:  75% (6/8)Compressing objects:  87% (7/8)Compressing objects: 100% (8/8)Compressing objects: 100% (8/8), done.
+Writing objects:  12% (1/8)Writing objects:  25% (2/8)Writing objects:  37% (3/8)Writing objects:  50% (4/8)Writing objects:  62% (5/8)Writing objects:  75% (6/8)Writing objects:  87% (7/8)Writing objects: 100% (8/8)Writing objects: 100% (8/8), 8.92 KiB | 8.92 MiB/s, done.
+Total 8 (delta 6), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas:   0% (0/6)[Kremote: Resolving deltas:  16% (1/6)[Kremote: Resolving deltas:  33% (2/6)[Kremote: Resolving deltas:  50% (3/6)[Kremote: Resolving deltas:  66% (4/6)[Kremote: Resolving deltas:  83% (5/6)[Kremote: Resolving deltas: 100% (6/6)[Kremote: Resolving deltas: 100% (6/6), completed with 6 local objects.[K
+To https://github.com/pratikrastogi/linux-monitoring-platform.git
+   77e2f79..b1ef261  main -> main
+[?2004h[root@master linux-monitoring-platform]# ssh jenkin
+[?2004lWelcome to Ubuntu 22.04.5 LTS (GNU/Linux 5.15.0-164-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Tue Jan 13 05:45:11 PM IST 2026
+
+  System load:  0.69               Processes:             216
+  Usage of /:   65.2% of 51.56GB   Users logged in:       0
+  Memory usage: 86%                IPv4 address for eth0: 192.168.1.49
+  Swap usage:   0%
+
+  => There is 1 zombie process.
+
+ * Strictly confined Kubernetes makes edge and IoT secure. Learn how MicroK8s
+   just raised the bar for easy, resilient and secure K8s cluster deployment.
+
+   https://ubuntu.com/engage/secure-kubernetes-at-the-edge
+
+Expanded Security Maintenance for Applications is not enabled.
+
+4 updates can be applied immediately.
+To see these additional updates run: apt list --upgradable
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+New release '24.04.3 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+
+Last login: Tue Jan 13 16:33:38 2026 from 192.168.1.46
+[?2004h]0;root@jenkin: ~root@jenkin:~# exitping 192.168.1.35
+[?2004lPING 192.168.1.35 (192.168.1.35) 56(84) bytes of data.
+^C
+--- 192.168.1.35 ping statistics ---
+149 packets transmitted, 0 received, 100% packet loss, time 151547ms
+
+[?2004h]0;root@jenkin: ~root@jenkin:~# exit
+[?2004llogout
+Connection to jenkin closed.
+[?2004h[root@master linux-monitoring-platform]# ssh jenkin[2Pgit pushcommit -m "change kiye fix kiya"add .[Kcommit -m "change kiye fix kiya"add ,[Kcat /etc/passwdkubectl get pods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              5h59m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-6fd5bdc64d-9j7ml             1/1     Running   0              40m
+provision-worker-59767bbc7-j8tzt    1/1     Running   0              6m40s
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (19h ago)   4d19h
+[?2004h[root@master linux-monitoring-platform]# kubectl get pods -w
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              5h59m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-6fd5bdc64d-9j7ml             1/1     Running   0              40m
+provision-worker-59767bbc7-j8tzt    1/1     Running   0              6m43s
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (19h ago)   4d19h
+php-ui-5f8896775d-hbnhm             0/1     Pending   0              0s
+php-ui-5f8896775d-hbnhm             0/1     Pending   0              0s
+php-ui-5f8896775d-hbnhm             0/1     ContainerCreating   0              0s
+php-ui-5f8896775d-hbnhm             0/1     ContainerCreating   0              1s
+php-ui-5f8896775d-hbnhm             1/1     Running             0              37s
+php-ui-6fd5bdc64d-9j7ml             1/1     Terminating         0              41m
+provision-worker-89757d97d-9qrnp    0/1     Pending             0              0s
+provision-worker-89757d97d-9qrnp    0/1     Pending             0              0s
+php-ui-6fd5bdc64d-9j7ml             1/1     Terminating         0              41m
+provision-worker-89757d97d-9qrnp    0/1     ContainerCreating   0              1s
+php-ui-6fd5bdc64d-9j7ml             0/1     Terminating         0              41m
+php-ui-6fd5bdc64d-9j7ml             0/1     Terminating         0              41m
+php-ui-6fd5bdc64d-9j7ml             0/1     Terminating         0              41m
+provision-worker-89757d97d-9qrnp    0/1     ContainerCreating   0              3s
+provision-worker-89757d97d-9qrnp    1/1     Running             0              42s
+provision-worker-59767bbc7-j8tzt    1/1     Terminating         0              8m55s
+provision-worker-59767bbc7-j8tzt    1/1     Terminating         0              9m26s
+provision-worker-59767bbc7-j8tzt    0/1     Terminating         0              9m27s
+provision-worker-59767bbc7-j8tzt    0/1     Terminating         0              9m28s
+provision-worker-59767bbc7-j8tzt    0/1     Terminating         0              9m28s
+^Z
+[2]+  Stopped                 kubectl get pods -w
+[?2004h[root@master linux-monitoring-platform]# kubectl get pods -w[K[K[K
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              6h3m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-5f8896775d-hbnhm             1/1     Running   0              2m40s
+provision-worker-89757d97d-9qrnp    1/1     Running   0              104s
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (19h ago)   4d19h
+[?2004h[root@master linux-monitoring-platform]# kubectl get pods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              6h3m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-5f8896775d-hbnhm             1/1     Running   0              3m5s
+provision-worker-89757d97d-9qrnp    1/1     Running   0              2m9s
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (19h ago)   4d19h
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwdkubectl get pods -w[K[6Pssh jenkin[2Pgit pushcommit -m "change kiye fix kiya"add .[Kcommit -m "change kiye fix kiya"add ,[Kcat /etc/passwdkubectl get pods[1Pcat /etc/passwdprovision_worker/provision_worker.py [A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[17Psu - user-3-1768305911
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ckubectl logs provision-worker-867f96577d-m57vz -f[K-f
+[?2004lError from server (NotFound): pods "provision-worker-867f96577d-m57vz" not found
+[?2004h[root@master linux-monitoring-platform]# kubectl logs provision-worker-867f96577d-m57vz -f[K[K[K[K[K[K[K[K[K[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K[K[K[K[K[K[K[K[K-89757d97d-9qrnp 
+[?2004l[?2004h[root@master linux-monitoring-platform]# kubectl logs provision-worker-89757d97d-9qrnp [A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C67f96577d-m57vz -f[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[24Pcat /etc/passwd
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# su - [7muser-9-1768306944 [27muser-9-1768306944 
+[?2004lsu: user user-9-1768306944 does not exist or the user entry does not contain all the required fields
+[?2004h[root@master linux-monitoring-platform]# l[Kproc[K[K[K[Kcd provision_worker/su - user-9-1768306944 [8Pcat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwdsu - user-9-1768306944 [8Pcat /etc/passwdkubectl logs provision-worker-89757d97d-9qrnp [A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C67f96577d-m57vz -f[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C9757d97d-[3P9qrnp 
+[?2004l[?2004h[root@master linux-monitoring-platform]# kubectl logs provision-worker-89757d97d-9qrnp -f
+[?2004l^C
+[?2004h[root@master linux-monitoring-platform]# ls
+[?2004l'='   [0m[01;34mcollector[0m   Jenkinsfile   [01;34mprovision_worker[0m   [01;34mui-php[0m
+ [01;34mci[0m   [01;34mdb[0m          [01;34mk8s[0m           [01;34mterminal-gateway[0m   [01;34mui-php-bkp[0m
+[?2004h[root@master linux-monitoring-platform]# cd provision_worker/
+[?2004l[?2004h[root@master provision_worker]# ld
+[?2004lld: no input files
+[?2004h[root@master provision_worker]# ls
+[?2004lcleanup_lab_user.sh  create_lab_user.sh  provision_worker.py
+cleanup_worker.py    Dockerfile
+[?2004h[root@master provision_worker]# pyht[K[Kton3 provision_worker.py 
+[?2004lbash: pyton3: command not found
+[?2004h[root@master provision_worker]# pyton3 provision_worker.py [1@h
+[?2004lTraceback (most recent call last):
+  File "/root/linux-monitoring-platform/provision_worker/provision_worker.py", line 2, in <module>
+    import mysql.connector
+ModuleNotFoundError: No module named 'mysql'
+[?2004h[root@master provision_worker]# v[Ksu vib[K[Kibhorr
+[?2004lsu: user vibhorr does not exist or the user entry does not contain all the required fields
+[?2004h[root@master provision_worker]# su vibhorr[K
+[?2004l[?2004h[vibhor@master provision_worker]$ ls
+[?2004lcleanup_lab_user.sh  create_lab_user.sh  provision_worker.py
+cleanup_worker.py    Dockerfile
+[?2004h[vibhor@master provision_worker]$ ky[Kubectl get pof[Kds
+[?2004lError from server (Forbidden): pods is forbidden: User "vibhor" cannot list resource "pods" in API group "" in the namespace "lab-vibhor"
+[?2004h[vibhor@master provision_worker]$ expor[Krt [K[K[K[K[K[K[Kexit
+[?2004lexit
+[?2004h[root@master provision_worker]# su - generai[Ktionpratik
+[?2004lLast login: Tue Jan 13 00:06:24 IST 2026 on pts/1
+[?2004h[generationpratik@master ~]$ kubectl get pods
+[?2004lNo resources found in lab-generationpratik namespace.
+[?2004h[generationpratik@master ~]$ kubectl get pods
+[?2004lNo resources found in lab-generationpratik namespace.
+[?2004h[generationpratik@master ~]$ kubectl get pods
+[?2004lNo resources found in lab-generationpratik namespace.
+[?2004h[generationpratik@master ~]$ kubectl get pods
+[?2004lNo resources found in lab-generationpratik namespace.
+[?2004h[generationpratik@master ~]$ exiy[Kt
+[?2004llogout
+[?2004h[root@master provision_worker]# su - shui[K[K[Kgenerationpratik[12Pvibhorrpython3 provision_worker.py [1P[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cls[Kdcd provision_worker/ls[Kkubectl logs provision-worker-89757d97d-9qrnp -f [A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ccat /etc/passwd[Kkubectl logs provision-worker-89757d97d-9qrnp -f [A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cls[K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Ccd provision_worker/ld[Kspyton3 provision_worker.py [1@h[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[18Psu vibhorr[K- generationpratiks[K[K[K[K[K[K[Kcat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[root@master provision_worker]# sud [K[K - [7mshivanirastogi127[27mshivanirastogi127
+[?2004lLast login: Mon Jan 12 12:24:12 IST 2026 from 192.168.1.48 on pts/1
+[?2004h[shivanirastogi127@master ~]$ kubectl get pods
+[?2004lNo resources found in lab-shivanirastogi127 namespace.
+[?2004h[shivanirastogi127@master ~]$ s[Kexit[K[K[K[Ksu - generationpratik
+[?2004lPassword: 
+su: Authentication failure
+[?2004h[shivanirastogi127@master ~]$ su - generationpratik
+[?2004lPassword: 
+su: Authentication failure
+[?2004h[shivanirastogi127@master ~]$ su - generationpratik
+[?2004lPassword: 
+su: Authentication failure
+[?2004h[shivanirastogi127@master ~]$ su - generationpratik
+[?2004lPassword: 
+su: Authentication failure
+[?2004h[shivanirastogi127@master ~]$ su - generationpratik[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kshivanirastogi
+[?2004lsu: user shivanirastogi does not exist or the user entry does not contain all the required fields
+[?2004h[shivanirastogi127@master ~]$ su - shivanirastogi127
+[?2004lPassword: 
+[?2004h[shivanirastogi127@master ~]$ cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+[?2004h[shivanirastogi127@master ~]$ cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+kakucha:x:1023:1023::/labs/kakucha:/bin/bash
+[?2004h[shivanirastogi127@master ~]$ cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+kakucha:x:1023:1023::/labs/kakucha:/bin/bash
+[?2004h[shivanirastogi127@master ~]$ sud[K[K[Ksu - kyndryl
+[?2004lPassword: 
+[?2004h[shivanirastogi127@master ~]$ ksu - kyndryl[K[K[K[K[K[K[Kkakucha
+[?2004lPassword: 
+[?2004h[shivanirastogi127@master ~]$ su - kakucha
+[?2004lPassword: 
+[?2004h[kakucha@master ~]$ 
+[?2004l[?2004h[kakucha@master ~]$ 
+[?2004l[?2004h[kakucha@master ~]$ kubectl get pods
+[?2004lNo resources found in lab-kakucha namespace.
+[?2004h[kakucha@master ~]$ kubectl get pods[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kexit
+[?2004llogout
+[?2004h[shivanirastogi127@master ~]$ kubectl get pods
+[?2004lNo resources found in lab-shivanirastogi127 namespace.
+[?2004h[shivanirastogi127@master ~]$ kubectl get pods[K[Kexit
+[?2004llogout
+[?2004h[root@master provision_worker]# kubectl get ns
+[?2004lNAME                     STATUS   AGE
+deepak                   Active   7d6h
+default                  Active   9d
+democratic-csi           Active   9d
+dev                      Active   6d6h
+dinesh                   Active   6d6h
+ingress-nginx1           Active   40h
+jenkins                  Active   9d
+kube-node-lease          Active   9d
+kube-public              Active   9d
+kube-system              Active   9d
+lab-generationpratik     Active   96m
+lab-kakucha              Active   3m3s
+lab-kyndryl              Active   5d5h
+lab-shivanirastogi127    Active   57m
+lab-testuser             Active   3d
+lab-user-10-1768241530   Active   18h
+lab-user-11-1768282232   Active   7h13m
+lab-user-3-1768281281    Active   7h29m
+lab-user-3-1768289472    Active   5h13m
+lab-user-9-1768241321    Active   18h
+lab-user-9-1768245554    Active   17h
+lab-vibhor               Active   39m
+linux-monitoring         Active   9d
+praksh                   Active   7d6h
+pratik                   Active   7d6h
+rahul                    Active   6d6h
+rook-ceph                Active   6d23h
+suresh                   Active   6d6h
+[?2004h[root@master provision_worker]# kubectl get nssu - shivanirastogi127[7Pcat /etc/passwdsu - shivanirastogi127[8Pkubectl get ns[Kssh jenkin
+[?2004lWelcome to Ubuntu 22.04.5 LTS (GNU/Linux 5.15.0-164-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Tue Jan 13 06:23:13 PM IST 2026
+
+  System load:  1.79               Processes:             214
+  Usage of /:   65.3% of 51.56GB   Users logged in:       0
+  Memory usage: 88%                IPv4 address for eth0: 192.168.1.49
+  Swap usage:   0%
+
+  => There is 1 zombie process.
+
+ * Strictly confined Kubernetes makes edge and IoT secure. Learn how MicroK8s
+   just raised the bar for easy, resilient and secure K8s cluster deployment.
+
+   https://ubuntu.com/engage/secure-kubernetes-at-the-edge
+
+Expanded Security Maintenance for Applications is not enabled.
+
+4 updates can be applied immediately.
+To see these additional updates run: apt list --upgradable
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+New release '24.04.3 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+
+Last login: Tue Jan 13 17:45:12 2026 from 192.168.1.46
+[?2004h]0;root@jenkin: ~root@jenkin:~# exitping 192.168.1.35[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cexit[Kping 192.168.1.35
+[?2004lPING 192.168.1.35 (192.168.1.35) 56(84) bytes of data.
+^C
+--- 192.168.1.35 ping statistics ---
+507 packets transmitted, 0 received, 100% packet loss, time 518136ms
+
+[?2004h]0;root@jenkin: ~root@jenkin:~# exit
+[?2004llogout
+Connection to jenkin closed.
+[?2004h[root@master provision_worker]# ssh jenkinkubectl get nssu - shivanirastogi127[7Pcat /etc/passwdsu - shivanirastogi127[8Pkubectl get ns[4Pssh jenkinkubectl get ns[K[K[K pods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              6h43m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-759cd74bff-gg9d5             1/1     Running   0              7m27s
+provision-worker-9d45dbc59-nh545    1/1     Running   0              6m7s
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (19h ago)   4d19h
+[?2004h[root@master provision_worker]# kubectl get pods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              6h46m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-759cd74bff-gg9d5             1/1     Running   0              10m
+provision-worker-9d45dbc59-nh545    1/1     Running   0              8m54s
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (19h ago)   4d19h
+[?2004h[root@master provision_worker]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkit

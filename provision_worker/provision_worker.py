@@ -70,12 +70,13 @@ def provision_new_lab(session):
 
     namespace = session["namespace"]
     username = session["username"]
+    user_id = session["user_id"]
     script = session["provision_script_path"]
 
     if not script:
         raise RuntimeError("Provision script path missing")
     
-    print(f"[DEBUG] Session details: id={session.get('id')}, user={username}, namespace={namespace}")
+    print(f"[DEBUG] Session details: id={session.get('id')}, user={username}, user_id={user_id}, namespace={namespace}")
     print(f"[DEBUG] Server: {host}, script={script}")
 
     # Calculate duration in minutes
@@ -97,11 +98,16 @@ def provision_new_lab(session):
     
     print(f"[DEBUG] Now: {now}, Expiry: {expiry_dt}, Duration: {duration_minutes} minutes")
 
-    safe_user = shlex.quote(username)
+    # Generate timestamp for unique username and namespace
+    timestamp = int(now.timestamp())
+    
+    # Format: user-{user_id}-{timestamp} and lab-user-{user_id}-{timestamp}
+    formatted_username = f"user-{user_id}-{timestamp}"
+    safe_user = shlex.quote(formatted_username)
+    safe_user_id = shlex.quote(str(user_id))
 
-    # Pass username and duration to the provision script
-    # The script creates its own namespace based on username
-    cmd = f"sudo {script} {safe_user} {duration_minutes}"
+    # Pass formatted username, user_id, duration, and timestamp to the provision script
+    cmd = f"sudo {script} {safe_user} {duration_minutes} {safe_user_id} {timestamp}"
 
     return ssh_exec(host, ssh_user, ssh_pass, cmd)
 

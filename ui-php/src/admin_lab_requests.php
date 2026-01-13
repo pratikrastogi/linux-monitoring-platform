@@ -16,15 +16,35 @@ if (isset($_GET['approve'])) {
     
     // Create lab session
     $req = $conn->query("SELECT * FROM lab_requests WHERE id=$id")->fetch_assoc();
+    
+    if (!$req) {
+        $_SESSION['error'] = "Lab request not found.";
+        header("Location: admin_lab_requests.php");
+        exit;
+    }
+    
     $lab = $conn->query("SELECT duration_minutes FROM labs WHERE id={$req['lab_id']}")->fetch_assoc();
+    
+    if (!$lab) {
+        $_SESSION['error'] = "Lab not found.";
+        header("Location: admin_lab_requests.php");
+        exit;
+    }
+    
     $duration_mins = $lab['duration_minutes'] ?? 60;
     $access_expiry = date('Y-m-d H:i:s', time() + ($duration_mins * 60));
     $session_token = bin2hex(random_bytes(16));
     
-    $conn->query("INSERT INTO lab_sessions (user_id, username, lab_id, namespace, access_start, access_expiry, status, session_token, plan, provisioned, created_at, updated_at)
-                  VALUES ({$req['user_id']}, '{$_SESSION['user']}', {$req['lab_id']}, 'pending', NOW(), '$access_expiry', 'REQUESTED', '$session_token', 'FREE', 0, NOW(), NOW())");
+    $insert_sql = "INSERT INTO lab_sessions (user_id, username, lab_id, namespace, access_start, access_expiry, status, session_token, plan, provisioned, created_at, updated_at)
+                  VALUES ({$req['user_id']}, '{$_SESSION['user']}', {$req['lab_id']}, 'pending', NOW(), '$access_expiry', 'REQUESTED', '$session_token', 'FREE', 0, NOW(), NOW())";
     
-    $_SESSION['success'] = "Lab request approved! Session created.";
+    if (!$conn->query($insert_sql)) {
+        $_SESSION['error'] = "Failed to create lab session: " . $conn->error;
+        header("Location: admin_lab_requests.php");
+        exit;
+    }
+    
+    $_SESSION['success'] = "Lab request approved! Session created with status REQUESTED.";
     header("Location: admin_lab_requests.php");
     exit;
 }
@@ -70,6 +90,13 @@ include 'includes/header.php';
       <div class="alert alert-success alert-dismissible">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         <i class="fas fa-check"></i> <?= $_SESSION['success']; unset($_SESSION['success']); ?>
+      </div>
+      <?php endif; ?>
+
+      <?php if (isset($_SESSION['error'])): ?>
+      <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <i class="fas fa-exclamation-triangle"></i> <?= $_SESSION['error']; unset($_SESSION['error']); ?>
       </div>
       <?php endif; ?>
 
