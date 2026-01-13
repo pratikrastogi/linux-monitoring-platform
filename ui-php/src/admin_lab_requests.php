@@ -35,8 +35,13 @@ if (isset($_GET['approve'])) {
     $access_expiry = date('Y-m-d H:i:s', time() + ($duration_mins * 60));
     $session_token = bin2hex(random_bytes(16));
     
-    $insert_sql = "INSERT INTO lab_sessions (user_id, username, lab_id, namespace, access_start, access_expiry, status, session_token, plan, provisioned, created_at, updated_at)
-                  VALUES ({$req['user_id']}, '{$_SESSION['user']}', {$req['lab_id']}, 'pending', NOW(), '$access_expiry', 'REQUESTED', '$session_token', 'FREE', 0, NOW(), NOW())";
+    // Generate unique username: user-{user_id}-{timestamp}
+    $timestamp = time();
+    $username = "user-{$req['user_id']}-{$timestamp}";
+    $namespace = "lab-{$username}";
+    
+    $insert_sql = "INSERT INTO lab_sessions (user_id, username, lab_id, namespace, access_start, access_expiry, status, session_token, plan, provisioned)
+                  VALUES ({$req['user_id']}, '$username', {$req['lab_id']}, '$namespace', NOW(), '$access_expiry', 'REQUESTED', '$session_token', 'FREE', 0)";
     
     if (!$conn->query($insert_sql)) {
         $_SESSION['error'] = "Failed to create lab session: " . $conn->error;
@@ -44,7 +49,7 @@ if (isset($_GET['approve'])) {
         exit;
     }
     
-    $_SESSION['success'] = "Lab request approved! Session created with status REQUESTED.";
+    $_SESSION['success'] = "Lab request approved! Session created with username: $username";
     header("Location: admin_lab_requests.php");
     exit;
 }

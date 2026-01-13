@@ -2083,4 +2083,254 @@ nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
 tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
 systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
 dbus:x:81:81:System message bus:/:/sbin/nologin
-polkit
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+kakucha:x:1023:1023::/labs/kakucha:/bin/bash
+[?2004h[root@master provision_worker]# su kaku
+[?2004l[?2004h[kaku@master provision_worker]$ kubectl get pods
+[?2004lNo resources found in lab-kaku namespace.
+[?2004h[kaku@master provision_worker]$ exit
+[?2004lexit
+[?2004h[root@master provision_worker]# l[Kcd ..
+[?2004l[?2004h[root@master linux-monitoring-platform]# git p[Kadd .
+[?2004l[?2004h[root@master linux-monitoring-platform]# fi[K[Kgit push [K[K[K[K[Kpush[K[K[K[Kc0m[Ko[K[Kommit -m ""f"i"[1P"x"e"d" "u"s"e" "r"l"i"o"[1P"[1P"[1P"[1P"l"g"g"[1P"[1P"o"g"i"n"
+[?2004l[main 1b9fb98] fxed use login
+ Committer: root <root@master.pratik.com>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly:
+
+    git config --global user.name "Your Name"
+    git config --global user.email you@example.com
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 3 files changed, 1189 insertions(+), 9 deletions(-)
+[?2004h[root@master linux-monitoring-platform]# ki[K[Kgit push
+[?2004lEnumerating objects: 15, done.
+Counting objects:   6% (1/15)Counting objects:  13% (2/15)Counting objects:  20% (3/15)Counting objects:  26% (4/15)Counting objects:  33% (5/15)Counting objects:  40% (6/15)Counting objects:  46% (7/15)Counting objects:  53% (8/15)Counting objects:  60% (9/15)Counting objects:  66% (10/15)Counting objects:  73% (11/15)Counting objects:  80% (12/15)Counting objects:  86% (13/15)Counting objects:  93% (14/15)Counting objects: 100% (15/15)Counting objects: 100% (15/15), done.
+Delta compression using up to 16 threads
+Compressing objects:  12% (1/8)Compressing objects:  25% (2/8)Compressing objects:  37% (3/8)Compressing objects:  50% (4/8)Compressing objects:  62% (5/8)Compressing objects:  75% (6/8)Compressing objects:  87% (7/8)Compressing objects: 100% (8/8)Compressing objects: 100% (8/8), done.
+Writing objects:  12% (1/8)Writing objects:  25% (2/8)Writing objects:  37% (3/8)Writing objects:  50% (4/8)Writing objects:  62% (5/8)Writing objects:  75% (6/8)Writing objects:  87% (7/8)Writing objects: 100% (8/8)Writing objects: 100% (8/8), 13.11 KiB | 6.55 MiB/s, done.
+Total 8 (delta 6), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas:   0% (0/6)[Kremote: Resolving deltas:  16% (1/6)[Kremote: Resolving deltas:  33% (2/6)[Kremote: Resolving deltas:  50% (3/6)[Kremote: Resolving deltas:  66% (4/6)[Kremote: Resolving deltas:  83% (5/6)[Kremote: Resolving deltas: 100% (6/6)[Kremote: Resolving deltas: 100% (6/6), completed with 6 local objects.[K
+To https://github.com/pratikrastogi/linux-monitoring-platform.git
+   b1ef261..1b9fb98  main -> main
+[?2004h[root@master linux-monitoring-platform]# git pushcommit -m "fxed use login"add .[K[4Pcd ..su kakucat /etc/passwdkubectl get pods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              6h50m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-759cd74bff-gg9d5             1/1     Running   0              13m
+provision-worker-9d45dbc59-nh545    1/1     Running   0              12m
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (19h ago)   4d19h
+[?2004h[root@master linux-monitoring-platform]# kubectl get pods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              6h50m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-759cd74bff-gg9d5             1/1     Running   0              13m
+provision-worker-9d45dbc59-nh545    1/1     Running   0              12m
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (19h ago)   4d19h
+[?2004h[root@master linux-monitoring-platform]# kubectl get pods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              6h50m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-759cd74bff-gg9d5             1/1     Running   0              13m
+provision-worker-9d45dbc59-nh545    1/1     Running   0              12m
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (19h ago)   4d19h
+[?2004h[root@master linux-monitoring-platform]# kubectl get pods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              6h50m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-759cd74bff-gg9d5             1/1     Running   0              13m
+provision-worker-9d45dbc59-nh545    1/1     Running   0              12m
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (19h ago)   4d19h
+[?2004h[root@master linux-monitoring-platform]# kubectl get pods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              6h50m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-759cd74bff-gg9d5             1/1     Running   0              13m
+provision-worker-9d45dbc59-nh545    1/1     Running   0              12m
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (19h ago)   4d19h
+[?2004h[root@master linux-monitoring-platform]# ls
+[?2004l'='   [0m[01;34mcollector[0m   Jenkinsfile   [01;34mprovision_worker[0m   [01;34mui-php[0m
+ [01;34mci[0m   [01;34mdb[0m          [01;34mk8s[0m           [01;34mterminal-gateway[0m   [01;34mui-php-bkp[0m
+[?2004h[root@master linux-monitoring-platform]# ca[K[Kca [Kt /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+kakucha:x:1023:1023::/labs/kakucha:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwdls[Kkubectl get pods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              6h54m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-7c9b598496-4bldk             1/1     Running   0              2m51s
+provision-worker-5cf8d584b4-xjzfz   1/1     Running   0              90s
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (20h ago)   4d20h
+[?2004h[root@master linux-monitoring-platform]# kubectl get pods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              6h54m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-7c9b598496-4bldk             1/1     Running   0              2m52s
+provision-worker-5cf8d584b4-xjzfz   1/1     Running   0              91s
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (20h ago)   4d20h
+[?2004h[root@master linux-monitoring-platform]# kubectl get pods[1Pcat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chrony:/sbin/nologin
+l1user:x:1000:1000::/home/l1user:/bin/bash
+l1mon:x:1001:1001::/home/l1mon:/bin/bash
+admin:x:1002:1002::/home/admin:/bin/bash
+vibhor:x:1003:1003::/home/vibhor:/bin/bash
+natasha:x:1004:1004::/home/natasha:/bin/bash
+kyndryl:x:1005:1005::/home/kyndryl:/bin/bash
+labprovision:x:1006:1006::/home/labprovision:/bin/bash
+testuser:x:1007:1007::/labs/testuser:/bin/bash
+sunil:x:1008:1008::/labs/sunil:/bin/bash
+kaku:x:1009:1009::/labs/kaku:/bin/bash
+rahul:x:1010:1010::/labs/rahul:/bin/bash
+parvati:x:1011:1011::/labs/parvati:/bin/bash
+generationpratik:x:1012:1012::/labs/generationpratik:/bin/bash
+gpradeep2410:x:1013:1013::/labs/gpradeep2410:/bin/bash
+deep:x:1014:1014::/labs/deep:/bin/bash
+shivanirastogi127:x:1015:1015::/labs/shivanirastogi127:/bin/bash
+vibhor.rastogi247:x:1016:1016::/labs/vibhor.rastogi247:/bin/bash
+user-10-1768241530:x:1018:1018::/labs/user-10-1768241530:/bin/bash
+user-9-1768245554:x:1019:1019::/labs/user-9-1768245554:/bin/bash
+user-3-1768281281:x:1020:1020::/labs/user-3-1768281281:/bin/bash
+user-11-1768282232:x:1021:1021::/labs/user-11-1768282232:/bin/bash
+user-3-1768289472:x:1022:1022::/labs/user-3-1768289472:/bin/bash
+kakucha:x:1023:1023::/labs/kakucha:/bin/bash
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwdkubectl get pods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              6h55m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-7c9b598496-4bldk             1/1     Running   0              2m55s
+provision-worker-5cf8d584b4-xjzfz   1/1     Running   0              94s
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (20h ago)   4d20h
+[?2004h[root@master linux-monitoring-platform]# kubectl get pods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              6h55m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-7c9b598496-4bldk             1/1     Running   0              2m56s
+provision-worker-5cf8d584b4-xjzfz   1/1     Running   0              95s
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (20h ago)   4d20h
+[?2004h[root@master linux-monitoring-platform]# kubectl get pods
+[?2004lNAME                                READY   STATUS    RESTARTS       AGE
+cleanup-worker-7dd54bd66-dqrgm      1/1     Running   0              6h55m
+collector-6964c8966c-z4wb6          1/1     Running   22 (46h ago)   8d
+mysql-0                             1/1     Running   3 (46h ago)    4d
+php-ui-7c9b598496-4bldk             1/1     Running   0              3m10s
+provision-worker-5cf8d584b4-xjzfz   1/1     Running   0              109s
+terminal-gateway-567875984d-xqd42   1/1     Running   14 (20h ago)   4d20h
+[?2004h[root@master linux-monitoring-platform]# cat /etc/passwd
+[?2004lroot:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+adm:x:3:4:adm:/var/adm:/sbin/nologin
+lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin
+sync:x:5:0:sync:/sbin:/bin/sync
+shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown
+halt:x:7:0:halt:/sbin:/sbin/halt
+mail:x:8:12:mail:/var/spool/mail:/sbin/nologin
+operator:x:11:0:operator:/root:/sbin/nologin
+games:x:12:100:games:/usr/games:/sbin/nologin
+ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin
+nobody:x:65534:65534:Kernel Overflow User:/:/sbin/nologin
+tss:x:59:59:Account used for TPM access:/:/usr/sbin/nologin
+systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+dbus:x:81:81:System message bus:/:/sbin/nologin
+polkitd:x:998:998:User for polkitd:/:/sbin/nologin
+sssd:x:997:996:User for sssd:/:/sbin/nologin
+sshd:x:74:74:Privilege-separated SSH:/usr/share/empty.sshd:/usr/sbin/nologin
+chrony:x:996:995:chrony system user:/var/lib/chr

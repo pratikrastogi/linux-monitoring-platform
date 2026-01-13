@@ -101,9 +101,9 @@ include 'includes/header.php';
             <thead class="bg-primary text-white">
               <tr>
                 <th style="width: 5%">ID</th>
-                <th style="width: 15%">Username</th>
+                <th style="width: 15%">User Email</th>
                 <th style="width: 20%">Lab</th>
-                <th style="width: 15%">Namespace</th>
+                <th style="width: 20%">Session Username</th>
                 <th style="width: 12%">Status</th>
                 <th style="width: 15%">Expires</th>
                 <th style="width: 10%">Time Remaining</th>
@@ -149,9 +149,9 @@ include 'includes/header.php';
               ?>
               <tr>
                 <td><strong>#<?= $session['id'] ?></strong></td>
-                <td><?= htmlspecialchars($session['username']) ?></td>
+                <td><?= htmlspecialchars($session['email'] ?? 'N/A') ?></td>
                 <td><?= htmlspecialchars($session['lab_name'] ?? 'N/A') ?></td>
-                <td><code><?= htmlspecialchars($session['namespace']) ?></code></td>
+                <td><code><?= htmlspecialchars($session['username']) ?></code></td>
                 <td><?= $status_badge ?></td>
                 <td><?= date('M d, Y H:i:s', strtotime($session['access_expiry'])) ?></td>
                 <td><?= $time_text ?></td>
