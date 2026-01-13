@@ -177,8 +177,11 @@ while True:
             print(f"\n[PROCESS] Session {session_id}: {username} (status={status}, expired={expiry_time})")
             
             # Attempt cleanup
+            # Attempt cleanup
             cleanup_success = cleanup_lab_session(session)
-            status and set provisioned=0 to indicate cleanup is done
+            
+            if cleanup_success:
+                # Mark session status and set provisioned=0 to indicate cleanup is done
                 if status == 'REVOKED':
                     final_status = 'REVOKED'
                 else:
@@ -190,8 +193,6 @@ while True:
                     WHERE id=%s
                 """, (final_status, session_id))
                 print(f"[DB] Session {session_id} marked as {final_status} with provisioned=0 (cleanup complete)")
-                """, (final_status, session_id))
-                print(f"[DB] Session {session_id} marked as {final_status}")
             else:
                 # Don't mark, retry next time
                 print(f"[SKIP] Session {session_id} cleanup failed, will retry")
