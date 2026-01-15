@@ -9,7 +9,7 @@ $page_title = "User Management";
 $conn = new mysqli("mysql","monitor","monitor123","monitoring");
 if ($conn->connect_error) die("DB Error");
 
-// Handle direct lab assignment
+// Handle direct lab assignment or extension
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_lab'])) {
     $user_id = (int)$_POST['user_id'];
     $lab_id = (int)$_POST['lab_id'];
@@ -17,19 +17,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_lab'])) {
     $notes = $conn->real_escape_string($_POST['notes']);
     
     // Check if user already has an active session for this lab
-    $existing_session = $conn->query("SELECT id, access_expiry, namespace FROM lab_sessions 
+    $existing_session = $conn->query("SELECT id, access_expiry, namespace, username FROM lab_sessions 
                                       WHERE user_id=$user_id AND lab_id=$lab_id 
                                       AND (status='ACTIVE' OR status='REQUESTED' OR status='PROVISIONING')
                                       AND access_expiry > NOW()")->fetch_assoc();
     
     if ($existing_session) {
-        $_SESSION['warning'] = "User already has an active session for this lab. Lab expires on " . 
-                               date('M d, Y H:i', strtotime($existing_session['access_expiry'])) . 
-                               ". Use the Extend Lab option instead.";
+        // Lab is already assigned - extend it instead
+        $current_expiry = strtotime($existing_session['access_expiry']);
+        $new_expiry = date('Y-m-d H:i:s', $current_expiry + ($validity_hours * 3600));
+        $old_expiry = $existing_session['access_expiry'];
+        
+        // Update session with new expiry
+        $update_result = $conn->query("UPDATE lab_sessions SET access_expiry='$new_expiry' WHERE id={$existing_session['id']}");
+        
+        if ($update_result) {
+            // Log reprovision task (update provisioning with new time)
+            $log_entry = "[" . date('Y-m-d H:i:s') . "] Lab session {$existing_session['id']} extended for user {$existing_session['username']} (lab_id=$lab_id). Old expiry: $old_expiry, New expiry: $new_expiry";
+            error_log($log_entry, 3, "/tmp/lab_provisioning.log");
+            
+            $_SESSION['success'] = "Lab extended successfully! New expiry: " . date('M d, Y H:i', strtotime($new_expiry)) . ". Environment will be reprovisioned with updated time.";
+        } else {
+            $_SESSION['error'] = "Failed to extend lab: " . $conn->error;
+        }
+        
         header("Location: admin_users.php");
         exit;
     }
     
+    // Lab is not assigned - proceed with normal assignment
     // Get user info
     $user_info = $conn->query("SELECT username, email FROM users WHERE id=$user_id")->fetch_assoc();
     $username = $user_info['username'] ?: $user_info['email'];
@@ -77,37 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_user_role'])) 
     
     $conn->query("UPDATE users SET role='$new_role' WHERE id=$user_id");
     $_SESSION['success'] = "User role updated successfully!";
-    header("Location: admin_users.php");
-    exit;
-}
-
-// Handle lab extension
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['extend_lab'])) {
-    $session_id = (int)$_POST['session_id'];
-    $extend_hours = (int)$_POST['extend_hours'];
-    
-    // Get current session
-    $session = $conn->query("SELECT access_expiry FROM lab_sessions WHERE id=$session_id")->fetch_assoc();
-    
-    if (!$session) {
-        $_SESSION['error'] = "Lab session not found!";
-        header("Location: admin_users.php");
-        exit;
-    }
-    
-    // Calculate new expiry
-    $current_expiry = strtotime($session['access_expiry']);
-    $new_expiry = date('Y-m-d H:i:s', $current_expiry + ($extend_hours * 3600));
-    
-    // Update session expiry
-    $update_result = $conn->query("UPDATE lab_sessions SET access_expiry='$new_expiry' WHERE id=$session_id");
-    
-    if ($update_result) {
-        $_SESSION['success'] = "Lab extended successfully until " . date('M d, Y H:i', strtotime($new_expiry));
-    } else {
-        $_SESSION['error'] = "Failed to extend lab: " . $conn->error;
-    }
-    
     header("Location: admin_users.php");
     exit;
 }

@@ -208,102 +208,114 @@ include 'includes/header.php';
 <?php
 
 /**
- * Parse course content and convert commands to copyable command blocks
- * Commands are sections enclosed in backticks, code blocks, or ending with semicolon
+ * Parse course content and render as formatted markdown with styled elements
  */
 function renderCourseContent($content) {
     if (!$content) return '<p class="text-muted">No content available.</p>';
     
-    // Escape HTML but preserve line breaks
-    $content = htmlspecialchars($content, ENT_QUOTES);
+    // Use a simple markdown to HTML converter
+    $html = markdownToHtml($content);
     
-    // Convert markdown-style code blocks (```command```) to copyable blocks
-    $content = preg_replace_callback('/```(.+?)```/s', function($matches) {
-        $cmd = trim($matches[1]);
-        // Detect if it looks like a command (starts with common command keywords)
-        $cmdKeywords = ['docker', 'kubectl', 'npm', 'git', 'curl', 'wget', 'ssh', 'scp', 'helm', 'make', 'python', 'node', 'java', 'grep', 'sed', 'awk', 'find', 'cat', 'echo', 'apt', 'yum', 'brew', 'systemctl', 'service'];
-        $isCommand = false;
-        foreach ($cmdKeywords as $kw) {
-            if (stripos($cmd, $kw) === 0) {
-                $isCommand = true;
-                break;
+    return $html;
+}
+
+/**
+ * Convert markdown to HTML with Bootstrap styling
+ */
+function markdownToHtml($markdown) {
+    // Escape HTML special characters first but preserve markdown
+    $markdown = htmlspecialchars($markdown, ENT_QUOTES);
+    
+    // Convert headers
+    $markdown = preg_replace('/^### (.*?)$/m', '<h3 style="color: #0056b3; margin-top: 15px; font-weight: 600;">$1</h3>', $markdown);
+    $markdown = preg_replace('/^## (.*?)$/m', '<h2 style="border-bottom: 1px solid #0056b3; padding-bottom: 8px; margin-top: 20px; font-weight: 600;">$1</h2>', $markdown);
+    $markdown = preg_replace('/^# (.*?)$/m', '<h1 style="border-bottom: 2px solid #007bff; padding-bottom: 10px; margin-top: 25px; font-weight: 700;">$1</h1>', $markdown);
+    
+    // Convert bold
+    $markdown = preg_replace('/\*\*(.*?)\*\*/s', '<strong style="color: #333; font-weight: 600;">$1</strong>', $markdown);
+    
+    // Convert italic
+    $markdown = preg_replace('/_([^_]+)_/', '<em style="color: #666;">$1</em>', $markdown);
+    
+    // Convert code blocks (```code```)
+    $markdown = preg_replace_callback('/```(.*?)```/s', function($matches) {
+        $code = trim($matches[1]);
+        $html = '<div style="background: #f5f5f5; padding: 12px; border-radius: 4px; border-left: 3px solid #007bff; margin: 10px 0; overflow-x: auto;">';
+        $html .= '<code style="color: #333; font-family: monospace; font-size: 13px; line-height: 1.4;">' . $code . '</code>';
+        $html .= '</div>';
+        return $html;
+    }, $markdown);
+    
+    // Convert inline code
+    $markdown = preg_replace('/`([^`]+)`/', '<code style="background: #f1f1f1; padding: 2px 6px; border-radius: 3px; color: #d63384; font-family: monospace; font-size: 13px;">$1</code>', $markdown);
+    
+    // Convert tables
+    $markdown = preg_replace_callback('/(\|.*?\|.*?\n\|[\s\-\|:]*\n(?:\|.*?\n)*)/s', function($matches) {
+        $table = $matches[0];
+        $rows = explode("\n", trim($table));
+        $html = '<table class="table table-bordered table-striped" style="margin: 15px 0;">';
+        $isHeader = true;
+        
+        foreach ($rows as $row) {
+            if (preg_match('/^[\s\|-]*$/', $row)) continue; // Skip separator
+            
+            $cells = array_filter(explode('|', $row), function($cell) { return trim($cell) !== ''; });
+            if (empty($cells)) continue;
+            
+            $tag = $isHeader ? 'th' : 'td';
+            $html .= '<tr>';
+            foreach ($cells as $cell) {
+                $html .= '<' . $tag . ' style="' . ($isHeader ? 'background: #343a40; color: white; font-weight: 600;' : '') . '">' . trim($cell) . '</' . $tag . '>';
             }
+            $html .= '</tr>';
+            $isHeader = false;
         }
         
-        if ($isCommand) {
-            return '<div class="cmd-block"><code>' . $cmd . '</code></div>';
-        }
-        return '<pre><code>' . $cmd . '</code></pre>';
-    }, $content);
+        $html .= '</table>';
+        return $html;
+    }, $markdown);
     
-    // Convert inline backtick commands (single line ending with ; or containing typical command chars)
-    $content = preg_replace_callback('/`([^`]+)`/', function($matches) {
-        $text = $matches[1];
-        // Check if it looks like a command
-        if (strpos($text, ';') !== false || 
-            preg_match('/^[a-z\-]+\s+/', $text) || 
-            strpos($text, '|') !== false ||
-            strpos($text, '>') !== false) {
-            return '<div class="cmd-block" style="display:inline-block; width:100%; margin: 8px 0;"><code>' . $text . '</code></div>';
-        }
-        return '<code class="bg-light" style="padding: 2px 6px; border-radius: 3px;">' . $text . '</code>';
-    }, $content);
-    
-    // Convert lines ending with semicolon to command blocks (if indented or prefixed with common commands)
-    $lines = explode("\n", $content);
-    $output = [];
-    $inCommandBlock = false;
-    $commandBuffer = '';
-    
-    foreach ($lines as $line) {
-        $trimmed = trim($line);
-        
-        // Check if line looks like a command (starts with command keyword or contains pipes/redirects)
-        if (preg_match('/^(docker|kubectl|npm|git|curl|wget|ssh|scp|helm|make|python|node|java|grep|sed|awk|find|cat|echo|apt|yum|brew|systemctl)[\s\-]/i', $trimmed)) {
-            if (!$inCommandBlock && $commandBuffer) {
-                $output[] = $commandBuffer;
-                $commandBuffer = '';
+    // Convert unordered lists
+    $markdown = preg_replace_callback('/^(\s*-\s+.*?)(?=^[^-]|\Z)/ms', function($matches) {
+        $items = preg_split('/^\s*-\s+/m', $matches[1]);
+        $html = '<ul style="margin-left: 20px; margin: 10px 0;">';
+        foreach ($items as $item) {
+            $item = trim($item);
+            if (!empty($item)) {
+                $html .= '<li style="margin-bottom: 5px;">' . $item . '</li>';
             }
-            $inCommandBlock = true;
-            $commandBuffer .= $line . "\n";
-        } elseif ($inCommandBlock && (empty($trimmed) || substr($trimmed, -1) === ';')) {
-            $commandBuffer .= $line . "\n";
-            if (substr($trimmed, -1) === ';' || empty($trimmed)) {
-                $cmd = trim($commandBuffer);
-                $output[] = '<div class="cmd-block"><code>' . $cmd . '</code></div>';
-                $commandBuffer = '';
-                $inCommandBlock = false;
+        }
+        $html .= '</ul>';
+        return $html;
+    }, $markdown);
+    
+    // Convert ordered lists
+    $markdown = preg_replace_callback('/^(\s*\d+\.\s+.*?)(?=^[^\d]|\Z)/ms', function($matches) {
+        $items = preg_split('/^\s*\d+\.\s+/m', $matches[1]);
+        $html = '<ol style="margin-left: 20px; margin: 10px 0;">';
+        foreach ($items as $item) {
+            $item = trim($item);
+            if (!empty($item)) {
+                $html .= '<li style="margin-bottom: 5px;">' . $item . '</li>';
             }
-        } else {
-            if ($inCommandBlock && !empty($trimmed)) {
-                $commandBuffer .= $line . "\n";
+        }
+        $html .= '</ol>';
+        return $html;
+    }, $markdown);
+    
+    // Convert line breaks to paragraphs
+    $html = '';
+    $paragraphs = preg_split('/\n\n+/', $markdown);
+    foreach ($paragraphs as $para) {
+        $para = trim($para);
+        if (!empty($para)) {
+            // Check if paragraph contains block-level elements
+            if (preg_match('/<(h[1-6]|div|table|ul|ol)/', $para)) {
+                $html .= $para . "\n";
             } else {
-                if ($commandBuffer) {
-                    $cmd = trim($commandBuffer);
-                    $output[] = '<div class="cmd-block"><code>' . $cmd . '</code></div>';
-                    $commandBuffer = '';
-                    $inCommandBlock = false;
-                }
-                $output[] = $line;
+                $html .= '<p style="margin-bottom: 12px; line-height: 1.6;">' . nl2br($para) . '</p>';
             }
         }
-    }
-    
-    if ($commandBuffer) {
-        $cmd = trim($commandBuffer);
-        $output[] = '<div class="cmd-block"><code>' . $cmd . '</code></div>';
-    }
-    
-    $html = implode("\n", $output);
-    
-    // Convert line breaks to <br> for display
-    $html = nl2br($html);
-    
-    // Convert paragraphs (double line breaks)
-    $html = str_replace("<br />\n<br />", "</p>\n<p>", $html);
-    
-    if (strpos($html, '<p>') === false && strpos($html, '<div') === false) {
-        $html = '<p>' . $html . '</p>';
     }
     
     return $html;

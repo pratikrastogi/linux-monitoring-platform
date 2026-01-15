@@ -18,9 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lab_id'])) {
                                     AND access_expiry > NOW()")->fetch_assoc();
     
     if ($existing_session) {
-        $_SESSION['error'] = "You already have an active session for this lab. It expires on " . 
+        $_SESSION['error'] = "Lab is already assigned to you. It expires on " . 
                             date('M d, Y H:i', strtotime($existing_session['access_expiry'])) . 
-                            ". Please wait for the session to expire or contact support to extend your access.";
+                            ". Please contact admin or support for extending your lab access.";
         header("Location: request_lab.php?lab_id=$lab_id&duplicate=1");
         exit;
     }
@@ -105,13 +105,13 @@ include 'includes/header.php';
                                          AND status='pending'")->fetch_assoc();
               ?>
                 <div class="col-md-6">
-                  <div class="card card-outline <?= $active_session ? 'card-warning' : 'card-primary' ?>">
+                  <div class="card card-outline <?= $active_session ? 'card-danger' : 'card-primary' ?>">
                     <div class="card-header">
                       <h5 class="card-title"><?= htmlspecialchars($lab['course_name']) ?></h5>
                       <h6 class="card-subtitle"><i class="fas fa-flask"></i> <?= htmlspecialchars($lab['lab_name']) ?></h6>
                       <?php if ($active_session): ?>
-                      <span class="badge badge-warning float-right">
-                        <i class="fas fa-clock"></i> Already Active
+                      <span class="badge badge-danger float-right">
+                        <i class="fas fa-lock"></i> Already Assigned
                       </span>
                       <?php elseif ($pending_req): ?>
                       <span class="badge badge-info float-right">
@@ -123,26 +123,16 @@ include 'includes/header.php';
                       <p><?= htmlspecialchars(substr($lab['lab_guide'] ?? $lab['guide_url'] ?? 'No description available', 0, 150)) ?>...</p>
                       
                       <?php if ($active_session): ?>
-                        <div class="alert alert-info alert-sm mb-2">
-                          <small><strong>Active Until:</strong> <?= date('M d, Y H:i', strtotime($active_session['access_expiry'])) ?></small>
+                        <div class="alert alert-danger alert-sm mb-2">
+                          <small>
+                            <i class="fas fa-info-circle"></i> <strong>Lab is already assigned to you</strong><br>
+                            Expires: <?= date('M d, Y H:i', strtotime($active_session['access_expiry'])) ?><br>
+                            Please contact <strong>admin or support</strong> for extending your lab access.
+                          </small>
                         </div>
-                        <form method="POST" action="my_labs.php?extend=<?= $active_session['id'] ?>">
-                          <div class="input-group input-group-sm">
-                            <select name="extend_hours" class="form-control" required>
-                              <option value="">-- Extend by --</option>
-                              <option value="1">1 Hour</option>
-                              <option value="2">2 Hours</option>
-                              <option value="4">4 Hours</option>
-                              <option value="8">8 Hours</option>
-                              <option value="24">1 Day</option>
-                            </select>
-                            <div class="input-group-append">
-                              <button type="submit" class="btn btn-info btn-sm">
-                                <i class="fas fa-plus"></i> Extend
-                              </button>
-                            </div>
-                          </div>
-                        </form>
+                        <button class="btn btn-secondary btn-sm" disabled>
+                          <i class="fas fa-lock"></i> Lab Already Assigned
+                        </button>
                       <?php elseif ($pending_req): ?>
                         <button class="btn btn-secondary btn-sm" disabled>
                           <i class="fas fa-hourglass-half"></i> Pending Approval

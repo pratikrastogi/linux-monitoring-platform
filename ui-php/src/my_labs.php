@@ -5,37 +5,6 @@ require_once 'auth.php';
 $db = new mysqli("mysql", "monitor", "monitor123", "monitoring");
 $uid = $_SESSION['uid'];
 
-// Handle lab extension
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['extend_lab'])) {
-    $session_id = (int)$_POST['session_id'];
-    $extend_hours = (int)$_POST['extend_hours'];
-    
-    // Get current session
-    $session = $db->query("SELECT access_expiry, user_id FROM lab_sessions WHERE id=$session_id")->fetch_assoc();
-    
-    if (!$session || $session['user_id'] != $uid) {
-        $_SESSION['error'] = "Lab session not found or access denied!";
-        header("Location: my_labs.php");
-        exit;
-    }
-    
-    // Calculate new expiry
-    $current_expiry = strtotime($session['access_expiry']);
-    $new_expiry = date('Y-m-d H:i:s', $current_expiry + ($extend_hours * 3600));
-    
-    // Update session expiry
-    $update_result = $db->query("UPDATE lab_sessions SET access_expiry='$new_expiry' WHERE id=$session_id");
-    
-    if ($update_result) {
-        $_SESSION['success'] = "Lab extended successfully until " . date('M d, Y H:i', strtotime($new_expiry));
-    } else {
-        $_SESSION['error'] = "Failed to extend lab: " . $db->error;
-    }
-    
-    header("Location: my_labs.php");
-    exit;
-}
-
 $active = $db->query("SELECT ls.*, l.lab_name, c.name as course_name 
     FROM lab_sessions ls 
     JOIN labs l ON ls.lab_id = l.id 
@@ -115,49 +84,12 @@ include 'includes/header.php';
                       <h6 class="card-subtitle mb-2"><i class="fas fa-flask"></i> <?= htmlspecialchars($lab['lab_name']) ?></h6>
                       <p class="card-text text-warning"><i class="fas fa-clock"></i> <strong><?= $hours ?>h <?= $mins % 60 ?>m remaining</strong></p>
                       <p class="card-text text-muted"><small>Expires: <?= date('M d, Y H:i', strtotime($lab['access_expiry'])) ?></small></p>
-                      <div class="btn-group" role="group">
-                        <a href="lab_terminal.php?session_id=<?= $lab['id'] ?>" class="btn btn-primary btn-sm">
-                          <i class="fas fa-terminal"></i> Terminal
-                        </a>
-                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#extendModal<?= $lab['id'] ?>">
-                          <i class="fas fa-plus-circle"></i> Extend
-                        </button>
+                      <div class="alert alert-info alert-sm mb-2">
+                        <small><i class="fas fa-info-circle"></i> To extend lab access, please contact <strong>admin or support</strong>.</small>
                       </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Extend Modal -->
-                <div class="modal fade" id="extendModal<?= $lab['id'] ?>">
-                  <div class="modal-dialog modal-sm">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h4 class="modal-title">Extend Lab Access</h4>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                      </div>
-                      <form method="POST">
-                        <div class="modal-body">
-                          <input type="hidden" name="session_id" value="<?= $lab['id'] ?>">
-                          <div class="form-group">
-                            <label>Extend by:</label>
-                            <select name="extend_hours" class="form-control" required>
-                              <option value="">-- Select Duration --</option>
-                              <option value="1">1 Hour</option>
-                              <option value="2">2 Hours</option>
-                              <option value="4">4 Hours</option>
-                              <option value="8">8 Hours</option>
-                              <option value="24">1 Day</option>
-                              <option value="48">2 Days</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                          <button type="submit" name="extend_lab" value="1" class="btn btn-info">
-                            <i class="fas fa-check"></i> Extend
-                          </button>
-                        </div>
-                      </form>
+                      <a href="lab_terminal.php?session_id=<?= $lab['id'] ?>" class="btn btn-primary btn-sm">
+                        <i class="fas fa-terminal"></i> Launch Terminal
+                      </a>
                     </div>
                   </div>
                 </div>

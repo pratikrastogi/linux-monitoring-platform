@@ -133,14 +133,77 @@ include 'includes/header.php';
             </div>
 
             <div class="form-group">
-              <label>Lab Guide Content <span class="text-muted">(Optional - supports code blocks with ```command``` or single-line commands)</span></label>
-              <textarea name="lab_guide_content" class="form-control" rows="6" 
-                        placeholder="Add lab guide content here. Wrap commands in backticks: `docker run ...` or code blocks &#10;```&#10;docker run -it ubuntu&#10;```"><?= htmlspecialchars($edit_course['lab_guide_content'] ?? '') ?></textarea>
+              <label>Lab Guide Content <span class="text-muted">(Optional - Supports formatting, code blocks, and tables)</span></label>
+              
+              <!-- Formatting Toolbar -->
+              <div class="btn-toolbar mb-2" role="toolbar">
+                <div class="btn-group btn-group-sm mr-2" role="group">
+                  <button type="button" class="btn btn-outline-secondary" onclick="insertFormat('# ', '')" title="Add Heading 1">
+                    <i class="fas fa-heading"></i> H1
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary" onclick="insertFormat('## ', '')" title="Add Heading 2">
+                    <i class="fas fa-heading"></i> H2
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary" onclick="insertFormat('### ', '')" title="Add Heading 3">
+                    <i class="fas fa-heading"></i> H3
+                  </button>
+                </div>
+                
+                <div class="btn-group btn-group-sm mr-2" role="group">
+                  <button type="button" class="btn btn-outline-secondary" onclick="insertFormat('**', '**')" title="Bold">
+                    <i class="fas fa-bold"></i>
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary" onclick="insertFormat('_', '_')" title="Italic">
+                    <i class="fas fa-italic"></i>
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary" onclick="insertFormat('`', '`')" title="Inline Code">
+                    <i class="fas fa-code"></i>
+                  </button>
+                </div>
+                
+                <div class="btn-group btn-group-sm mr-2" role="group">
+                  <button type="button" class="btn btn-outline-secondary" onclick="insertCodeBlock()" title="Code Block">
+                    <i class="fas fa-code"></i> Block
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary" onclick="insertTopic()" title="Add Topic Section">
+                    <i class="fas fa-list"></i> Topic
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary" onclick="insertCommandSection()" title="Add Command Section">
+                    <i class="fas fa-terminal"></i> Command
+                  </button>
+                </div>
+                
+                <div class="btn-group btn-group-sm mr-2" role="group">
+                  <button type="button" class="btn btn-outline-secondary" onclick="insertTable()" title="Insert Table">
+                    <i class="fas fa-table"></i> Table
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary" onclick="insertList('ul')" title="Unordered List">
+                    <i class="fas fa-list-ul"></i>
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary" onclick="insertList('ol')" title="Ordered List">
+                    <i class="fas fa-list-ol"></i>
+                  </button>
+                </div>
+                
+                <div class="btn-group btn-group-sm" role="group">
+                  <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#previewModal" title="Preview">
+                    <i class="fas fa-eye"></i> Preview
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Textarea -->
+              <textarea id="lab_guide_content" name="lab_guide_content" class="form-control" rows="10" 
+                        placeholder="Use formatting buttons above or write markdown. Examples:&#10;# Main Topic&#10;## Subtopic&#10;### Lesson&#10;&#10;```command&#10;docker run -it ubuntu&#10;```&#10;&#10;| Column 1 | Column 2 |&#10;|----------|----------|&#10;| Data 1   | Data 2   |"><?= htmlspecialchars($edit_course['lab_guide_content'] ?? '') ?></textarea>
+              
               <small class="form-text text-muted mt-2">
-                <strong>Command Format Examples:</strong><br>
-                • Inline: `docker ps`<br>
-                • Code block: ```docker run -it ubuntu```<br>
-                • Multi-line: Commands starting with docker, kubectl, npm, git, etc. will be auto-detected
+                <strong>Quick Tips:</strong><br>
+                • Use <code>#</code> for headings (H1), <code>##</code> for H2, <code>###</code> for H3<br>
+                • Use <code>\`command\`</code> for inline commands<br>
+                • Use code blocks with <code>\`\`\`</code> for multi-line commands<br>
+                • Create tables with <code>| Column 1 | Column 2 |</code><br>
+                • Use lists with <code>- Item</code> (unordered) or <code>1. Item</code> (ordered)<br>
+                • Click Preview to see formatted output
               </small>
             </div>
 
@@ -255,6 +318,143 @@ include 'includes/header.php';
 
 <?php include 'includes/footer.php'; ?>
 
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" size="lg">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><i class="fas fa-eye"></i> Lab Guide Preview</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body" id="previewContent" style="max-height: 600px; overflow-y: auto;">
+        <p class="text-muted">Preview loading...</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div>
 </body>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+// Insert formatted text into textarea
+function insertFormat(before, after) {
+    const textarea = document.getElementById('lab_guide_content');
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end) || 'text';
+    const beforeText = textarea.value.substring(0, start);
+    const afterText = textarea.value.substring(end);
+    
+    textarea.value = beforeText + before + selectedText + after + afterText;
+    textarea.focus();
+    textarea.selectionStart = start + before.length;
+    textarea.selectionEnd = start + before.length + selectedText.length;
+}
+
+// Insert code block
+function insertCodeBlock() {
+    const textarea = document.getElementById('lab_guide_content');
+    const codeBlock = '\n```\ncommand here\n```\n';
+    const start = textarea.selectionStart;
+    textarea.value = textarea.value.substring(0, start) + codeBlock + textarea.value.substring(start);
+    textarea.focus();
+}
+
+// Insert topic section
+function insertTopic() {
+    const textarea = document.getElementById('lab_guide_content');
+    const topic = '\n## Topic Title\n**Description or introduction goes here.**\n\n### Subtopic\nDetails here...\n';
+    const start = textarea.selectionStart;
+    textarea.value = textarea.value.substring(0, start) + topic + textarea.value.substring(start);
+    textarea.focus();
+}
+
+// Insert command section
+function insertCommandSection() {
+    const textarea = document.getElementById('lab_guide_content');
+    const command = '\n### Command: Description\n**Purpose:** Explain what this command does\n\n```\ncommand-syntax here\n```\n\n**Output:**\n```\nExpected output\n```\n';
+    const start = textarea.selectionStart;
+    textarea.value = textarea.value.substring(0, start) + command + textarea.value.substring(start);
+    textarea.focus();
+}
+
+// Insert table
+function insertTable() {
+    const textarea = document.getElementById('lab_guide_content');
+    const table = '\n| Column 1 | Column 2 | Column 3 |\n|----------|----------|----------|\n| Data 1   | Data 2   | Data 3   |\n| Data 4   | Data 5   | Data 6   |\n\n';
+    const start = textarea.selectionStart;
+    textarea.value = textarea.value.substring(0, start) + table + textarea.value.substring(start);
+    textarea.focus();
+}
+
+// Insert list
+function insertList(type) {
+    const textarea = document.getElementById('lab_guide_content');
+    let list = '';
+    if (type === 'ul') {
+        list = '\n- Item 1\n- Item 2\n- Item 3\n';
+    } else {
+        list = '\n1. First item\n2. Second item\n3. Third item\n';
+    }
+    const start = textarea.selectionStart;
+    textarea.value = textarea.value.substring(0, start) + list + textarea.value.substring(start);
+    textarea.focus();
+}
+
+// Parse and display markdown with custom styling
+function parseMarkdownToHTML(markdown) {
+    // Configure marked options
+    marked.setOptions({
+        breaks: true,
+        gfm: true,
+        tables: true
+    });
+    
+    let html = marked.parse(markdown);
+    
+    // Add Bootstrap styling to tables
+    html = html.replace(/<table>/g, '<table class="table table-bordered table-striped">');
+    html = html.replace(/<thead>/g, '<thead class="table-dark">');
+    
+    // Add Bootstrap styling to code blocks
+    html = html.replace(/<pre><code/g, '<pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; border-left: 3px solid #007bff;"><code style="color: #333;"');
+    html = html.replace(/<code>/g, '<code style="background: #f1f1f1; padding: 2px 4px; border-radius: 3px; color: #d63384; font-family: monospace;">');
+    
+    // Add styling to headings
+    html = html.replace(/<h1>/g, '<h1 style="border-bottom: 2px solid #007bff; padding-bottom: 10px; margin-top: 20px;">');
+    html = html.replace(/<h2>/g, '<h2 style="border-bottom: 1px solid #0056b3; padding-bottom: 8px; margin-top: 18px;">');
+    html = html.replace(/<h3>/g, '<h3 style="color: #0056b3; margin-top: 15px;">');
+    
+    // Add styling to blockquotes
+    html = html.replace(/<blockquote>/g, '<blockquote style="border-left: 4px solid #ffc107; padding: 10px 15px; background: #fffbf0; margin: 10px 0;">');
+    
+    // Add styling to lists
+    html = html.replace(/<li>/g, '<li style="margin-bottom: 5px;">');
+    
+    return html;
+}
+
+// Show preview
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if preview modal exists
+    const previewBtn = document.querySelector('[data-target="#previewModal"]');
+    if (previewBtn) {
+        previewBtn.addEventListener('click', function() {
+            const content = document.getElementById('lab_guide_content').value;
+            const previewContent = document.getElementById('previewContent');
+            if (content.trim()) {
+                previewContent.innerHTML = parseMarkdownToHTML(content);
+            } else {
+                previewContent.innerHTML = '<p class="text-muted"><i class="fas fa-info-circle"></i> No content to preview</p>';
+            }
+        });
+    }
+});
+</script>
+
 </html>
