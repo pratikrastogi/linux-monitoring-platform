@@ -17,8 +17,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_case'])) {
     $description = $conn->real_escape_string($_POST['description']);
     $category = $conn->real_escape_string($_POST['category']);
     
-    $conn->query("INSERT INTO support_cases (user_id, subject, description, category, status, last_response_by, last_response_at, created_at)
+    // Truncate category to max 50 characters to prevent data truncation errors
+    $category = substr($category, 0, 50);
+    
+    // Validate category is not empty
+    if (empty($category)) {
+        $_SESSION['error'] = "Please select a valid category.";
+        header("Location: support.php");
+        exit;
+    }
+    
+    $insert_result = $conn->query("INSERT INTO support_cases (user_id, subject, description, category, status, last_response_by, last_response_at, created_at)
                   VALUES ($uid, '$subject', '$description', '$category', 'OPEN', 'USER', NOW(), NOW())");
+    
+    if (!$insert_result) {
+        $_SESSION['error'] = "Error creating case: " . htmlspecialchars($conn->error);
+        header("Location: support.php");
+        exit;
+    }
     
     $case_id = $conn->insert_id;
     
@@ -429,10 +445,10 @@ include 'includes/header.php';
             <label>Category <span class="text-danger">*</span></label>
             <select name="category" class="form-control" required>
               <option value="">-- Select Category --</option>
-              <option value="TECHNICAL">Technical Issue</option>
-              <option value="BILLING">Billing / Payment</option>
-              <option value="ACCOUNT">Account Access</option>
-              <option value="FEATURE">Feature Request</option>
+              <option value="ACCESS">Account Access Issue</option>
+              <option value="LAB">Lab / Technical Issue</option>
+              <option value="PAYMENT">Billing / Payment</option>
+              <option value="REFUND">Refund Request</option>
               <option value="OTHER">Other</option>
             </select>
           </div>

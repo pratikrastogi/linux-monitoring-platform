@@ -160,12 +160,14 @@ $(document).ready(function() {
 });
 
 function initializeTerminal() {
-    // Terminal setup
+    // Terminal setup with auto-scroll enabled
     const term = new Terminal({
         cursorBlink: true,
         fontSize: 12,
         fontFamily: 'Courier New, monospace',
-        theme: { background: '#000000', foreground: '#ffffff' }
+        theme: { background: '#000000', foreground: '#ffffff' },
+        scrollback: 10000,  // Keep 10000 lines of history
+        screenKeys: false
     });
 
     const fitAddon = new FitAddon.FitAddon();
@@ -179,6 +181,8 @@ function initializeTerminal() {
     window.addEventListener('resize', () => {
         try {
             fitAddon.fit();
+            // Scroll to bottom on resize
+            term.scrollToBottom();
         } catch (e) {
             console.error('Fit error:', e);
         }
@@ -208,6 +212,8 @@ function initializeTerminal() {
     
     ws.onmessage = (event) => {
         term.write(event.data);
+        // Auto-scroll to bottom when receiving data
+        term.scrollToBottom();
     };
     
     ws.onerror = (err) => {
