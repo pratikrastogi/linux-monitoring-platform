@@ -174,18 +174,18 @@ include 'includes/header.php';
   </div>
   
   <!-- Split View: Terminal + Guide -->
-  <div style="flex: 1; display: flex; overflow: hidden; gap: 0; background: #ddd; margin-bottom: 20px;">
-    <!-- Left: Terminal (70%) -->
-    <div style="flex: 1; display: flex; flex-direction: column; background: #000; border-right: 2px solid #dee2e6; overflow: hidden; max-height: calc(100vh - 180px);">
+  <div style="flex: 1; display: flex; overflow: hidden; gap: 0; background: #ddd; padding-left: 5%; padding-bottom: 20%;">
+    <!-- Left: Terminal (45%) -->
+    <div style="flex: 0 0 45%; display: flex; flex-direction: column; background: #000; border-right: 2px solid #dee2e6; overflow: hidden; max-height: calc(100vh - 180px);">
       <div style="background: #2c3e50; color: white; padding: 8px 12px; font-weight: bold; flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center;">
         <span><i class="fas fa-terminal"></i> Terminal - <?= htmlspecialchars($session['ip_address'] ?? 'Lab Server') ?></span>
         <small style="font-weight: normal; opacity: 0.8;">Provisioned User: <code><?= htmlspecialchars($session['username']) ?></code></small>
       </div>
-      <div id="terminal" style="flex: 1; background: #000; overflow: auto; padding-bottom: 20px;"></div>
+      <div id="terminal" style="flex: 1; background: #000; overflow: auto;"></div>
     </div>
     
-    <!-- Right: Lab Guide (30%) -->
-    <div style="flex: 0 0 30%; display: flex; flex-direction: column; background: #f8f9fa; overflow: hidden; max-height: calc(100vh - 180px);">
+    <!-- Right: Lab Guide (50%) -->
+    <div style="flex: 0 0 50%; display: flex; flex-direction: column; background: #f8f9fa; overflow: hidden; max-height: calc(100vh - 180px);">
       <div style="background: #f1f3f4; padding: 8px 12px; font-weight: bold; border-bottom: 1px solid #dee2e6; flex: 0 0 auto;">
         <i class="fas fa-book"></i> Lab Information & Guide
       </div>
