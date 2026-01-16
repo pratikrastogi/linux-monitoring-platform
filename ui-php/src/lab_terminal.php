@@ -2,6 +2,108 @@
 session_start();
 require_once 'auth.php';
 
+/**
+ * Convert markdown to HTML with Bootstrap styling
+ */
+function markdownToHtml($markdown) {
+    // Escape HTML special characters first but preserve markdown
+    $markdown = htmlspecialchars($markdown, ENT_QUOTES);
+    
+    // Convert headers
+    $markdown = preg_replace('/^### (.*?)$/m', '<h3 style="color: #0056b3; margin-top: 15px; font-weight: 600;">$1</h3>', $markdown);
+    $markdown = preg_replace('/^## (.*?)$/m', '<h2 style="border-bottom: 1px solid #0056b3; padding-bottom: 8px; margin-top: 20px; font-weight: 600;">$1</h2>', $markdown);
+    $markdown = preg_replace('/^# (.*?)$/m', '<h1 style="border-bottom: 2px solid #007bff; padding-bottom: 10px; margin-top: 25px; font-weight: 700;">$1</h1>', $markdown);
+    
+    // Convert bold
+    $markdown = preg_replace('/\*\*(.*?)\*\*/s', '<strong style="color: #333; font-weight: 600;">$1</strong>', $markdown);
+    
+    // Convert italic
+    $markdown = preg_replace('/_([^_]+)_/', '<em style="color: #666;">$1</em>', $markdown);
+    
+    // Convert code blocks (```code```)
+    $markdown = preg_replace_callback('/```(.*?)```/s', function($matches) {
+        $code = trim($matches[1]);
+        $html = '<div style="background: #f5f5f5; padding: 12px; border-radius: 4px; border-left: 3px solid #007bff; margin: 10px 0; overflow-x: auto;">';
+        $html .= '<code style="color: #333; font-family: monospace; font-size: 13px; line-height: 1.4;">' . $code . '</code>';
+        $html .= '</div>';
+        return $html;
+    }, $markdown);
+    
+    // Convert inline code
+    $markdown = preg_replace('/`([^`]+)`/', '<code style="background: #f1f1f1; padding: 2px 6px; border-radius: 3px; color: #d63384; font-family: monospace; font-size: 13px;">$1</code>', $markdown);
+    
+    // Convert tables
+    $markdown = preg_replace_callback('/(\|.*?\|.*?\n\|[\s\-\|:]*\n(?:\|.*?\n)*)/s', function($matches) {
+        $table = $matches[0];
+        $rows = explode("\n", trim($table));
+        $html = '<table class="table table-bordered table-striped" style="margin: 15px 0;">';
+        $isHeader = true;
+        
+        foreach ($rows as $row) {
+            if (preg_match('/^[\s\|-]*$/', $row)) continue; // Skip separator
+            
+            $cells = array_filter(explode('|', $row), function($cell) { return trim($cell) !== ''; });
+            if (empty($cells)) continue;
+            
+            $tag = $isHeader ? 'th' : 'td';
+            $html .= '<tr>';
+            foreach ($cells as $cell) {
+                $html .= '<' . $tag . ' style="' . ($isHeader ? 'background: #343a40; color: white; font-weight: 600;' : '') . '">' . trim($cell) . '</' . $tag . '>';
+            }
+            $html .= '</tr>';
+            $isHeader = false;
+        }
+        
+        $html .= '</table>';
+        return $html;
+    }, $markdown);
+    
+    // Convert unordered lists
+    $markdown = preg_replace_callback('/^(\s*-\s+.*?)(?=^[^-]|\Z)/ms', function($matches) {
+        $items = preg_split('/^\s*-\s+/m', $matches[1]);
+        $html = '<ul style="margin-left: 20px; margin: 10px 0;">';
+        foreach ($items as $item) {
+            $item = trim($item);
+            if (!empty($item)) {
+                $html .= '<li style="margin-bottom: 5px;">' . $item . '</li>';
+            }
+        }
+        $html .= '</ul>';
+        return $html;
+    }, $markdown);
+    
+    // Convert ordered lists
+    $markdown = preg_replace_callback('/^(\s*\d+\.\s+.*?)(?=^[^\d]|\Z)/ms', function($matches) {
+        $items = preg_split('/^\s*\d+\.\s+/m', $matches[1]);
+        $html = '<ol style="margin-left: 20px; margin: 10px 0;">';
+        foreach ($items as $item) {
+            $item = trim($item);
+            if (!empty($item)) {
+                $html .= '<li style="margin-bottom: 5px;">' . $item . '</li>';
+            }
+        }
+        $html .= '</ol>';
+        return $html;
+    }, $markdown);
+    
+    // Convert line breaks to paragraphs
+    $html = '';
+    $paragraphs = preg_split('/\n\n+/', $markdown);
+    foreach ($paragraphs as $para) {
+        $para = trim($para);
+        if (!empty($para)) {
+            // Check if paragraph contains block-level elements
+            if (preg_match('/<(h[1-6]|div|table|ul|ol)/', $para)) {
+                $html .= $para . "\n";
+            } else {
+                $html .= '<p style="margin-bottom: 12px; line-height: 1.6;">' . nl2br($para) . '</p>';
+            }
+        }
+    }
+    
+    return $html;
+}
+
 $db = new mysqli("mysql", "monitor", "monitor123", "monitoring");
 $session_id = (int)$_GET['session_id'];
 $uid = $_SESSION['uid'];
@@ -46,7 +148,7 @@ include 'includes/header.php';
 <div class="wrapper">
 <?php include 'includes/navbar.php'; ?>
 <?php include 'includes/sidebar.php'; ?>
-<div class="content-wrapper" style="display: flex; flex-direction: column; overflow: hidden; height: 100vh;">
+<div class="content-wrapper" style="display: flex; flex-direction: column; overflow: hidden; height: calc(100vh - 57px);">
   <!-- Lab Header -->
   <div style="flex: 0 0 auto; background: #f8f9fa; border-bottom: 2px solid #dee2e6; padding: 12px 20px;">
     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -72,18 +174,18 @@ include 'includes/header.php';
   </div>
   
   <!-- Split View: Terminal + Guide -->
-  <div style="flex: 1; display: flex; overflow: hidden; gap: 0; background: #ddd;">
+  <div style="flex: 1; display: flex; overflow: hidden; gap: 0; background: #ddd; margin-bottom: 20px;">
     <!-- Left: Terminal (70%) -->
-    <div style="flex: 1; display: flex; flex-direction: column; background: #000; border-right: 2px solid #dee2e6; overflow: hidden;">
+    <div style="flex: 1; display: flex; flex-direction: column; background: #000; border-right: 2px solid #dee2e6; overflow: hidden; max-height: calc(100vh - 180px);">
       <div style="background: #2c3e50; color: white; padding: 8px 12px; font-weight: bold; flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center;">
         <span><i class="fas fa-terminal"></i> Terminal - <?= htmlspecialchars($session['ip_address'] ?? 'Lab Server') ?></span>
         <small style="font-weight: normal; opacity: 0.8;">Provisioned User: <code><?= htmlspecialchars($session['username']) ?></code></small>
       </div>
-      <div id="terminal" style="flex: 1; background: #000; overflow: hidden;"></div>
+      <div id="terminal" style="flex: 1; background: #000; overflow: auto; padding-bottom: 20px;"></div>
     </div>
     
     <!-- Right: Lab Guide (30%) -->
-    <div style="flex: 0 0 30%; display: flex; flex-direction: column; background: #f8f9fa; overflow: hidden;">
+    <div style="flex: 0 0 30%; display: flex; flex-direction: column; background: #f8f9fa; overflow: hidden; max-height: calc(100vh - 180px);">
       <div style="background: #f1f3f4; padding: 8px 12px; font-weight: bold; border-bottom: 1px solid #dee2e6; flex: 0 0 auto;">
         <i class="fas fa-book"></i> Lab Information & Guide
       </div>
@@ -93,7 +195,7 @@ include 'includes/header.php';
         <?php if (!empty($session['lab_guide_content'])): ?>
           <!-- Lab Guide Content from Course -->
           <div class="lab-guide-content">
-            <div id="guide-content"></div>
+            <?= markdownToHtml($session['lab_guide_content']) ?>
           </div>
         <?php else: ?>
           <!-- Default Lab Information -->
@@ -143,31 +245,25 @@ include 'includes/header.php';
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css">
 <script src="https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 
 <script>
 $(document).ready(function() {
-    // Render lab guide if available
-    const guideContent = <?= json_encode($session['lab_guide_content'] ?? null) ?>;
-    if (guideContent && document.getElementById('guide-content')) {
-        document.getElementById('guide-content').innerHTML = marked.parse(guideContent);
-    }
-    
     initializeTerminal();
 });
 
 function initializeTerminal() {
-    // Terminal setup with auto-scroll enabled
+    // Terminal setup with controlled scrolling
     const term = new Terminal({
         cursorBlink: true,
-        fontSize: 12,
+        fontSize: 13,
         fontFamily: 'Courier New, monospace',
         theme: { background: '#000000', foreground: '#ffffff' },
-        scrollback: 10000,  // Keep 10000 lines of history
-        screenKeys: false
+        scrollback: 1000,  // Reduced scrollback to prevent overflow
+        screenKeys: false,
+        convertEol: true
     });
 
     const fitAddon = new FitAddon.FitAddon();
@@ -175,13 +271,15 @@ function initializeTerminal() {
     term.open(document.getElementById('terminal'));
 
     // Fit terminal to container
-    setTimeout(() => fitAddon.fit(), 100);
+    setTimeout(() => {
+        fitAddon.fit();
+        term.scrollToBottom();
+    }, 100);
     
     // Responsive resize
     window.addEventListener('resize', () => {
         try {
             fitAddon.fit();
-            // Scroll to bottom on resize
             term.scrollToBottom();
         } catch (e) {
             console.error('Fit error:', e);
@@ -262,16 +360,38 @@ setInterval(() => {
 .lab-guide-content {
     color: #333;
     line-height: 1.8;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .lab-guide-content p {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    line-height: 1.6;
 }
 
-.lab-guide-content h1,
-.lab-guide-content h2,
-.lab-guide-content h3,
+.lab-guide-content h1 {
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+    margin-top: 25px;
+    font-weight: 700;
+    font-size: 24px;
+}
+
+.lab-guide-content h2 {
+    border-bottom: 1px solid #0056b3;
+    padding-bottom: 8px;
+    margin-top: 20px;
+    font-weight: 600;
+    font-size: 20px;
+    color: #0056b3;
+}
+
+.lab-guide-content h3 {
+    color: #0056b3;
+    margin-top: 15px;
+    font-weight: 600;
+    font-size: 18px;
+}
+
 .lab-guide-content h4,
 .lab-guide-content h5,
 .lab-guide-content h6 {
@@ -283,26 +403,65 @@ setInterval(() => {
 
 .lab-guide-content code {
     background: #f1f1f1;
-    padding: 2px 4px;
+    padding: 2px 6px;
     border-radius: 3px;
-    font-family: 'Courier New', monospace;
-    font-size: 12px;
+    color: #d63384;
+    font-family: monospace;
+    font-size: 13px;
 }
 
 .lab-guide-content pre {
-    background: #f1f1f1;
-    padding: 10px;
+    background: #f5f5f5;
+    padding: 12px;
     border-radius: 4px;
-    overflow-x: auto;
     border-left: 3px solid #007bff;
+    margin: 10px 0;
+    overflow-x: auto;
+}
+
+.lab-guide-content pre code {
+    color: #333;
+    background: none;
+    padding: 0;
+    font-size: 13px;
+    line-height: 1.4;
 }
 
 .lab-guide-content ul, .lab-guide-content ol {
-    margin-bottom: 10px;
     margin-left: 20px;
+    margin: 10px 0;
 }
 
 .lab-guide-content li {
     margin-bottom: 5px;
+}
+
+.lab-guide-content strong {
+    color: #333;
+    font-weight: 600;
+}
+
+.lab-guide-content em {
+    color: #666;
+}
+
+.lab-guide-content table {
+    margin: 15px 0;
+}
+
+.lab-guide-content table th {
+    background: #343a40;
+    color: white;
+    font-weight: 600;
+}
+
+/* Ensure terminal stays within bounds */
+#terminal {
+    max-height: 100%;
+    overflow-y: auto !important;
+}
+
+.xterm-viewport {
+    overflow-y: auto !important;
 }
 </style>
