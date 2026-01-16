@@ -174,9 +174,9 @@ include 'includes/header.php';
   </div>
   
   <!-- Split View: Terminal + Guide -->
-  <div style="flex: 1; display: flex; overflow: hidden; gap: 0; background: #ddd; padding-left: 5%; padding-bottom: 20%;">
+  <div style="flex: 1; display: flex; overflow: hidden; gap: 0; background: #ddd;">
     <!-- Left: Terminal (45%) -->
-    <div style="flex: 0 0 45%; display: flex; flex-direction: column; background: #000; border-right: 2px solid #dee2e6; overflow: hidden; max-height: calc(100vh - 180px);">
+    <div style="flex: 0 0 45%; display: flex; flex-direction: column; background: #000; border-right: 2px solid #dee2e6; overflow: hidden; max-height: calc(100vh - 180px); padding-bottom: 80px;">
       <div style="background: #2c3e50; color: white; padding: 8px 12px; font-weight: bold; flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center;">
         <span><i class="fas fa-terminal"></i> Terminal - <?= htmlspecialchars($session['ip_address'] ?? 'Lab Server') ?></span>
         <small style="font-weight: normal; opacity: 0.8;">Provisioned User: <code><?= htmlspecialchars($session['username']) ?></code></small>
