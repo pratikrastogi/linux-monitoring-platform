@@ -175,23 +175,53 @@ include 'includes/header.php';
   
   <!-- Split View: Terminal + Guide -->
   <div style="flex: 1; display: flex; overflow: hidden; gap: 0; background: #ddd;">
-    <!-- Left: Terminal (45%) -->
-    <div style="flex: 0 0 45%; display: flex; flex-direction: column; background: #000; border-right: 2px solid #dee2e6; overflow: hidden; padding-bottom: 80px;">
-      <div style="background: #2c3e50; color: white; padding: 8px 12px; font-weight: bold; flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center;">
-        <span><i class="fas fa-terminal"></i> Terminal - <?= htmlspecialchars($session['ip_address'] ?? 'Lab Server') ?></span>
-        <small style="font-weight: normal; opacity: 0.8;">Provisioned User: <code><?= htmlspecialchars($session['username']) ?></code></small>
+    <!-- Left: Terminal (55%) + Lab Specifications -->
+    <div style="flex: 0 0 55%; display: flex; flex-direction: column; background: #000; border-right: 2px solid #dee2e6; overflow: hidden;">
+      <!-- Terminal Section -->
+      <div style="flex: 0 0 70%; display: flex; flex-direction: column; overflow: hidden;">
+        <div style="background: #2c3e50; color: white; padding: 8px 12px; font-weight: bold; flex: 0 0 auto; display: flex; justify-content: space-between; align-items: center;">
+          <span><i class="fas fa-terminal"></i> Terminal - <?= htmlspecialchars($session['ip_address'] ?? 'Lab Server') ?></span>
+          <small style="font-weight: normal; opacity: 0.8;">Provisioned User: <code><?= htmlspecialchars($session['username']) ?></code></small>
+        </div>
+        <div id="terminal" style="flex: 1; background: #000; overflow: auto;"></div>
       </div>
-      <div id="terminal" style="flex: 1; background: #000; overflow: auto;"></div>
+      
+      <!-- Lab Specifications Section -->
+      <div style="flex: 0 0 30%; background: #1a1a1a; border-top: 1px solid #444; overflow-y: auto; padding: 12px;">
+        <h6 style="color: #fff; font-size: 12px; margin-bottom: 10px; margin-top: 0;"><i class="fas fa-info-circle"></i> Connection Details</h6>
+        <table style="width: 100%; font-size: 11px; color: #ccc;">
+          <tr style="border-bottom: 1px solid #444;">
+            <td style="padding: 5px 0; font-weight: bold; color: #0f0;">SSH Host:</td>
+            <td style="padding: 5px 5px; text-align: right;"><code><?= htmlspecialchars($session['ip_address'] ?? 'N/A') ?></code></td>
+          </tr>
+          <tr style="border-bottom: 1px solid #444;">
+            <td style="padding: 5px 0; font-weight: bold; color: #0f0;">Username:</td>
+            <td style="padding: 5px 5px; text-align: right;"><code><?= htmlspecialchars($session['username']) ?></code></td>
+          </tr>
+          <tr style="border-bottom: 1px solid #444;">
+            <td style="padding: 5px 0; font-weight: bold; color: #0f0;">Password:</td>
+            <td style="padding: 5px 5px; text-align: right;"><code>k8s<?= htmlspecialchars($session['username']) ?>@123!</code></td>
+          </tr>
+          <tr style="border-bottom: 1px solid #444;">
+            <td style="padding: 5px 0; font-weight: bold; color: #0f0;">SSH Port:</td>
+            <td style="padding: 5px 5px; text-align: right;"><code><?= $session['ssh_port'] ?? 22 ?></code></td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 0; font-weight: bold; color: #0f0;">Lab:</td>
+            <td style="padding: 5px 5px; text-align: right;"><code style="font-size: 10px;"><?= htmlspecialchars($session['lab_name']) ?></code></td>
+          </tr>
+        </table>
+      </div>
     </div>
     
-    <!-- Right: Lab Guide (50%) - Full Height -->
-    <div style="flex: 1; display: flex; flex-direction: column; background: #f8f9fa; overflow: hidden;">
+    <!-- Right: Lab Guide (45%) - Full Height -->
+    <div style="flex: 0 0 45%; display: flex; flex-direction: column; background: #f8f9fa; overflow: hidden;">
       <div style="background: #f1f3f4; padding: 8px 12px; font-weight: bold; border-bottom: 1px solid #dee2e6; flex: 0 0 auto;">
         <i class="fas fa-book"></i> Lab Information & Guide
       </div>
       
       <!-- Guide Content -->
-      <div style="flex: 1; overflow-y: auto; padding: 20px 0 20px 20px;" id="labGuidePanel">
+      <div style="flex: 1; overflow-y: auto; padding: 20px 20px 20px 20px;" id="labGuidePanel">
         <?php if (!empty($session['lab_guide_content'])): ?>
           <!-- Lab Guide Content from Course -->
           <div class="lab-guide-content">
@@ -204,37 +234,6 @@ include 'includes/header.php';
             <p>No lab guide available for this course.</p>
           </div>
         <?php endif; ?>
-        
-        <!-- Lab Specifications -->
-        <div class="card mt-4" style="border: 1px solid #dee2e6;">
-          <div class="card-header bg-light" style="background: #f1f3f4;">
-            <h6 class="mb-0" style="font-size: 12px;"><i class="fas fa-cogs"></i> Lab Specifications</h6>
-          </div>
-          <div class="card-body" style="padding: 10px;">
-            <table class="table table-sm table-borderless" style="margin: 0; font-size: 12px;">
-              <tr>
-                <td><strong>Lab:</strong></td>
-                <td><?= htmlspecialchars($session['lab_name']) ?></td>
-              </tr>
-              <tr>
-                <td><strong>Course:</strong></td>
-                <td><?= htmlspecialchars($session['course_name'] ?? 'N/A') ?></td>
-              </tr>
-              <tr>
-                <td><strong>Server IP:</strong></td>
-                <td><code style="font-size: 11px;"><?= htmlspecialchars($session['ip_address'] ?? 'N/A') ?></code></td>
-              </tr>
-              <tr>
-                <td><strong>Username:</strong></td>
-                <td><code style="font-size: 11px;"><?= htmlspecialchars($session['username']) ?></code></td>
-              </tr>
-              <tr>
-                <td><strong>SSH Port:</strong></td>
-                <td><?= $session['ssh_port'] ?? 22 ?></td>
-              </tr>
-            </table>
-          </div>
-        </div>
       </div>
     </div>
   </div>
