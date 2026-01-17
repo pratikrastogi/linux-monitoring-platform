@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: collector
-          image: pratikrastogi/linux-monitor-collector:2.2
+          image: docker.io/pratikrastogi/linux-monitor-collector:202601040240
           imagePullPolicy: IfNotPresent
           resources:
             requests:
