@@ -6,7 +6,7 @@
     margin-left: 0 !important;
     background: var(--bg-light);
     min-height: 100vh;
-    padding: 90px 16px 40px;
+    padding: 90px 10px 40px;
 }
 
 /* Trim container padding so content hugs the left a bit more without the legacy sidebar gap */
@@ -15,9 +15,27 @@
     padding-right: 0;
 }
 
+/* Remove any residual AdminLTE left offsets when the old sidebar is absent */
+.wrapper,
+.content-wrapper,
+.main-footer,
+.main-header {
+    margin-left: 0 !important;
+}
+
+/* Optional: tighten row gutters slightly */
+.app-shell .row {
+    margin-left: -6px;
+    margin-right: -6px;
+}
+.app-shell [class*="col-"] {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
 @media (max-width: 992px) {
     .app-shell {
-        padding: 90px 12px 32px;
+        padding: 90px 8px 32px;
     }
 }
 
