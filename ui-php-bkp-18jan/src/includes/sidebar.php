@@ -1,0 +1,181 @@
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+  <!-- Brand Logo -->
+  <a href="index.php" class="brand-link">
+    <i class="fas fa-rocket brand-image ml-3"></i>
+    <span class="brand-text font-weight-light">KubeArena</span>
+  </a>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <!-- Sidebar user panel (optional) -->
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+      <div class="image">
+        <i class="fas fa-user-circle fa-2x text-white"></i>
+      </div>
+      <div class="info">
+        <a href="#" class="d-block"><?php echo htmlspecialchars($_SESSION['user']); ?></a>
+        <small class="text-muted"><?php echo ucfirst($_SESSION['role']); ?></small>
+      </div>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <nav class="mt-2">
+      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        
+        <!-- Dashboard -->
+        <li class="nav-item">
+          <a href="index.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <p>Dashboard</p>
+          </a>
+        </li>
+        
+        <!-- Charts -->
+        <li class="nav-item">
+          <a href="charts.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'charts.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-chart-line"></i>
+            <p>Performance Charts</p>
+          </a>
+        </li>
+        
+        <!-- Alerts -->
+        <li class="nav-item">
+          <a href="alerts.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'alerts.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-exclamation-triangle"></i>
+            <p>
+              Alerts
+              <span class="badge badge-danger right" id="sidebarAlertCount">0</span>
+            </p>
+          </a>
+        </li>
+        
+        <!-- =============================================
+             LABS PLATFORM SECTION (Phase 2 - ADDITIVE)
+             Purpose: Add Labs platform navigation
+             Backward Compatible: Does NOT modify existing menu items
+             ============================================= -->
+        
+        <?php if ($_SESSION['role'] === 'admin'): ?>
+        <!-- Admin Labs Section -->
+        <li class="nav-header">LABS PLATFORM</li>
+        
+        <li class="nav-item">
+          <a href="courses.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'courses.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-graduation-cap"></i>
+            <p>Courses</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="admin_labs.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_labs.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-flask"></i>
+            <p>Manage Labs</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="admin_lab_requests.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_lab_requests.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-clipboard-check"></i>
+            <p>
+              Lab Requests
+              <span class="badge badge-warning right" id="pendingLabRequests">0</span>
+            </p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="admin_provisioners.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_provisioners.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-server"></i>
+            <p>Manage Servers</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="admin_users.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_users.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-users-cog"></i>
+            <p>User Management</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="admin_live_sessions.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_live_sessions.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-users-circle"></i>
+            <p>
+              Live Sessions
+              <span class="badge badge-success right" id="liveSessions">0</span>
+            </p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="admin_support.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_support.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-headset"></i>
+            <p>
+              Support Cases
+              <span class="badge badge-warning right" id="supportCases">0</span>
+            </p>
+          </a>
+        </li>
+        
+        <?php endif; ?>
+        
+        <?php if ($_SESSION['role'] === 'user'): ?>
+        <!-- User Labs Section -->
+        <li class="nav-header">MY LEARNING</li>
+        
+        <li class="nav-item">
+          <a href="browse_labs.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'browse_labs.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-search"></i>
+            <p>Browse Labs</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="my_active_labs.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'my_active_labs.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-laptop-code"></i>
+            <p>My Active Labs</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="profile.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-user"></i>
+            <p>My Profile</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="support.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'support.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-life-ring"></i>
+            <p>Support</p>
+          </a>
+        </li>
+        
+        <?php endif; ?>
+        
+        <!-- General Section -->
+        <li class="nav-header">ACCOUNT</li>
+        
+        <!-- Profile -->
+        <li class="nav-item">
+          <a href="profile.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-user-circle"></i>
+            <p>My Profile</p>
+          </a>
+        </li>
+        
+        <!-- Logout -->
+        <li class="nav-item">
+          <a href="logout.php" class="nav-link text-danger">
+            <i class="nav-icon fas fa-sign-out-alt"></i>
+            <p>Logout</p>
+          </a>
+        </li>
+        
+      </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+  </div>
+  <!-- /.sidebar -->
+</aside>

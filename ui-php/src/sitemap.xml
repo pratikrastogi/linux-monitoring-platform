@@ -37,6 +37,14 @@
     <priority>0.7</priority>
   </url>
   
+  <!-- Browse Courses (publicly accessible) -->
+  <url>
+    <loc>https://kubearena.pratikrastogi.co.in/browse_courses.php</loc>
+    <lastmod>2026-01-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
   <!-- Courses (if publicly accessible) -->
   <url>
     <loc>https://kubearena.pratikrastogi.co.in/courses.php</loc>

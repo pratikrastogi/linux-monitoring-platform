@@ -203,6 +203,7 @@ if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
       <p style="margin-bottom: 2rem;">Master Linux, Kubernetes, Docker, and DevOps with interactive lab environments. Get real terminal access and practice on live servers.</p>
       
       <div class="cta-buttons">
+        <a href="browse_courses.php" class="btn btn-primary"><i class="fas fa-book"></i> Browse Courses</a>
         <a href="register.php" class="btn btn-primary"><i class="fas fa-user-plus"></i> Start Learning Free</a>
         <a href="login.php" class="btn btn-secondary"><i class="fas fa-sign-in-alt"></i> Login</a>
       </div>

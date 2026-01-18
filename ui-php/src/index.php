@@ -1,17 +1,7 @@
 <?php
 session_start();
 
-// Detect search engine bots (Googlebot, Bingbot, etc.)
-$user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-$is_bot = preg_match('/bot|crawl|slurp|spider|mediapartners/i', $user_agent);
-
-// If it's a bot, serve public landing page content
-if ($is_bot) {
-    include 'index_public.php';
-    exit;
-}
-
-// If user is logged in, show dashboard
+// If user is logged in, show their dashboard
 if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
     require_once 'auth.php';
     $db = new mysqli("mysql", "monitor", "monitor123", "monitoring");
@@ -20,8 +10,8 @@ if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
     $page_title = "Dashboard";
     include 'includes/header.php';
 } else {
-    // Not logged in and not a bot, redirect to login
-    header('Location: login.php');
+    // Not logged in - show public landing page to everyone (users and bots)
+    include 'index_public.php';
     exit;
 }
 ?>
