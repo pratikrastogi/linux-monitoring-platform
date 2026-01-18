@@ -1,13 +1,29 @@
 <?php
 session_start();
-require_once 'auth.php';
 
-$db = new mysqli("mysql", "monitor", "monitor123", "monitoring");
-$uid = $_SESSION['uid'];
-$role = $_SESSION['role'];
-$page_title = "Dashboard";
+// Detect search engine bots (Googlebot, Bingbot, etc.)
+$user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+$is_bot = preg_match('/bot|crawl|slurp|spider|mediapartners/i', $user_agent);
 
-include 'includes/header.php';
+// If it's a bot, serve public landing page content
+if ($is_bot) {
+    include 'index_public.php';
+    exit;
+}
+
+// If user is logged in, show dashboard
+if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
+    require_once 'auth.php';
+    $db = new mysqli("mysql", "monitor", "monitor123", "monitoring");
+    $uid = $_SESSION['uid'];
+    $role = $_SESSION['role'];
+    $page_title = "Dashboard";
+    include 'includes/header.php';
+} else {
+    // Not logged in and not a bot, redirect to login
+    header('Location: login.php');
+    exit;
+}
 ?>
 
 <body class="hold-transition sidebar-mini">
