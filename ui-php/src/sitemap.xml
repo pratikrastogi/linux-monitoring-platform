@@ -29,6 +29,22 @@
     <priority>0.9</priority>
   </url>
   
+  <!-- Learning Paths -->
+  <url>
+    <loc>https://kubearena.pratikrastogi.co.in/learning_paths.php</loc>
+    <lastmod>2026-01-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  
+  <!-- Blog -->
+  <url>
+    <loc>https://kubearena.pratikrastogi.co.in/blog.php</loc>
+    <lastmod>2026-01-18</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  
   <!-- Forgot Password -->
   <url>
     <loc>https://kubearena.pratikrastogi.co.in/forgot_password.php</loc>

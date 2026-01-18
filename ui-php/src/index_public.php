@@ -65,6 +65,7 @@ if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
     body {
       font-family: 'Poppins', sans-serif;
       color: #333;
+      overflow-x: hidden;
     }
     
     .hero {
@@ -76,23 +77,92 @@ if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
       justify-content: center;
       text-align: center;
       padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* Animated background particles */
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      top: -50%;
+      left: -50%;
+      background: 
+        radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+      background-size: 80px 80px;
+      background-position: 0 0, 40px 40px;
+      animation: particleMove 20s linear infinite;
+    }
+    
+    @keyframes particleMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(80px, 80px); }
+    }
+    
+    /* Floating shapes */
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      top: 10%;
+      right: 5%;
+      animation: floatShape 15s ease-in-out infinite;
+    }
+    
+    @keyframes floatShape {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -30px) rotate(120deg); }
+      66% { transform: translate(-30px, 30px) rotate(240deg); }
     }
     
     .hero-content {
       max-width: 800px;
+      position: relative;
+      z-index: 1;
     }
     
     h1 {
       font-family: 'Orbitron', sans-serif;
       font-size: 3rem;
       margin-bottom: 1.5rem;
-      animation: fadeInDown 1s;
+      animation: fadeInDown 1s ease-out;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      position: relative;
+      display: inline-block;
+    }
+    
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 3px;
+      background: white;
+      animation: expandLine 1.5s ease-out 0.5s forwards;
+    }
+    
+    @keyframes expandLine {
+      to { width: 80%; }
     }
     
     .subtitle {
       font-size: 1.25rem;
       margin-bottom: 2rem;
-      opacity: 0.95;
+      opacity: 0;
+      animation: fadeInUp 1s ease-out 0.3s forwards;
+    }
+    
+    .hero-content > p {
+      opacity: 0;
+      animation: fadeInUp 1s ease-out 0.5s forwards;
     }
     
     .cta-buttons {
@@ -101,6 +171,8 @@ if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
       justify-content: center;
       flex-wrap: wrap;
       margin: 2rem 0;
+      opacity: 0;
+      animation: fadeInUp 1s ease-out 0.7s forwards;
     }
     
     .btn {
@@ -111,18 +183,39 @@ if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
       cursor: pointer;
       text-decoration: none;
       display: inline-block;
-      transition: all 0.3s;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       font-weight: 600;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
     }
     
     .btn-primary {
       background: white;
       color: #667eea;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
     .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
     }
     
     .btn-secondary {
@@ -134,11 +227,24 @@ if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
     .btn-secondary:hover {
       background: white;
       color: #667eea;
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 15px 35px rgba(255,255,255,0.3);
+    }
+    
+    .btn i {
+      transition: transform 0.3s;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .btn:hover i {
+      transform: scale(1.2) rotate(5deg);
     }
     
     .features {
       padding: 4rem 2rem;
-      background: #f8f9fa;
+      background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+      position: relative;
     }
     
     .features-grid {
@@ -154,33 +260,111 @@ if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
       padding: 2rem;
       border-radius: 15px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      transition: transform 0.3s;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 0.8s ease-out forwards;
+      position: relative;
+      overflow: hidden;
     }
     
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+      transition: left 0.6s;
+    }
+    
+    .feature-card:hover::before {
+      left: 100%;
+    }
+    
+    .feature-card:nth-child(1) { animation-delay: 0.1s; }
+    .feature-card:nth-child(2) { animation-delay: 0.2s; }
+    .feature-card:nth-child(3) { animation-delay: 0.3s; }
+    .feature-card:nth-child(4) { animation-delay: 0.4s; }
+    .feature-card:nth-child(5) { animation-delay: 0.5s; }
+    .feature-card:nth-child(6) { animation-delay: 0.6s; }
+    
     .feature-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-10px) scale(1.03);
+      box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
     }
     
     .feature-icon {
       font-size: 3rem;
       margin-bottom: 1rem;
-      color: #667eea;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      transition: all 0.4s;
+      display: inline-block;
+    }
+    
+    .feature-card:hover .feature-icon {
+      transform: scale(1.2) rotate(360deg);
     }
     
     .feature-title {
       font-size: 1.5rem;
       margin-bottom: 1rem;
       color: #333;
+      transition: color 0.3s;
+    }
+    
+    .feature-card:hover .feature-title {
+      color: #667eea;
+    }
+    
+    .feature-card p {
+      transition: transform 0.3s;
+    }
+    
+    .feature-card:hover p {
+      transform: translateX(5px);
     }
     
     @keyframes fadeInDown {
       from {
         opacity: 0;
-        transform: translateY(-20px);
+        transform: translateY(-40px);
       }
       to {
         opacity: 1;
         transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Pulse animation for rocket emoji */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    h1:hover {
+      animation: pulse 0.6s ease-in-out;
+    }
+    
+    /* Scroll reveal effect */
+    @media (prefers-reduced-motion: no-preference) {
+      .feature-card {
+        will-change: transform, opacity;
       }
     }
     
@@ -190,6 +374,13 @@ if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
       }
       .cta-buttons {
         flex-direction: column;
+      }
+      .btn {
+        width: 100%;
+      }
+      .hero::after {
+        width: 150px;
+        height: 150px;
       }
     }
   </style>
@@ -203,6 +394,7 @@ if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
       <p style="margin-bottom: 2rem;">Master Linux, Kubernetes, Docker, and DevOps with interactive lab environments. Get real terminal access and practice on live servers.</p>
       
       <div class="cta-buttons">
+        <a href="learning_paths.php" class="btn btn-primary"><i class="fas fa-route"></i> Learning Paths</a>
         <a href="browse_courses.php" class="btn btn-primary"><i class="fas fa-book"></i> Browse Courses</a>
         <a href="register.php" class="btn btn-primary"><i class="fas fa-user-plus"></i> Start Learning Free</a>
         <a href="login.php" class="btn btn-secondary"><i class="fas fa-sign-in-alt"></i> Login</a>
