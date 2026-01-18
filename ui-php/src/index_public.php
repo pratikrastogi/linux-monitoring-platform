@@ -1,5 +1,5 @@
 <?php
-session_start();
+// Session already started by index.php
 
 // If user is already logged in, redirect to dashboard
 if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
