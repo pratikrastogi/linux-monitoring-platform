@@ -368,6 +368,9 @@ if (isset($_SESSION['user'])) {
 </head>
 <body class="login-page">
   
+<?php include 'includes/public_sidebar.php'; ?>
+<?php include 'includes/query_popup.php'; ?>
+
   <!-- Animated particles background -->
   <div class="particles">
     <div class="particle" style="width: 80px; height: 80px; top: 10%; left: 5%; animation-delay: 0s;"></div>

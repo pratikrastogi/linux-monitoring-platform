@@ -108,6 +108,47 @@
           </a>
         </li>
         
+        <li class="nav-item">
+          <a href="admin_support.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_support.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-headset"></i>
+            <p>
+              Support Cases
+              <span class="badge badge-warning right" id="supportCases">0</span>
+            </p>
+          </a>
+        </li>
+        
+        <!-- Content Management Section -->
+        <li class="nav-header">CONTENT MANAGEMENT</li>
+        
+        <li class="nav-item">
+          <a href="blog_create.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'blog_create.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-pen-fancy"></i>
+            <p>Write Blog Post</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="blog_manage.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'blog_manage.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-blog"></i>
+            <p>Manage Blogs</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="about_edit.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'about_edit.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-info-circle"></i>
+            <p>Update About Us</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="learning_paths_manage.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'learning_paths_manage.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-road"></i>
+            <p>Manage Learning Paths</p>
+          </a>
+        </li>
+        
         <?php endif; ?>
         
         <?php if ($_SESSION['role'] === 'user'): ?>
@@ -125,13 +166,6 @@
           <a href="my_active_labs.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'my_active_labs.php' ? 'active' : ''; ?>">
             <i class="nav-icon fas fa-laptop-code"></i>
             <p>My Active Labs</p>
-          </a>
-        </li>
-        
-        <li class="nav-item">
-          <a href="terminal.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'terminal.php' ? 'active' : ''; ?>">
-            <i class="nav-icon fas fa-terminal"></i>
-            <p>Lab Terminal</p>
           </a>
         </li>
         
@@ -154,15 +188,13 @@
         <!-- General Section -->
         <li class="nav-header">ACCOUNT</li>
         
-        <!-- Request Access (for non-admin users) -->
-        <?php if ($_SESSION['role'] !== 'admin') { ?>
+        <!-- Profile -->
         <li class="nav-item">
-          <a href="request_access.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'request_access.php' ? 'active' : ''; ?>">
-            <i class="nav-icon fas fa-clock"></i>
-            <p>Request Lab Time</p>
+          <a href="profile.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-user-circle"></i>
+            <p>My Profile</p>
           </a>
         </li>
-        <?php } ?>
         
         <!-- Logout -->
         <li class="nav-item">

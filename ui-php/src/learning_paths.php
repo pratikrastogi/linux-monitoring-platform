@@ -27,48 +27,6 @@ if (session_status() === PHP_SESSION_NONE) {
             min-height: 100vh;
         }
 
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 1rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2rem;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: #667eea;
-        }
-
         .container {
             max-width: 1200px;
             margin: 3rem auto;
@@ -277,6 +235,161 @@ if (session_status() === PHP_SESSION_NONE) {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
 
+        /* Animations */
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            }
+            50% {
+                box-shadow: 0 15px 45px rgba(102, 126, 234, 0.3);
+            }
+        }
+
+        @keyframes rotateIcon {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .header {
+            animation: slideInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            animation: slideInDown 1s ease-out 0.2s both;
+        }
+
+        .header p {
+            animation: slideInDown 1s ease-out 0.4s both;
+        }
+
+        .pathway-flow {
+            animation: fadeInScale 0.8s ease-out 0.3s both;
+        }
+
+        .flow-step {
+            animation: pulse 2s infinite;
+        }
+
+        .flow-step:nth-child(1) { animation-delay: 0s; }
+        .flow-step:nth-child(3) { animation-delay: 0.3s; }
+        .flow-step:nth-child(5) { animation-delay: 0.6s; }
+        .flow-step:nth-child(7) { animation-delay: 0.9s; }
+        .flow-step:nth-child(9) { animation-delay: 1.2s; }
+
+        .flow-arrow {
+            animation: rotateIcon 3s ease-in-out infinite;
+        }
+
+        .path-card {
+            animation: slideInUp 0.6s ease-out both;
+        }
+
+        .path-card:nth-child(1) { animation-delay: 0.2s; }
+        .path-card:nth-child(2) { animation-delay: 0.4s; }
+        .path-card:nth-child(3) { animation-delay: 0.6s; }
+        .path-card:nth-child(4) { animation-delay: 0.8s; }
+        .path-card:nth-child(5) { animation-delay: 1s; }
+
+        .path-card {
+            animation: slideInUp 0.6s ease-out both, glow 3s ease-in-out 0.5s infinite;
+        }
+
+        .path-card-title {
+            transition: all 0.3s ease;
+        }
+
+        .path-card:hover .path-card-title {
+            color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .duration {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .cta-section {
+            animation: slideInUp 0.8s ease-out 1.2s both;
+        }
+
+        .btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2rem;
@@ -299,23 +412,6 @@ if (session_status() === PHP_SESSION_NONE) {
 <body>
     <?php include 'includes/public_sidebar.php'; ?>
     <?php include 'includes/query_popup.php'; ?>
-    
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="/" class="logo">KubeArena</a>
-            <ul class="nav-links">
-                <li><a href="/">Home</a></li>
-                <li><a href="learning_paths.php">Learning Paths</a></li>
-                <li><a href="browse_courses.php">Courses</a></li>
-                <li><a href="blog.php">Blog</a></li>
-                <?php if (isset($_SESSION['user'])): ?>
-                    <li><a href="dashboard.php">Dashboard</a></li>
-                <?php else: ?>
-                    <li><a href="login.php">Login</a></li>
-                <?php endif; ?>
-            </ul>
-        </div>
-    </nav>
 
     <div class="container">
         <div class="header">

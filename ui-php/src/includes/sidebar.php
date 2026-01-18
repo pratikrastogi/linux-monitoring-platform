@@ -118,6 +118,37 @@
           </a>
         </li>
         
+        <!-- Content Management Section -->
+        <li class="nav-header">CONTENT MANAGEMENT</li>
+        
+        <li class="nav-item">
+          <a href="blog_create.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'blog_create.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-pen-fancy"></i>
+            <p>Write Blog Post</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="blog_manage.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'blog_manage.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-blog"></i>
+            <p>Manage Blogs</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="about_edit.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'about_edit.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-info-circle"></i>
+            <p>Update About Us</p>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="learning_paths_manage.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'learning_paths_manage.php' ? 'active' : ''; ?>">
+            <i class="nav-icon fas fa-road"></i>
+            <p>Manage Learning Paths</p>
+          </a>
+        </li>
+        
         <?php endif; ?>
         
         <?php if ($_SESSION['role'] === 'user'): ?>
