@@ -229,19 +229,19 @@
         <li><div class="admin-sidebar-section-title">Navigation</div></li>
         
         <li>
-            <a href="index.php" <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'class="active"' : ''; ?>>
+            <a href="/index.php" <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-tachometer-alt"></i> Dashboard
             </a>
         </li>
         
         <li>
-            <a href="charts.php" <?php echo basename($_SERVER['PHP_SELF']) == 'charts.php' ? 'class="active"' : ''; ?>>
+            <a href="/charts.php" <?php echo basename($_SERVER['PHP_SELF']) == 'charts.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-chart-line"></i> Performance Charts
             </a>
         </li>
         
         <li>
-            <a href="alerts.php" <?php echo basename($_SERVER['PHP_SELF']) == 'alerts.php' ? 'class="active"' : ''; ?>>
+            <a href="/alerts.php" <?php echo basename($_SERVER['PHP_SELF']) == 'alerts.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-exclamation-triangle"></i> Alerts
             </a>
         </li>
@@ -251,43 +251,43 @@
         <li><div class="admin-sidebar-section-title">Labs Platform</div></li>
         
         <li>
-            <a href="courses.php" <?php echo basename($_SERVER['PHP_SELF']) == 'courses.php' ? 'class="active"' : ''; ?>>
+            <a href="/courses.php" <?php echo basename($_SERVER['PHP_SELF']) == 'courses.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-graduation-cap"></i> Courses
             </a>
         </li>
         
         <li>
-            <a href="admin_labs.php" <?php echo basename($_SERVER['PHP_SELF']) == 'admin_labs.php' ? 'class="active"' : ''; ?>>
+            <a href="/admin_labs.php" <?php echo basename($_SERVER['PHP_SELF']) == 'admin_labs.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-flask"></i> Manage Labs
             </a>
         </li>
         
         <li>
-            <a href="admin_lab_requests.php" <?php echo basename($_SERVER['PHP_SELF']) == 'admin_lab_requests.php' ? 'class="active"' : ''; ?>>
+            <a href="/admin_lab_requests.php" <?php echo basename($_SERVER['PHP_SELF']) == 'admin_lab_requests.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-clipboard-check"></i> Lab Requests
             </a>
         </li>
         
         <li>
-            <a href="admin_provisioners.php" <?php echo basename($_SERVER['PHP_SELF']) == 'admin_provisioners.php' ? 'class="active"' : ''; ?>>
+            <a href="/admin_provisioners.php" <?php echo basename($_SERVER['PHP_SELF']) == 'admin_provisioners.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-server"></i> Manage Servers
             </a>
         </li>
         
         <li>
-            <a href="admin_users.php" <?php echo basename($_SERVER['PHP_SELF']) == 'admin_users.php' ? 'class="active"' : ''; ?>>
+            <a href="/admin_users.php" <?php echo basename($_SERVER['PHP_SELF']) == 'admin_users.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-users-cog"></i> User Management
             </a>
         </li>
         
         <li>
-            <a href="admin_live_sessions.php" <?php echo basename($_SERVER['PHP_SELF']) == 'admin_live_sessions.php' ? 'class="active"' : ''; ?>>
+            <a href="/admin_live_sessions.php" <?php echo basename($_SERVER['PHP_SELF']) == 'admin_live_sessions.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-users-circle"></i> Live Sessions
             </a>
         </li>
         
         <li>
-            <a href="admin_support.php" <?php echo basename($_SERVER['PHP_SELF']) == 'admin_support.php' ? 'class="active"' : ''; ?>>
+            <a href="/admin_support.php" <?php echo basename($_SERVER['PHP_SELF']) == 'admin_support.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-headset"></i> Support Cases
             </a>
         </li>
@@ -296,25 +296,25 @@
         <li><div class="admin-sidebar-section-title">Content Management</div></li>
         
         <li>
-            <a href="blog_create.php" <?php echo basename($_SERVER['PHP_SELF']) == 'blog_create.php' ? 'class="active"' : ''; ?>>
+            <a href="/admin/blog_create.php" <?php echo basename($_SERVER['PHP_SELF']) == 'blog_create.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-pen-fancy"></i> Write Blog Post
             </a>
         </li>
         
         <li>
-            <a href="blog_manage.php" <?php echo basename($_SERVER['PHP_SELF']) == 'blog_manage.php' ? 'class="active"' : ''; ?>>
+            <a href="/admin/blog_manage.php" <?php echo basename($_SERVER['PHP_SELF']) == 'blog_manage.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-blog"></i> Manage Blogs
             </a>
         </li>
         
         <li>
-            <a href="about_edit.php" <?php echo basename($_SERVER['PHP_SELF']) == 'about_edit.php' ? 'class="active"' : ''; ?>>
+            <a href="/admin/about_edit.php" <?php echo basename($_SERVER['PHP_SELF']) == 'about_edit.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-info-circle"></i> Update About Us
             </a>
         </li>
         
         <li>
-            <a href="learning_paths_manage.php" <?php echo basename($_SERVER['PHP_SELF']) == 'learning_paths_manage.php' ? 'class="active"' : ''; ?>>
+            <a href="/admin/learning_paths_manage.php" <?php echo basename($_SERVER['PHP_SELF']) == 'learning_paths_manage.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-road"></i> Manage Learning Paths
             </a>
         </li>
@@ -326,25 +326,25 @@
         <li><div class="admin-sidebar-section-title">My Learning</div></li>
         
         <li>
-            <a href="browse_labs.php" <?php echo basename($_SERVER['PHP_SELF']) == 'browse_labs.php' ? 'class="active"' : ''; ?>>
+            <a href="/browse_labs.php" <?php echo basename($_SERVER['PHP_SELF']) == 'browse_labs.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-search"></i> Browse Labs
             </a>
         </li>
         
         <li>
-            <a href="my_active_labs.php" <?php echo basename($_SERVER['PHP_SELF']) == 'my_active_labs.php' ? 'class="active"' : ''; ?>>
+            <a href="/my_active_labs.php" <?php echo basename($_SERVER['PHP_SELF']) == 'my_active_labs.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-laptop-code"></i> My Active Labs
             </a>
         </li>
         
         <li>
-            <a href="profile.php" <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'class="active"' : ''; ?>>
+            <a href="/profile.php" <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-user"></i> My Profile
             </a>
         </li>
         
         <li>
-            <a href="support.php" <?php echo basename($_SERVER['PHP_SELF']) == 'support.php' ? 'class="active"' : ''; ?>>
+            <a href="/support.php" <?php echo basename($_SERVER['PHP_SELF']) == 'support.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-life-ring"></i> Support
             </a>
         </li>
@@ -354,14 +354,14 @@
         <li><div class="admin-sidebar-section-title">Account</div></li>
         
         <li>
-            <a href="profile.php" <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'class="active"' : ''; ?>>
+            <a href="/profile.php" <?php echo basename($_SERVER['PHP_SELF']) == 'profile.php' ? 'class="active"' : ''; ?> >
                 <i class="fas fa-user-circle"></i> My Profile
             </a>
         </li>
     </ul>
 
     <div class="admin-sidebar-footer">
-        <a href="logout.php" class="btn">
+        <a href="/logout.php" class="btn">
             <i class="fas fa-sign-out-alt"></i> Logout
         </a>
     </div>

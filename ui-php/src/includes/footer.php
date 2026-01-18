@@ -55,6 +55,13 @@ function checkAlerts() {
         sidebarAlertElem.textContent = alertCount;
         sidebarAlertElem.className = alertCount > 0 ? 'badge badge-danger right' : 'badge badge-success right';
       }
+
+      // Update compact topbar badge
+      const compactAlertElem = document.getElementById('compactAlertCount');
+      if (compactAlertElem) {
+        compactAlertElem.textContent = alertCount;
+        compactAlertElem.style.background = alertCount > 0 ? '#ff6b6b' : '#2ecc71';
+      }
       
       // Update dropdown
       const alertDropdown = document.getElementById('alertDropdown');

@@ -71,10 +71,10 @@ include 'includes/header.php';
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
 
-<?php include 'includes/navbar.php'; ?>
-<?php include 'includes/sidebar.php'; ?>
+<?php include 'includes/admin_sidebar.php'; ?>
+<?php include 'includes/admin_topbar.php'; ?>
 
-<div class="content-wrapper" style="display: flex; flex-direction: column; overflow: hidden;">
+<div class="content-wrapper app-shell" style="display: flex; flex-direction: column; overflow: hidden;">
   <div class="content-header" style="flex: 0 0 auto;">
     <div class="container-fluid">
       <div class="row mb-2">
