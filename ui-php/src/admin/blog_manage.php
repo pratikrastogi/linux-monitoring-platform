@@ -59,7 +59,7 @@ $result = $db->query($query);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 2rem;
@@ -79,10 +79,12 @@ $result = $db->query($query);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            animation: slideInDown 0.6s ease-out;
         }
 
         .header h1 {
             color: #667eea;
+            font-family: 'Orbitron', sans-serif;
         }
 
         .header-actions {
@@ -98,6 +100,39 @@ $result = $db->query($query);
             border-radius: 8px;
             font-weight: 600;
             transition: transform 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap">
+</head>
+<body>
+    <?php include '../includes/admin_sidebar.php'; ?>
             display: inline-block;
             border: none;
             cursor: pointer;

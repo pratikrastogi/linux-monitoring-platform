@@ -20,7 +20,7 @@ if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
 <div class="wrapper">
 
 <?php include 'includes/navbar.php'; ?>
-<?php include 'includes/sidebar.php'; ?>
+<?php include 'includes/admin_sidebar.php'; ?>
     
     <!-- Content Wrapper -->
     <div class="content-wrapper">

@@ -224,6 +224,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
+    <?php include '../includes/admin_sidebar.php'; ?>
     <div class="container">
         <div class="header">
             <h1>✏️ Edit About Us Page</h1>
