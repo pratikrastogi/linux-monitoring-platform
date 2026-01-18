@@ -74,6 +74,16 @@
     width: 24px;
     text-align: center;
     font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.public-sidebar-menu a:hover i {
+    transform: translateX(5px) scale(1.2);
+    color: #ffd700;
+}
+
+.public-sidebar-menu a.active i {
+    color: #fff;
 }
 
 .public-sidebar-toggle {
