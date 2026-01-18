@@ -19,11 +19,11 @@ if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
 
-<?php include 'includes/navbar.php'; ?>
 <?php include 'includes/admin_sidebar.php'; ?>
+<?php include 'includes/admin_topbar.php'; ?>
     
     <!-- Content Wrapper -->
-    <div class="content-wrapper">
+    <div class="content-wrapper app-shell">
         <!-- Content Header -->
         <div class="content-header">
             <div class="container-fluid">

@@ -6,12 +6,18 @@
     margin-left: 0 !important;
     background: var(--bg-light);
     min-height: 100vh;
-    padding: 90px 24px 40px;
+    padding: 90px 16px 40px;
+}
+
+/* Trim container padding so content hugs the left a bit more without the legacy sidebar gap */
+.app-shell .container-fluid {
+    padding-left: 0;
+    padding-right: 0;
 }
 
 @media (max-width: 992px) {
     .app-shell {
-        padding: 90px 16px 32px;
+        padding: 90px 12px 32px;
     }
 }
 
