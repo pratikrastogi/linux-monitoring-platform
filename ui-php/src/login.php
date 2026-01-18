@@ -10,7 +10,46 @@ if (isset($_SESSION['user'])) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login | KubeArena Learning Platform</title>
+  <title>KubeArena - Free Linux Practice Labs | RHEL, RHCE, RHCSA, Server Access</title>
+  <meta name="description" content="KubeArena offers free hands-on Linux labs including RHEL, RHCE, RHCSA certification prep, Kubernetes, Docker, and DevOps training. Get interactive terminal access and real-time server monitoring for complete Linux practice.">
+  <meta name="keywords" content="Linux, RHEL, RHCE, RHCSA, Kubernetes, Docker, DevOps, free Linux practice, server access, lab environment, terminal, containers, cloud, certification prep, hands-on labs, KubeArena">
+  <meta name="author" content="KubeArena Team">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://kubearena.pratikrastogi.co.in/login.php">
+  
+  <!-- Open Graph / Social Media Tags -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kubearena.pratikrastogi.co.in/login.php">
+  <meta property="og:title" content="KubeArena - Free Linux Practice Labs | RHEL, RHCE, RHCSA">
+  <meta property="og:description" content="Access free hands-on Linux labs for RHEL, RHCE, RHCSA, Kubernetes, Docker, and DevOps with interactive terminal and real-time monitoring."
+  <meta property="og:site_name" content="KubeArena">
+  
+  <!-- Twitter Card Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="KubeArena - Free Linux Practice Labs | RHEL, RHCE, RHCSA">
+  <meta name="twitter:description" content="Access free hands-on Linux labs for RHEL, RHCE, RHCSA, Kubernetes, Docker, and DevOps with interactive terminal and real-time monitoring.">
+  
+  <!-- Structured Data (JSON-LD Schema) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "KubeArena",
+    "url": "https://kubearena.pratikrastogi.co.in",
+    "description": "Free hands-on Linux and Kubernetes lab learning platform with RHEL, RHCE, RHCSA certification prep, Docker, and DevOps training",
+    "sameAs": [
+      "https://kubearena.pratikrastogi.co.in"
+    ],
+    "offers": {
+      "@type": "EducationalOccupationalProgram",
+      "name": "Linux, RHEL, Kubernetes, Docker, DevOps Labs",
+      "description": "Interactive hands-on labs for Linux, RHEL, RHCE, RHCSA, Kubernetes, Docker, and DevOps with live terminal access and server management"
+    }
+  }
+  </script>
 
   <!-- Google Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap">

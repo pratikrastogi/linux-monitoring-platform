@@ -1,0 +1,38 @@
+# KubeArena Learning Platform - robots.txt
+# Generated for SEO and search engine crawling
+
+# Allow all bots to crawl the site
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/internal/
+Disallow: /includes/
+Disallow: /config/
+Disallow: /private/
+Disallow: *?*sort=
+Disallow: *?*filter=
+Disallow: /logout.php
+Disallow: /login_submit.php
+Disallow: /register_submit.php
+
+# Crawl delay (optional - be nice to servers)
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://kubearena.pratikrastogi.co.in/sitemap.xml
+
+# Google specific
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /api/internal/
+Disallow: /includes/
+Disallow: /config/
+Crawl-delay: 0
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /api/internal/
+Crawl-delay: 1
