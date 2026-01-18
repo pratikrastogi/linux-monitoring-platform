@@ -386,6 +386,9 @@ if (isset($_SESSION['user']) && isset($_SESSION['uid'])) {
   </style>
 </head>
 <body>
+  <?php include 'includes/public_sidebar.php'; ?>
+  <?php include 'includes/query_popup.php'; ?>
+  
   <!-- Hero Section -->
   <section class="hero">
     <div class="hero-content">

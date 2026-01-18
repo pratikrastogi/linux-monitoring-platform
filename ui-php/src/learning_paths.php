@@ -297,6 +297,9 @@ if (session_status() === PHP_SESSION_NONE) {
     </style>
 </head>
 <body>
+    <?php include 'includes/public_sidebar.php'; ?>
+    <?php include 'includes/query_popup.php'; ?>
+    
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="logo">KubeArena</a>

@@ -161,6 +161,8 @@ $courses_query = $db->query("SELECT * FROM courses WHERE active=1 ORDER BY name"
   </style>
 </head>
 <body>
+    <?php include 'includes/public_sidebar.php'; ?>
+    <?php include 'includes/query_popup.php'; ?>
   <!-- Navigation Bar -->
   <div class="nav-bar">
     <div class="nav-links">
