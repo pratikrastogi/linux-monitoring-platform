@@ -304,7 +304,7 @@ $result = $db->query($query);
                 <div class="stat-label">Drafts</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value"><?php echo number_format($stats['total_views']); ?></div>
+                <div class="stat-value"><?php echo number_format($stats['total_views'] ?? 0); ?></div>
                 <div class="stat-label">Total Views</div>
             </div>
         </div>
